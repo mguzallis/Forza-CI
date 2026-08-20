@@ -68,17 +68,22 @@ function tryZX(c){
   if(typeof ZXing==='undefined'){scanFail();return;}
   try{var rd=new ZXing.BrowserMultiFormatReader(),im=new Image();im.onload=function(){rd.decodeFromImageElement(im).then(function(r){handleScan(r.getText());}).catch(scanFail);};im.src=c.toDataURL();}catch(e){scanFail();}
 }
-function scanFail(){document.getElementById('scannerHint').textContent='Could not read barcode. Try better lighting, hold steadier, or move closer.';document.getElementById('captureBtn').textContent='Try Again';}
+function scanFail(){
+  // Grab the captured image before closing
+  var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
+  closeScan();
+  showManualEntry(imgData,'');
+}
 function handleScan(raw){
   closeScan();
   var cl=raw.trim(),nz=cl.replace(/^0+/,''),sn=UPC_MAP[cl]||UPC_MAP[nz]||null,el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){document.getElementById('skuInput').value=sn;var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});if(m.length){showRes(m,sn);return;}}
   var dm=SKU.filter(function(d){return nm(d.comp).indexOf(nm(cl))>-1||nm(cl).indexOf(nm(d.comp))>-1;});
   if(dm.length){document.getElementById('skuInput').value=cl;showRes(dm,cl);return;}
-  var box=mk('div','scan-result-box');
-  if(/^[0-9]{8,14}$/.test(cl)){box.appendChild(mk('strong',null,'UPC: '+cl));box.appendChild(mk('span',null,' — Not in database yet. Search by product name above.'));}
-  else{box.appendChild(mk('strong',null,'Scanned: '+cl));box.appendChild(mk('span',null,' — No Forza cross found. Try searching by name above.'));document.getElementById('skuInput').value=cl;}
-  el.appendChild(box);
+  // Nothing matched — grab image and show manual entry
+  var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
+  var prefill=/^[0-9]{8,14}$/.test(cl)?'':cl;
+  showManualEntry(imgData,prefill);
 }
 
 // ── FIELD GUIDES ─────────────────────────────────────────────────────────
@@ -112,6 +117,51 @@ function buildFG(){
     sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(mk('td','fg-forza',row[2]||'-'));if(isFas)tr.appendChild(mk('td','fg-forza2',row[3]||'-'));tb.appendChild(tr);});
     tbl.appendChild(tb);w.appendChild(tbl);el.appendChild(w);
   });
+}
+
+
+function showManualEntry(imgData, prefill){
+  var el=document.getElementById('skuResult');
+  el.innerHTML='';
+
+  var wrap=mk('div','manual-wrap');
+
+  // Captured image
+  if(imgData){
+    var imgLabel=mk('div','manual-label','Captured image — find the product name on the label:');
+    wrap.appendChild(imgLabel);
+    var img=document.createElement('img');
+    img.src=imgData;img.className='manual-img';
+    wrap.appendChild(img);
+  }
+
+  // Instruction
+  var inst=mk('div','manual-label','Type the product name or SKU you see:');
+  wrap.appendChild(inst);
+
+  // Input + search row
+  var row=mk('div','srow');row.style.marginTop='8px';
+  var inp=mk('input','sinput');
+  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';
+  inp.value=prefill||'';
+  var btn=mk('button','sbtn','Search');
+  btn.addEventListener('click',function(){
+    var v=inp.value.trim();if(!v)return;
+    document.getElementById('skuInput').value=v;
+    var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(v))>-1||nm(d.brand).indexOf(nm(v))>-1;});
+    el.innerHTML='';showRes(m.length?m:[],v);
+  });
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
+  row.appendChild(inp);row.appendChild(btn);
+  wrap.appendChild(row);
+
+  // Retry scan button
+  var retry=mk('button','retry-scan-btn','Try Scan Again');
+  retry.addEventListener('click',function(){el.innerHTML='';openScan();});
+  wrap.appendChild(retry);
+
+  el.appendChild(wrap);
+  if(prefill)inp.select();else inp.focus();
 }
 
 </script>
@@ -283,6 +333,12 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;flex-shrink:0;}
 .fg-tbl td.fg-forza2{font-weight:700;color:#B83D35;}
 .fg-tbl tr:last-child td{border-bottom:none;}
 .fg-tbl tr:hover td{background:#F8F9FC;}
+
+.manual-wrap{margin-top:14px;background:var(--surface);border-radius:8px;padding:16px;border-left:4px solid var(--orange);}
+.manual-label{font-size:.72rem;font-weight:600;color:var(--blue);margin-bottom:8px;letter-spacing:.02em;}
+.manual-img{width:100%;max-height:220px;object-fit:contain;border-radius:6px;border:1px solid var(--border);margin-bottom:12px;background:#000;}
+.retry-scan-btn{margin-top:10px;padding:8px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:.74rem;font-weight:600;color:var(--blue);cursor:pointer;font-family:'Poppins',sans-serif;width:100%;}
+.retry-scan-btn:hover{border-color:var(--blue);background:#F5F7FB;}
 </style>
 </head>
 <body>
@@ -652,17 +708,22 @@ function tryZX(c){
   if(typeof ZXing==='undefined'){scanFail();return;}
   try{var rd=new ZXing.BrowserMultiFormatReader(),im=new Image();im.onload=function(){rd.decodeFromImageElement(im).then(function(r){handleScan(r.getText());}).catch(scanFail);};im.src=c.toDataURL();}catch(e){scanFail();}
 }
-function scanFail(){document.getElementById('scannerHint').textContent='Could not read barcode. Try better lighting, hold steadier, or move closer.';document.getElementById('captureBtn').textContent='Try Again';}
+function scanFail(){
+  // Grab the captured image before closing
+  var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
+  closeScan();
+  showManualEntry(imgData,'');
+}
 function handleScan(raw){
   closeScan();
   var cl=raw.trim(),nz=cl.replace(/^0+/,''),sn=UPC_MAP[cl]||UPC_MAP[nz]||null,el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){document.getElementById('skuInput').value=sn;var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});if(m.length){showRes(m,sn);return;}}
   var dm=SKU.filter(function(d){return nm(d.comp).indexOf(nm(cl))>-1||nm(cl).indexOf(nm(d.comp))>-1;});
   if(dm.length){document.getElementById('skuInput').value=cl;showRes(dm,cl);return;}
-  var box=mk('div','scan-result-box');
-  if(/^[0-9]{8,14}$/.test(cl)){box.appendChild(mk('strong',null,'UPC: '+cl));box.appendChild(mk('span',null,' — Not in database yet. Search by product name above.'));}
-  else{box.appendChild(mk('strong',null,'Scanned: '+cl));box.appendChild(mk('span',null,' — No Forza cross found. Try searching by name above.'));document.getElementById('skuInput').value=cl;}
-  el.appendChild(box);
+  // Nothing matched — grab image and show manual entry
+  var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
+  var prefill=/^[0-9]{8,14}$/.test(cl)?'':cl;
+  showManualEntry(imgData,prefill);
 }
 
 // ── FIELD GUIDES ─────────────────────────────────────────────────────────
@@ -696,6 +757,51 @@ function buildFG(){
     sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(mk('td','fg-forza',row[2]||'-'));if(isFas)tr.appendChild(mk('td','fg-forza2',row[3]||'-'));tb.appendChild(tr);});
     tbl.appendChild(tb);w.appendChild(tbl);el.appendChild(w);
   });
+}
+
+
+function showManualEntry(imgData, prefill){
+  var el=document.getElementById('skuResult');
+  el.innerHTML='';
+
+  var wrap=mk('div','manual-wrap');
+
+  // Captured image
+  if(imgData){
+    var imgLabel=mk('div','manual-label','Captured image — find the product name on the label:');
+    wrap.appendChild(imgLabel);
+    var img=document.createElement('img');
+    img.src=imgData;img.className='manual-img';
+    wrap.appendChild(img);
+  }
+
+  // Instruction
+  var inst=mk('div','manual-label','Type the product name or SKU you see:');
+  wrap.appendChild(inst);
+
+  // Input + search row
+  var row=mk('div','srow');row.style.marginTop='8px';
+  var inp=mk('input','sinput');
+  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';
+  inp.value=prefill||'';
+  var btn=mk('button','sbtn','Search');
+  btn.addEventListener('click',function(){
+    var v=inp.value.trim();if(!v)return;
+    document.getElementById('skuInput').value=v;
+    var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(v))>-1||nm(d.brand).indexOf(nm(v))>-1;});
+    el.innerHTML='';showRes(m.length?m:[],v);
+  });
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
+  row.appendChild(inp);row.appendChild(btn);
+  wrap.appendChild(row);
+
+  // Retry scan button
+  var retry=mk('button','retry-scan-btn','Try Scan Again');
+  retry.addEventListener('click',function(){el.innerHTML='';openScan();});
+  wrap.appendChild(retry);
+
+  el.appendChild(wrap);
+  if(prefill)inp.select();else inp.focus();
 }
 
 </script>
