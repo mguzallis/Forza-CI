@@ -153,7 +153,162 @@ hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
 .fg-tbl td.fg-forza2{font-weight:700;color:#B83D35;}
 .fg-tbl tr:last-child td{border-bottom:none;}
 .fg-tbl tr:hover td{background:#F8F9FC;}
+
+.scan-btn{display:flex;align-items:center;gap:8px;padding:11px 18px;background:#1B3764;color:#fff;border:none;border-radius:6px;font-size:.82rem;font-weight:700;font-family:'K','Poppins',sans-serif;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+.scan-btn:hover{background:#142d55;}
+.scan-btn svg{flex-shrink:0;}
+.scanner-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;flex-direction:column;align-items:center;justify-content:center;}
+.scanner-modal.open{display:flex;}
+.scanner-inner{background:#000;border-radius:12px;overflow:hidden;width:min(420px,94vw);position:relative;}
+.scanner-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1B3764;}
+.scanner-title{color:#fff;font-family:'K','Poppins',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;}
+.scanner-close{background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1;padding:0 4px;}
+.scanner-video-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#111;}
+#scannerVideo{width:100%;height:100%;object-fit:cover;display:block;}
+.scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.scanner-frame{width:65%;aspect-ratio:3/1;border:2px solid var(--orange);border-radius:6px;box-shadow:0 0 0 9999px rgba(0,0,0,.45);}
+.scanner-hint{padding:10px 16px;color:#aaa;font-size:.72rem;text-align:center;background:#111;}
+.scan-result-box{margin-top:12px;background:#ECF4FF;border-radius:8px;padding:12px 16px;border-left:4px solid var(--blue);font-size:.8rem;color:var(--blue);}
+.scan-result-box strong{display:block;font-size:.9rem;margin-bottom:3px;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.18.6/index.min.js">
+// ── BARCODE SCANNER ────────────────────────────────────────────────────────
+var scannerStream = null;
+var scannerActive = false;
+var codeReader = null;
+
+// UPC-to-SKU map — add more as you encounter them in the field
+var UPC_MAP = {
+  '051111072783': '3M Hi-Strength 90',
+  '051111072788': '3M Hi-Strength 90',
+  '021200725715': '3M Super 77',
+  '021200506995': '3M Super 77',
+  '021200508524': '3M 24 Foam Fabric Spray',
+  '021200795626': '3M HoldFast 70',
+  '051135809793': 'Sikaflex-252',
+  '051135808000': 'Sikaflex-221',
+  '051135808109': 'Sikaflex-291',
+  '723513802656': 'Manus 75-AM',
+};
+
+document.getElementById('scanBtn').addEventListener('click', function() {
+  openScanner();
+});
+document.getElementById('scannerClose').addEventListener('click', function() {
+  closeScanner();
+});
+
+function openScanner() {
+  var modal = document.getElementById('scannerModal');
+  modal.classList.add('open');
+  scannerActive = true;
+  startCamera();
+}
+
+function closeScanner() {
+  var modal = document.getElementById('scannerModal');
+  modal.classList.remove('open');
+  scannerActive = false;
+  stopCamera();
+}
+
+function stopCamera() {
+  if (scannerStream) {
+    scannerStream.getTracks().forEach(function(t) { t.stop(); });
+    scannerStream = null;
+  }
+  if (codeReader) {
+    try { codeReader.reset(); } catch(e) {}
+    codeReader = null;
+  }
+}
+
+function startCamera() {
+  var video = document.getElementById('scannerVideo');
+  // Try to use ZXing if available
+  if (typeof ZXing !== 'undefined') {
+    try {
+      codeReader = new ZXing.BrowserMultiFormatReader();
+      codeReader.decodeFromConstraints(
+        { video: { facingMode: 'environment' } },
+        video,
+        function(result, err) {
+          if (result && scannerActive) {
+            handleScan(result.getText());
+          }
+        }
+      );
+      return;
+    } catch(e) {}
+  }
+  // Fallback: just show camera feed, manual decode not available
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(function(stream) {
+      scannerStream = stream;
+      video.srcObject = stream;
+      // Use BarcodeDetector API if available (Chrome/Android)
+      if ('BarcodeDetector' in window) {
+        var detector = new BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code','data_matrix'] });
+        function detect() {
+          if (!scannerActive) return;
+          detector.detect(video).then(function(codes) {
+            if (codes.length > 0 && scannerActive) {
+              handleScan(codes[0].rawValue);
+            } else {
+              requestAnimationFrame(detect);
+            }
+          }).catch(function() { requestAnimationFrame(detect); });
+        }
+        video.addEventListener('loadedmetadata', function() { detect(); });
+      }
+    })
+    .catch(function(err) {
+      document.querySelector('.scanner-hint').textContent = 'Camera access denied. Please allow camera permission and try again.';
+    });
+}
+
+function handleScan(raw) {
+  if (!scannerActive) return;
+  closeScanner();
+
+  var cleaned = raw.trim();
+  // Strip leading zeros and check UPC map
+  var noZero = cleaned.replace(/^0+/, '');
+  var skuName = UPC_MAP[cleaned] || UPC_MAP[noZero] || null;
+
+  var resultEl = document.getElementById('skuResult');
+  resultEl.innerHTML = '';
+
+  if (skuName) {
+    // Found in UPC map — run search
+    document.getElementById('skuInput').value = skuName;
+    var matches = SKU.filter(function(d) { return nm(d.comp).indexOf(nm(skuName)) > -1 || nm(d.brand).indexOf(nm(skuName)) > -1; });
+    if (matches.length) { showRes(matches, skuName); return; }
+  }
+
+  // Try direct SKU match (for products like FTG-8214-1 that encode the SKU)
+  var directMatches = SKU.filter(function(d) {
+    return nm(d.comp).indexOf(nm(cleaned)) > -1 || nm(cleaned).indexOf(nm(d.comp)) > -1;
+  });
+
+  if (directMatches.length) {
+    document.getElementById('skuInput').value = cleaned;
+    showRes(directMatches, cleaned);
+    return;
+  }
+
+  // Not found — show the raw scanned value with helper message
+  var box = mk('div','scan-result-box');
+  if (/^\d{8,14}$/.test(cleaned)) {
+    box.innerHTML = '<strong>UPC: ' + cleaned + '</strong>Not in database yet. Search by product name above, or add this UPC to the lookup table.';
+  } else {
+    box.innerHTML = '<strong>Scanned: ' + cleaned + '</strong>No Forza cross found. Try searching by product name above.';
+    document.getElementById('skuInput').value = cleaned;
+  }
+  resultEl.appendChild(box);
+}
+
+</script>
 </head>
 <body>
 <div class="app">
@@ -178,8 +333,27 @@ hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
       <div class="srow">
         <input class="sinput" id="skuInput" type="text" placeholder="e.g. Super 77, Sikaflex-252, H8000, 75-AM-HV, Loctite 401...">
         <button class="sbtn" id="skuBtn">Search</button>
+        <button class="scan-btn" id="scanBtn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+          Scan
+        </button>
       </div>
       <div id="skuResult"></div>
+    </div>
+
+    <!-- Scanner Modal -->
+    <div class="scanner-modal" id="scannerModal">
+      <div class="scanner-inner">
+        <div class="scanner-header">
+          <span class="scanner-title">Scan Competitor Barcode</span>
+          <button class="scanner-close" id="scannerClose">&times;</button>
+        </div>
+        <div class="scanner-video-wrap">
+          <video id="scannerVideo" autoplay playsinline muted></video>
+          <div class="scanner-overlay"><div class="scanner-frame"></div></div>
+        </div>
+        <div class="scanner-hint">Point camera at barcode or QR code on competitor product</div>
+      </div>
     </div>
     <div id="sec-verticals" class="sec"><div class="vgrid" id="vertGrid"></div><div id="vertDetail"></div></div>
     <div id="sec-analysis" class="sec"><div class="comp-grid" id="anGrid"></div><div id="anDetail"></div></div>
@@ -501,6 +675,143 @@ function showVD(i){
   tbl.appendChild(tbody);dp.appendChild(tbl);det.appendChild(dp);
 }
 buildDocs();
+
+// ── BARCODE SCANNER ────────────────────────────────────────────────────────
+var scannerStream = null;
+var scannerActive = false;
+var codeReader = null;
+
+// UPC-to-SKU map — add more as you encounter them in the field
+var UPC_MAP = {
+  '051111072783': '3M Hi-Strength 90',
+  '051111072788': '3M Hi-Strength 90',
+  '021200725715': '3M Super 77',
+  '021200506995': '3M Super 77',
+  '021200508524': '3M 24 Foam Fabric Spray',
+  '021200795626': '3M HoldFast 70',
+  '051135809793': 'Sikaflex-252',
+  '051135808000': 'Sikaflex-221',
+  '051135808109': 'Sikaflex-291',
+  '723513802656': 'Manus 75-AM',
+};
+
+document.getElementById('scanBtn').addEventListener('click', function() {
+  openScanner();
+});
+document.getElementById('scannerClose').addEventListener('click', function() {
+  closeScanner();
+});
+
+function openScanner() {
+  var modal = document.getElementById('scannerModal');
+  modal.classList.add('open');
+  scannerActive = true;
+  startCamera();
+}
+
+function closeScanner() {
+  var modal = document.getElementById('scannerModal');
+  modal.classList.remove('open');
+  scannerActive = false;
+  stopCamera();
+}
+
+function stopCamera() {
+  if (scannerStream) {
+    scannerStream.getTracks().forEach(function(t) { t.stop(); });
+    scannerStream = null;
+  }
+  if (codeReader) {
+    try { codeReader.reset(); } catch(e) {}
+    codeReader = null;
+  }
+}
+
+function startCamera() {
+  var video = document.getElementById('scannerVideo');
+  // Try to use ZXing if available
+  if (typeof ZXing !== 'undefined') {
+    try {
+      codeReader = new ZXing.BrowserMultiFormatReader();
+      codeReader.decodeFromConstraints(
+        { video: { facingMode: 'environment' } },
+        video,
+        function(result, err) {
+          if (result && scannerActive) {
+            handleScan(result.getText());
+          }
+        }
+      );
+      return;
+    } catch(e) {}
+  }
+  // Fallback: just show camera feed, manual decode not available
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(function(stream) {
+      scannerStream = stream;
+      video.srcObject = stream;
+      // Use BarcodeDetector API if available (Chrome/Android)
+      if ('BarcodeDetector' in window) {
+        var detector = new BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code','data_matrix'] });
+        function detect() {
+          if (!scannerActive) return;
+          detector.detect(video).then(function(codes) {
+            if (codes.length > 0 && scannerActive) {
+              handleScan(codes[0].rawValue);
+            } else {
+              requestAnimationFrame(detect);
+            }
+          }).catch(function() { requestAnimationFrame(detect); });
+        }
+        video.addEventListener('loadedmetadata', function() { detect(); });
+      }
+    })
+    .catch(function(err) {
+      document.querySelector('.scanner-hint').textContent = 'Camera access denied. Please allow camera permission and try again.';
+    });
+}
+
+function handleScan(raw) {
+  if (!scannerActive) return;
+  closeScanner();
+
+  var cleaned = raw.trim();
+  // Strip leading zeros and check UPC map
+  var noZero = cleaned.replace(/^0+/, '');
+  var skuName = UPC_MAP[cleaned] || UPC_MAP[noZero] || null;
+
+  var resultEl = document.getElementById('skuResult');
+  resultEl.innerHTML = '';
+
+  if (skuName) {
+    // Found in UPC map — run search
+    document.getElementById('skuInput').value = skuName;
+    var matches = SKU.filter(function(d) { return nm(d.comp).indexOf(nm(skuName)) > -1 || nm(d.brand).indexOf(nm(skuName)) > -1; });
+    if (matches.length) { showRes(matches, skuName); return; }
+  }
+
+  // Try direct SKU match (for products like FTG-8214-1 that encode the SKU)
+  var directMatches = SKU.filter(function(d) {
+    return nm(d.comp).indexOf(nm(cleaned)) > -1 || nm(cleaned).indexOf(nm(d.comp)) > -1;
+  });
+
+  if (directMatches.length) {
+    document.getElementById('skuInput').value = cleaned;
+    showRes(directMatches, cleaned);
+    return;
+  }
+
+  // Not found — show the raw scanned value with helper message
+  var box = mk('div','scan-result-box');
+  if (/^\d{8,14}$/.test(cleaned)) {
+    box.innerHTML = '<strong>UPC: ' + cleaned + '</strong>Not in database yet. Search by product name above, or add this UPC to the lookup table.';
+  } else {
+    box.innerHTML = '<strong>Scanned: ' + cleaned + '</strong>No Forza cross found. Try searching by product name above.';
+    document.getElementById('skuInput').value = cleaned;
+  }
+  resultEl.appendChild(box);
+}
+
 </script>
 </body>
 </html>
