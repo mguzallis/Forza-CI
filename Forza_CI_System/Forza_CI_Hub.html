@@ -11,17 +11,47 @@ var UPC_MAP={'051111072783':'3M Hi-Strength 90','021200725715':'3M Super 77','02
 document.getElementById('scanBtn').addEventListener('click',function(){openScan();});
 document.getElementById('scannerClose').addEventListener('click',function(){closeScan();});
 document.getElementById('captureBtn').addEventListener('click',function(){captureFr();});
+var torchOn=false;
 function openScan(){
+  torchOn=false;
+  document.getElementById('flashBtn').classList.remove('on');
   document.getElementById('scannerModal').classList.add('open');
   document.getElementById('scannerHint').textContent='Point camera at barcode, then tap Capture';
   document.getElementById('captureBtn').textContent='Capture';
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
-    .then(function(s){scanStream=s;document.getElementById('scannerVideo').srcObject=s;})
+    .then(function(s){
+      scanStream=s;
+      document.getElementById('scannerVideo').srcObject=s;
+      // Check if torch is supported
+      var track=s.getVideoTracks()[0];
+      var caps=track.getCapabilities?track.getCapabilities():{};
+      if(!caps.torch){document.getElementById('flashBtn').style.display='none';}
+      else{document.getElementById('flashBtn').style.display='';}
+    })
     .catch(function(){document.getElementById('scannerHint').textContent='Camera access denied. Allow camera in browser settings.';});
 }
+document.getElementById('flashBtn').addEventListener('click',function(){
+  if(!scanStream)return;
+  var track=scanStream.getVideoTracks()[0];
+  torchOn=!torchOn;
+  track.applyConstraints({advanced:[{torch:torchOn}]})
+    .then(function(){
+      document.getElementById('flashBtn').classList.toggle('on',torchOn);
+    })
+    .catch(function(){
+      document.getElementById('scannerHint').textContent='Flash not supported on this device.';
+      torchOn=false;
+    });
+});
 function closeScan(){
   document.getElementById('scannerModal').classList.remove('open');
-  if(scanStream){scanStream.getTracks().forEach(function(t){t.stop();});scanStream=null;}
+  if(scanStream){
+    // Turn off torch before stopping
+    try{var track=scanStream.getVideoTracks()[0];if(torchOn)track.applyConstraints({advanced:[{torch:false}]});}catch(e){}
+    scanStream.getTracks().forEach(function(t){t.stop();}); scanStream=null;
+  }
+  torchOn=false;
+  document.getElementById('flashBtn').classList.remove('on');
 }
 function captureFr(){
   var v=document.getElementById('scannerVideo'),c=document.getElementById('scanCanvas');
@@ -225,6 +255,8 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;flex-shrink:0;}
 .scanner-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1B3764;}
 .scanner-title{color:#fff;font-family:'K','Poppins',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;}
 .scanner-close{background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1;padding:0 4px;}
+.scanner-flash{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:1rem;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px;}
+.scanner-flash.on{background:rgba(255,220,0,.25);border-color:#FFD700;color:#FFD700;}
 .scanner-video-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#111;}
 #scannerVideo{width:100%;height:100%;object-fit:cover;display:block;}
 .scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
@@ -280,7 +312,7 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;flex-shrink:0;}
       </div>
       <div class="scanner-modal" id="scannerModal">
         <div class="scanner-inner">
-          <div class="scanner-header"><span class="scanner-title">Scan Competitor Barcode</span><button class="scanner-close" id="scannerClose">&times;</button></div>
+          <div class="scanner-header"><span class="scanner-title">Scan Competitor Barcode</span><div style="display:flex;gap:10px;align-items:center;"><button class="scanner-flash" id="flashBtn" title="Toggle Flash">&#9889;</button><button class="scanner-close" id="scannerClose">&times;</button></div></div>
           <div class="scanner-video-wrap"><video id="scannerVideo" autoplay playsinline muted></video><div class="scanner-overlay"><div class="scanner-frame"></div></div></div>
           <div class="scanner-hint" id="scannerHint">Point camera at barcode, then tap Capture</div>
           <div class="scanner-capture"><button class="scanner-capture-btn" id="captureBtn">Capture</button></div>
@@ -563,17 +595,47 @@ var UPC_MAP={'051111072783':'3M Hi-Strength 90','021200725715':'3M Super 77','02
 document.getElementById('scanBtn').addEventListener('click',function(){openScan();});
 document.getElementById('scannerClose').addEventListener('click',function(){closeScan();});
 document.getElementById('captureBtn').addEventListener('click',function(){captureFr();});
+var torchOn=false;
 function openScan(){
+  torchOn=false;
+  document.getElementById('flashBtn').classList.remove('on');
   document.getElementById('scannerModal').classList.add('open');
   document.getElementById('scannerHint').textContent='Point camera at barcode, then tap Capture';
   document.getElementById('captureBtn').textContent='Capture';
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
-    .then(function(s){scanStream=s;document.getElementById('scannerVideo').srcObject=s;})
+    .then(function(s){
+      scanStream=s;
+      document.getElementById('scannerVideo').srcObject=s;
+      // Check if torch is supported
+      var track=s.getVideoTracks()[0];
+      var caps=track.getCapabilities?track.getCapabilities():{};
+      if(!caps.torch){document.getElementById('flashBtn').style.display='none';}
+      else{document.getElementById('flashBtn').style.display='';}
+    })
     .catch(function(){document.getElementById('scannerHint').textContent='Camera access denied. Allow camera in browser settings.';});
 }
+document.getElementById('flashBtn').addEventListener('click',function(){
+  if(!scanStream)return;
+  var track=scanStream.getVideoTracks()[0];
+  torchOn=!torchOn;
+  track.applyConstraints({advanced:[{torch:torchOn}]})
+    .then(function(){
+      document.getElementById('flashBtn').classList.toggle('on',torchOn);
+    })
+    .catch(function(){
+      document.getElementById('scannerHint').textContent='Flash not supported on this device.';
+      torchOn=false;
+    });
+});
 function closeScan(){
   document.getElementById('scannerModal').classList.remove('open');
-  if(scanStream){scanStream.getTracks().forEach(function(t){t.stop();});scanStream=null;}
+  if(scanStream){
+    // Turn off torch before stopping
+    try{var track=scanStream.getVideoTracks()[0];if(torchOn)track.applyConstraints({advanced:[{torch:false}]});}catch(e){}
+    scanStream.getTracks().forEach(function(t){t.stop();}); scanStream=null;
+  }
+  torchOn=false;
+  document.getElementById('flashBtn').classList.remove('on');
 }
 function captureFr(){
   var v=document.getElementById('scannerVideo'),c=document.getElementById('scanCanvas');
