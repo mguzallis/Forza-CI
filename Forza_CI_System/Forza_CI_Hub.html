@@ -332,6 +332,10 @@ document.getElementById('scanFileInput').addEventListener('change',function(e){
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
+      // Show immediate feedback so user knows photo was received
+      document.getElementById('skuResult').innerHTML='';
+      var proc=mk('div','scan-processing','Photo received — reading barcode...');
+      document.getElementById('skuResult').appendChild(proc);
       // Draw to canvas for decode + save as captured image
       var c=document.getElementById('scanCanvas');
       c.width=img.naturalWidth;c.height=img.naturalHeight;
@@ -351,29 +355,40 @@ document.getElementById('scanFileInput').addEventListener('change',function(e){
         tryZXFile(img,imgData);
       }
     };
+      img.crossOrigin='anonymous';
     img.src=ev.target.result;
   };
+  // Use readAsDataURL so ZXing can access the image
   reader.readAsDataURL(file);
 });
 
 function tryZXFile(img,imgData){
-  if(typeof ZXing==='undefined'){showManualEntry(imgData,'',lastUpc);return;}
+  // Show processing status
+  var statusEl=document.getElementById('skuResult');
+  statusEl.innerHTML='';
+  var proc=mk('div','scan-processing','Reading barcode from photo...');
+  statusEl.appendChild(proc);
+
+  if(typeof ZXing==='undefined'){
+    statusEl.innerHTML='';
+    showManualEntry(imgData,'',lastUpc);
+    return;
+  }
   try{
-    var hints=new Map();
-    var fmts=[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.ITF];
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,fmts);
-    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
-    var rd=new ZXing.MultiFormatReader();rd.setHints(hints);
-    var lum=new ZXing.HTMLCanvasElementLuminanceSource(document.getElementById('scanCanvas'));
-    var bmp=new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lum));
-    var result=rd.decode(bmp);
-    handleScan(result.getText(),imgData);
+    var rd=new ZXing.BrowserMultiFormatReader();
+    // decodeFromImageElement is the most reliable ZXing method
+    rd.decodeFromImageElement(img)
+      .then(function(result){
+        statusEl.innerHTML='';
+        handleScan(result.getText(),imgData);
+      })
+      .catch(function(err){
+        statusEl.innerHTML='';
+        showManualEntry(imgData,'',lastUpc);
+      });
   } catch(e){
-    // Try the simpler reader as fallback
-    try{
-      var rd2=new ZXing.BrowserMultiFormatReader();
-      rd2.decodeFromImageElement(img).then(function(r){handleScan(r.getText(),imgData);}).catch(function(){showManualEntry(imgData,'',lastUpc);});
-    } catch(e2){showManualEntry(imgData,'',lastUpc);}
+    statusEl.innerHTML='';
+    showManualEntry(imgData,'',lastUpc);
   }
 }
 function slog(msg){
