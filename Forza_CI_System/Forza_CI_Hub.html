@@ -68,22 +68,25 @@ function tryZX(c){
   if(typeof ZXing==='undefined'){scanFail();return;}
   try{var rd=new ZXing.BrowserMultiFormatReader(),im=new Image();im.onload=function(){rd.decodeFromImageElement(im).then(function(r){handleScan(r.getText());}).catch(scanFail);};im.src=c.toDataURL();}catch(e){scanFail();}
 }
+var lastScannedUpc='';
 function scanFail(){
-  // Grab the captured image before closing
   var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
   closeScan();
-  showManualEntry(imgData,'');
+  showManualEntry(imgData,'',lastScannedUpc);
 }
 function handleScan(raw){
   closeScan();
-  var cl=raw.trim(),nz=cl.replace(/^0+/,''),sn=UPC_MAP[cl]||UPC_MAP[nz]||null,el=document.getElementById('skuResult');el.innerHTML='';
+  var cl=raw.trim(),nz=cl.replace(/^0+/,'');
+  lastScannedUpc=/^[0-9]{8,14}$/.test(cl)?cl:'';
+  // Also check shared repo
+  var repo=getUpcRepo();var repoName=repo[cl]||repo[nz]||null;
+  var sn=UPC_MAP[cl]||UPC_MAP[nz]||repoName||null,el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){document.getElementById('skuInput').value=sn;var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});if(m.length){showRes(m,sn);return;}}
   var dm=SKU.filter(function(d){return nm(d.comp).indexOf(nm(cl))>-1||nm(cl).indexOf(nm(d.comp))>-1;});
   if(dm.length){document.getElementById('skuInput').value=cl;showRes(dm,cl);return;}
-  // Nothing matched — grab image and show manual entry
   var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
   var prefill=/^[0-9]{8,14}$/.test(cl)?'':cl;
-  showManualEntry(imgData,prefill);
+  showManualEntry(imgData,prefill,lastScannedUpc);
 }
 
 // ── FIELD GUIDES ─────────────────────────────────────────────────────────
@@ -120,42 +123,42 @@ function buildFG(){
 }
 
 
-function showManualEntry(imgData, prefill){
+function showManualEntry(imgData, prefill, rawUpc){
   var el=document.getElementById('skuResult');
   el.innerHTML='';
-
   var wrap=mk('div','manual-wrap');
 
-  // Captured image
   if(imgData){
-    var imgLabel=mk('div','manual-label','Captured image — find the product name on the label:');
-    wrap.appendChild(imgLabel);
-    var img=document.createElement('img');
-    img.src=imgData;img.className='manual-img';
-    wrap.appendChild(img);
+    wrap.appendChild(mk('div','manual-label','Captured image — find the product name on the label:'));
+    var img=document.createElement('img');img.src=imgData;img.className='manual-img';wrap.appendChild(img);
   }
 
-  // Instruction
-  var inst=mk('div','manual-label','Type the product name or SKU you see:');
-  wrap.appendChild(inst);
+  wrap.appendChild(mk('div','manual-label','Type the product name or SKU you see:'));
 
-  // Input + search row
   var row=mk('div','srow');row.style.marginTop='8px';
   var inp=mk('input','sinput');
-  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';
-  inp.value=prefill||'';
+  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';inp.value=prefill||'';
+
   var btn=mk('button','sbtn','Search');
   btn.addEventListener('click',function(){
     var v=inp.value.trim();if(!v)return;
     document.getElementById('skuInput').value=v;
     var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(v))>-1||nm(d.brand).indexOf(nm(v))>-1;});
-    el.innerHTML='';showRes(m.length?m:[],v);
+    el.innerHTML='';
+    if(m.length){
+      showRes(m,v);
+      // If we have a raw UPC that caused this manual entry, offer to save it
+      if(rawUpc&&/^[0-9]{8,14}$/.test(rawUpc)){
+        offerUpcSave(rawUpc, v, m[0]);
+      }
+    } else {
+      showRes([],v);
+    }
   });
   inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
   row.appendChild(inp);row.appendChild(btn);
   wrap.appendChild(row);
 
-  // Retry scan button
   var retry=mk('button','retry-scan-btn','Try Scan Again');
   retry.addEventListener('click',function(){el.innerHTML='';openScan();});
   wrap.appendChild(retry);
@@ -163,6 +166,96 @@ function showManualEntry(imgData, prefill){
   el.appendChild(wrap);
   if(prefill)inp.select();else inp.focus();
 }
+
+function offerUpcSave(upc, productName, skuObj){
+  // Check if already saved
+  var stored=getUpcRepo();
+  if(stored[upc]){return;} // already in repo
+  var bar=mk('div','upc-save-bar');
+  var lbl=mk('div','upc-save-label','Save UPC '+upc+' = "'+productName+'" to shared database?');
+  var btn=mk('button','upc-save-btn','Save for All Reps');
+  btn.addEventListener('click',function(){
+    saveUpcToRepo(upc, productName, skuObj?skuObj.ind:'');
+    bar.innerHTML='';
+    var msg=mk('div','upc-saved-msg','Saved! Next rep who scans this UPC will get an instant cross.');
+    bar.appendChild(msg);
+    renderUpcRepo();
+  });
+  bar.appendChild(lbl);bar.appendChild(btn);
+  document.getElementById('skuResult').appendChild(bar);
+}
+
+
+// ── UPC REPOSITORY ───────────────────────────────────────────────────────────
+var UPC_REPO_KEY='upc_repo';
+
+function getUpcRepo(){
+  try{
+    var r=window.storage?null:null; // use localStorage as fallback since storage API may not be available
+    var raw=localStorage.getItem(UPC_REPO_KEY);
+    return raw?JSON.parse(raw):{};
+  }catch(e){return{};}
+}
+
+function saveUpcToRepo(upc, productName, forzaInd){
+  try{
+    var repo=getUpcRepo();
+    repo[upc]={name:productName,ind:forzaInd,date:new Date().toLocaleDateString(),by:'Field Rep'};
+    localStorage.setItem(UPC_REPO_KEY,JSON.stringify(repo));
+  }catch(e){}
+}
+
+function deleteUpcFromRepo(upc){
+  try{
+    var repo=getUpcRepo();
+    delete repo[upc];
+    localStorage.setItem(UPC_REPO_KEY,JSON.stringify(repo));
+    renderUpcRepo();
+  }catch(e){}
+}
+
+function renderUpcRepo(){
+  var wrap=document.getElementById('upcRepoWrap');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  var repo=getUpcRepo();
+  var keys=Object.keys(repo);
+
+  // Always show the section so reps know it exists
+  var hdr=mk('div','upc-repo-hdr');
+  hdr.appendChild(mk('div','upc-repo-title','Field UPC Repository'));
+  hdr.appendChild(mk('div','upc-repo-count',keys.length+' saved'));
+  wrap.appendChild(hdr);
+
+  if(!keys.length){
+    wrap.appendChild(mk('div','upc-empty','No UPCs saved yet. Scan a competitor product and save the match to build the database.'));
+    return;
+  }
+
+  var tbl=mk('table','upc-repo-tbl');
+  var thead=mk('thead'),hrow=mk('tr');
+  ['UPC','Product Name','Forza Cross','Saved',''].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+  thead.appendChild(hrow);tbl.appendChild(thead);
+  var tbody=mk('tbody');
+  keys.forEach(function(upc){
+    var entry=repo[upc];
+    var tr=mk('tr');
+    tr.appendChild(mk('td',null,upc));
+    tr.appendChild(mk('td',null,typeof entry==='string'?entry:entry.name));
+    var ind=typeof entry==='string'?'':entry.ind;
+    tr.appendChild(mk('td','upc-sku',ind||'—'));
+    tr.appendChild(mk('td',null,typeof entry==='string'?'':entry.date||''));
+    var delTd=mk('td','upc-del');
+    var delBtn=mk('button','upc-del-btn','×');
+    delBtn.addEventListener('click',(function(u){return function(){if(confirm('Remove UPC '+u+' from repository?'))deleteUpcFromRepo(u);};})(upc));
+    delTd.appendChild(delBtn);tr.appendChild(delTd);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);
+}
+
+// Render repo on page load
+renderUpcRepo();
 
 </script>
 <style>
@@ -339,6 +432,27 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;flex-shrink:0;}
 .manual-img{width:100%;max-height:220px;object-fit:contain;border-radius:6px;border:1px solid var(--border);margin-bottom:12px;background:#000;}
 .retry-scan-btn{margin-top:10px;padding:8px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:.74rem;font-weight:600;color:var(--blue);cursor:pointer;font-family:'Poppins',sans-serif;width:100%;}
 .retry-scan-btn:hover{border-color:var(--blue);background:#F5F7FB;}
+
+.upc-save-bar{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;background:#F0FAF4;border-radius:6px;border:1px solid #C3E6CB;}
+.upc-save-label{font-size:.72rem;color:#1A6B35;font-weight:600;flex:1;}
+.upc-save-btn{padding:6px 14px;background:#1A6B35;color:#fff;border:none;border-radius:4px;font-size:.72rem;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;white-space:nowrap;}
+.upc-save-btn:hover{background:#155728;}
+.upc-saved-msg{font-size:.72rem;color:#1A6B35;font-weight:600;margin-top:8px;}
+.upc-repo-wrap{margin-top:20px;}
+.upc-repo-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.upc-repo-title{font-family:'K','Poppins',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);}
+.upc-repo-count{font-size:.68rem;color:#888;}
+.upc-repo-tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:6px;overflow:hidden;border:1px solid var(--border);display:block;overflow-x:auto;}
+.upc-repo-tbl th{text-align:left;font-family:'K','Poppins',sans-serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#888;padding:8px 12px;border-bottom:1px solid var(--border);}
+.upc-repo-tbl td{font-size:.78rem;padding:7px 12px;border-bottom:1px solid #F0F2F6;color:#333;}
+.upc-repo-tbl td:first-child{font-family:'Poppins',sans-serif;font-weight:600;color:var(--blue);}
+.upc-repo-tbl td.upc-sku{color:var(--orange);font-weight:700;}
+.upc-repo-tbl td.upc-del{text-align:center;width:32px;}
+.upc-del-btn{background:none;border:none;color:#ccc;font-size:1rem;cursor:pointer;padding:0;}
+.upc-del-btn:hover{color:#C0390D;}
+.upc-repo-tbl tr:last-child td{border-bottom:none;}
+.upc-repo-tbl tr:hover td{background:#F8F9FC;}
+.upc-empty{font-size:.78rem;color:#aaa;font-style:italic;padding:12px 0;}
 </style>
 </head>
 <body>
@@ -376,6 +490,7 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;flex-shrink:0;}
         </div>
       </div>
       <div id="skuResult"></div>
+      <div class="upc-repo-wrap" id="upcRepoWrap"></div>
     </div>
     <div id="sec-verticals" class="sec"><div class="vgrid" id="vertGrid"></div><div id="vertDetail"></div></div>
     <div id="sec-analysis" class="sec"><div class="comp-grid" id="anGrid"></div><div id="anDetail"></div></div>
@@ -708,22 +823,25 @@ function tryZX(c){
   if(typeof ZXing==='undefined'){scanFail();return;}
   try{var rd=new ZXing.BrowserMultiFormatReader(),im=new Image();im.onload=function(){rd.decodeFromImageElement(im).then(function(r){handleScan(r.getText());}).catch(scanFail);};im.src=c.toDataURL();}catch(e){scanFail();}
 }
+var lastScannedUpc='';
 function scanFail(){
-  // Grab the captured image before closing
   var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
   closeScan();
-  showManualEntry(imgData,'');
+  showManualEntry(imgData,'',lastScannedUpc);
 }
 function handleScan(raw){
   closeScan();
-  var cl=raw.trim(),nz=cl.replace(/^0+/,''),sn=UPC_MAP[cl]||UPC_MAP[nz]||null,el=document.getElementById('skuResult');el.innerHTML='';
+  var cl=raw.trim(),nz=cl.replace(/^0+/,'');
+  lastScannedUpc=/^[0-9]{8,14}$/.test(cl)?cl:'';
+  // Also check shared repo
+  var repo=getUpcRepo();var repoName=repo[cl]||repo[nz]||null;
+  var sn=UPC_MAP[cl]||UPC_MAP[nz]||repoName||null,el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){document.getElementById('skuInput').value=sn;var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});if(m.length){showRes(m,sn);return;}}
   var dm=SKU.filter(function(d){return nm(d.comp).indexOf(nm(cl))>-1||nm(cl).indexOf(nm(d.comp))>-1;});
   if(dm.length){document.getElementById('skuInput').value=cl;showRes(dm,cl);return;}
-  // Nothing matched — grab image and show manual entry
   var imgData=document.getElementById('scanCanvas').toDataURL('image/jpeg',0.7);
   var prefill=/^[0-9]{8,14}$/.test(cl)?'':cl;
-  showManualEntry(imgData,prefill);
+  showManualEntry(imgData,prefill,lastScannedUpc);
 }
 
 // ── FIELD GUIDES ─────────────────────────────────────────────────────────
@@ -760,42 +878,42 @@ function buildFG(){
 }
 
 
-function showManualEntry(imgData, prefill){
+function showManualEntry(imgData, prefill, rawUpc){
   var el=document.getElementById('skuResult');
   el.innerHTML='';
-
   var wrap=mk('div','manual-wrap');
 
-  // Captured image
   if(imgData){
-    var imgLabel=mk('div','manual-label','Captured image — find the product name on the label:');
-    wrap.appendChild(imgLabel);
-    var img=document.createElement('img');
-    img.src=imgData;img.className='manual-img';
-    wrap.appendChild(img);
+    wrap.appendChild(mk('div','manual-label','Captured image — find the product name on the label:'));
+    var img=document.createElement('img');img.src=imgData;img.className='manual-img';wrap.appendChild(img);
   }
 
-  // Instruction
-  var inst=mk('div','manual-label','Type the product name or SKU you see:');
-  wrap.appendChild(inst);
+  wrap.appendChild(mk('div','manual-label','Type the product name or SKU you see:'));
 
-  // Input + search row
   var row=mk('div','srow');row.style.marginTop='8px';
   var inp=mk('input','sinput');
-  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';
-  inp.value=prefill||'';
+  inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';inp.value=prefill||'';
+
   var btn=mk('button','sbtn','Search');
   btn.addEventListener('click',function(){
     var v=inp.value.trim();if(!v)return;
     document.getElementById('skuInput').value=v;
     var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(v))>-1||nm(d.brand).indexOf(nm(v))>-1;});
-    el.innerHTML='';showRes(m.length?m:[],v);
+    el.innerHTML='';
+    if(m.length){
+      showRes(m,v);
+      // If we have a raw UPC that caused this manual entry, offer to save it
+      if(rawUpc&&/^[0-9]{8,14}$/.test(rawUpc)){
+        offerUpcSave(rawUpc, v, m[0]);
+      }
+    } else {
+      showRes([],v);
+    }
   });
   inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
   row.appendChild(inp);row.appendChild(btn);
   wrap.appendChild(row);
 
-  // Retry scan button
   var retry=mk('button','retry-scan-btn','Try Scan Again');
   retry.addEventListener('click',function(){el.innerHTML='';openScan();});
   wrap.appendChild(retry);
@@ -803,6 +921,96 @@ function showManualEntry(imgData, prefill){
   el.appendChild(wrap);
   if(prefill)inp.select();else inp.focus();
 }
+
+function offerUpcSave(upc, productName, skuObj){
+  // Check if already saved
+  var stored=getUpcRepo();
+  if(stored[upc]){return;} // already in repo
+  var bar=mk('div','upc-save-bar');
+  var lbl=mk('div','upc-save-label','Save UPC '+upc+' = "'+productName+'" to shared database?');
+  var btn=mk('button','upc-save-btn','Save for All Reps');
+  btn.addEventListener('click',function(){
+    saveUpcToRepo(upc, productName, skuObj?skuObj.ind:'');
+    bar.innerHTML='';
+    var msg=mk('div','upc-saved-msg','Saved! Next rep who scans this UPC will get an instant cross.');
+    bar.appendChild(msg);
+    renderUpcRepo();
+  });
+  bar.appendChild(lbl);bar.appendChild(btn);
+  document.getElementById('skuResult').appendChild(bar);
+}
+
+
+// ── UPC REPOSITORY ───────────────────────────────────────────────────────────
+var UPC_REPO_KEY='upc_repo';
+
+function getUpcRepo(){
+  try{
+    var r=window.storage?null:null; // use localStorage as fallback since storage API may not be available
+    var raw=localStorage.getItem(UPC_REPO_KEY);
+    return raw?JSON.parse(raw):{};
+  }catch(e){return{};}
+}
+
+function saveUpcToRepo(upc, productName, forzaInd){
+  try{
+    var repo=getUpcRepo();
+    repo[upc]={name:productName,ind:forzaInd,date:new Date().toLocaleDateString(),by:'Field Rep'};
+    localStorage.setItem(UPC_REPO_KEY,JSON.stringify(repo));
+  }catch(e){}
+}
+
+function deleteUpcFromRepo(upc){
+  try{
+    var repo=getUpcRepo();
+    delete repo[upc];
+    localStorage.setItem(UPC_REPO_KEY,JSON.stringify(repo));
+    renderUpcRepo();
+  }catch(e){}
+}
+
+function renderUpcRepo(){
+  var wrap=document.getElementById('upcRepoWrap');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  var repo=getUpcRepo();
+  var keys=Object.keys(repo);
+
+  // Always show the section so reps know it exists
+  var hdr=mk('div','upc-repo-hdr');
+  hdr.appendChild(mk('div','upc-repo-title','Field UPC Repository'));
+  hdr.appendChild(mk('div','upc-repo-count',keys.length+' saved'));
+  wrap.appendChild(hdr);
+
+  if(!keys.length){
+    wrap.appendChild(mk('div','upc-empty','No UPCs saved yet. Scan a competitor product and save the match to build the database.'));
+    return;
+  }
+
+  var tbl=mk('table','upc-repo-tbl');
+  var thead=mk('thead'),hrow=mk('tr');
+  ['UPC','Product Name','Forza Cross','Saved',''].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+  thead.appendChild(hrow);tbl.appendChild(thead);
+  var tbody=mk('tbody');
+  keys.forEach(function(upc){
+    var entry=repo[upc];
+    var tr=mk('tr');
+    tr.appendChild(mk('td',null,upc));
+    tr.appendChild(mk('td',null,typeof entry==='string'?entry:entry.name));
+    var ind=typeof entry==='string'?'':entry.ind;
+    tr.appendChild(mk('td','upc-sku',ind||'—'));
+    tr.appendChild(mk('td',null,typeof entry==='string'?'':entry.date||''));
+    var delTd=mk('td','upc-del');
+    var delBtn=mk('button','upc-del-btn','×');
+    delBtn.addEventListener('click',(function(u){return function(){if(confirm('Remove UPC '+u+' from repository?'))deleteUpcFromRepo(u);};})(upc));
+    delTd.appendChild(delBtn);tr.appendChild(delTd);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);
+}
+
+// Render repo on page load
+renderUpcRepo();
 
 </script>
 </body>
