@@ -168,8 +168,8 @@ hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
     <button class="tab active" id="tb-lookup">SKU Lookup</button>
     <button class="tab" id="tb-verticals">Verticals</button>
     <button class="tab" id="tb-analysis">Competitor Analysis</button>
-    <button class="tab" id="tb-fieldguides">Field Guides</button>
     <button class="tab" id="tb-battlecards">Battle Cards</button>
+    <button class="tab" id="tb-fieldguides">Field Guides</button>
     <button class="tab" id="tb-documents">Documents</button>
   </div>
   <div class="content-area">
@@ -184,6 +184,7 @@ hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
     <div id="sec-verticals" class="sec"><div class="vgrid" id="vertGrid"></div><div id="vertDetail"></div></div>
     <div id="sec-analysis" class="sec"><div class="comp-grid" id="anGrid"></div><div id="anDetail"></div></div>
     <div id="sec-battlecards" class="sec"><div class="comp-grid" id="bcGrid"></div><div id="bcDetail"></div></div>
+    <div id="sec-analysis" class="sec"><div class="comp-grid" id="anGrid"></div><div id="anDetail"></div></div>
     <div id="sec-fieldguides" class="sec"><div id="fgContent"></div></div>
     <div id="sec-documents" class="sec">
       <div class="dtoolbar">
@@ -220,11 +221,11 @@ var TL={battle:'Battle Card',crosswalk:'Crosswalk',brief:'Exec Brief',guide:'Fie
 function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
 
 // TABS
-['lookup','verticals','battlecards','analysis','fieldguides','documents'].forEach(function(id){
+['lookup','verticals','analysis','battlecards','fieldguides','documents'].forEach(function(id){
   document.getElementById('tb-'+id).addEventListener('click',function(){showTab(id);});
 });
 function showTab(t){
-  ['lookup','verticals','battlecards','analysis','fieldguides','documents'].forEach(function(id){
+  ['lookup','verticals','analysis','battlecards','fieldguides','documents'].forEach(function(id){
     document.getElementById('sec-'+id).classList.toggle('active',id===t);
     document.getElementById('tb-'+id).classList.toggle('active',id===t);
   });
