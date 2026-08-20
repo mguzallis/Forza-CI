@@ -99,6 +99,22 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
 .sku-table td:first-child{font-weight:700;color:var(--blue);}
 .sku-table tr:hover td{background:#F8F9FC;}
 .section{display:none;}.section.active{display:block;}
+
+.bc-section-label{font-family:'Kallisto Heavy','Poppins',sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.bc-msgs{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
+.bc-msg{background:#fff;border-radius:6px;padding:10px 14px;border-left:3px solid var(--blue);}
+.bc-msg-who{font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin-bottom:3px;}
+.bc-msg-txt{font-size:.78rem;color:#333;line-height:1.5;font-style:italic;}
+.bc-seeds{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
+.bc-seed{background:#FFF8EC;border-radius:6px;padding:10px 14px;border-left:3px solid var(--orange);font-size:.78rem;color:#333;line-height:1.5;}
+.bc-landmines{display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
+.bc-landmine{background:#fff;border-radius:6px;padding:12px 14px;border-left:3px solid #C0390D;border:1px solid var(--border);}
+.bc-lm-title{font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#C0390D;margin-bottom:4px;}
+.bc-lm-body{font-size:.77rem;color:#333;line-height:1.55;}
+.bc-objections{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
+.bc-obj{background:#F5F7FB;border-radius:6px;padding:10px 14px;}
+.bc-obj-q{font-size:.77rem;font-weight:600;color:var(--blue);margin-bottom:3px;}
+.bc-obj-a{font-size:.77rem;color:#444;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -244,12 +260,184 @@ var SKU=[
   {comp:"ES60 EPS Foam",brand:"NewStar",app:"EverStrong EPS foam bonding styrene safe",ind:"IC947",trans:"TC467"}
 ];
 var COMP=[
-  {id:"3m",name:"3M",brands:"Super 77 / Scotch-Weld / VHB / PU Sealants / Hot Melt",hq:"Maplewood, MN",rev:"$32B+",threat:"HIGH",pitch:"3M is a $32B+ diversified technology conglomerate. Their adhesive rep covers electronics, healthcare, traffic safety, and abrasives on the same call. Forza makes adhesives, sealants, and tapes. Same performance, Iowa-made, direct manufacturer pricing, no 3M brand premium.",wins:["No 3M canister spray system - Forza IC/MC/TC/RC unchallenged","Direct manufacturer pricing - no 3M brand premium","Iowa-made vs. Maplewood MN / global manufacturing","Forza publishes more ASTM data than 3M on VHB TDS","Single-source: adhesive + sealant + tape + cleaner"],gaps:["3M brand recognition is unmatched in the US market","VHB often spec by brand name in drawings","3M 5200 marine sealant is deeply entrenched benchmark","Scotch-Weld aerospace/electronics outside Forza portfolio"]},
-  {id:"sika",name:"Sika",brands:"Sikaflex / SikaFast / Sika Aktivator / Sikasil",hq:"Baar Switzerland / Lyndhurst NJ",rev:"CHF 11.76B",threat:"HIGH",pitch:"Sika is a CHF 11.76B Swiss construction chemistry platform. Their rep manages concrete, roofing, waterproofing, and flooring alongside Sikaflex. Forza is adhesives, sealants, and tapes only. Specialist vs. line item.",wins:["Sika makes ZERO spray adhesives - Forza unchallenged","Sika makes ZERO tapes - Forza 22 SKUs unchallenged","Iowa-made vs. Swiss-owned US HQ New Jersey","Entry: sell spray adhesive first earn sealant conversation","Single-source: four categories vs. Sika sealant-only"],gaps:["Sikaflex is benchmark sealant in Transportation and Marine","Sikaflex-252 widely specified for vehicle assembly by name","SikaFast MMA line is deep and well-established","Sika construction platform gives broad account entry"]},
-  {id:"henkel",name:"Henkel",brands:"Loctite / Teroson / Technomelt / Bonderite",hq:"Dusseldorf Germany",rev:"$11B+ adhesives",threat:"HIGH",pitch:"Henkel is the world largest adhesive manufacturer. Loctite is the most recognized structural adhesive brand in the US. Iowa family manufacturer vs. $10B+ German conglomerate. Call Forza get the chemist. Call Loctite get a distributor.",wins:["Iowa family manufacturer vs. German conglomerate - the frame works","Forza has won business directly from Loctite accounts","Direct manufacturer relationship - chemist on the phone","ForzaTape: Loctite has no tape product line","RuggedRed: Henkel has no dedicated industrial cleaner brand"],gaps:["Loctite H8000 SpeedBonder written into specs by name","Teroson has deep automotive OEM penetration","Technomelt hot melt is a mature established product line","50000+ adhesive employees globally - deep technical base"]},
-  {id:"manus",name:"Manus Products",brands:"Manus-Bond STP / Silicone / PU",hq:"Waconia MN",rev:"Independent / Private",threat:"MODERATE-HIGH",pitch:"Manus is a Midwest sealant manufacturer - ISO 9001 65+ years Waconia MN. The small Midwest manufacturer frame does not work here - they will use it back. The differentiator is product breadth: Forza makes four categories. Manus makes two.",wins:["Forza makes spray adhesives - Manus makes ZERO","Forza makes tapes - Manus makes ZERO","RuggedRed cleaners - Manus has no cleaner line","Marine vertical - Manus has no Marine products at all","Single-source: four categories vs. Manus two"],gaps:["75-AM STP family has 30+ variants - very deep sealant library","65+ years in the construction/transportation channel","ISO 9001:2015 certified - credible quality story","Butyl/latex/foam sealant lines Forza does not play in"]},
-  {id:"quin",name:"Quin Global Americas",brands:"Tensorgrip / QDEK",hq:"UK HQ / Omaha NE",rev:"Global / Private",threat:"HIGH",pitch:"Quin Global Americas is in Omaha - same metro as Forza. Their canister gun is compatible with Forza hardware. The switch from Tensorgrip to Forza is a product decision not a hardware decision.",wins:["Canister system compatible - zero hardware switching cost","ForzaSeal: 24 sealant SKUs. Quin makes ZERO sealants","ForzaTape: 22 tape SKUs. Quin makes ZERO tapes","Iowa-made vs. UK-headquartered US sales office","Single-source: four categories vs. Quin one"],gaps:["Tensorgrip brand recognition in industrial/marine channel","EPO-series strong in reefer trailer repair sub-vertical","100+ US/Americas distributors - real distribution footprint","Same Omaha metro - established regional relationships"]},
-  {id:"newstar",name:"NewStar Adhesives",brands:"EverStrong / EverHold / EverBond",hq:"Massachusetts",rev:"Independent / Private",threat:"MODERATE",pitch:"NewStar: We do one thing and we do it well. Accurate - and that is the ceiling. Every contractor buying EverStrong still needs sealant tape and cleaner. NewStar cannot supply any of those.",wins:["Single-source: Forza supplies 4 categories vs. NewStar 1","Iowa-made vs. MA/GA/NC manufacturing","ForzaBond covers every EverStrong application","EverBond private-label - distributors may not know it is NewStar","No canister return logistics dependency with Forza"],gaps:["EverStrong brand recognition in industrial/marine adhesive channel","EverHold well-established in marine fabrication shops","30+ years of adhesive-specialist positioning","Pionite/Nevamar HPL channel relationships deeply entrenched"]}
+  {
+    id:"3m",name:"3M",brands:"Super 77 / Scotch-Weld / VHB / PU Sealants / Hot Melt",
+    hq:"Maplewood, MN",rev:"$32B+",threat:"HIGH",
+    pitch:"3M is a $32B+ diversified technology company. Their adhesive rep covers electronics, healthcare, traffic safety, and abrasives on the same call. Forza makes adhesives, sealants, and tapes only. Same performance, Iowa-made, direct manufacturer pricing, no 3M brand premium.",
+    msgs:[
+      ["To the Contractor / Fabricator","3M Super 77 and Forza IC933/IC936 are the same multi-purpose spray chemistry. The 3M name adds a price premium. Forza is Iowa-made, direct manufacturer, and also supplies the sealant and tape for the same job."],
+      ["To the Marine Fabricator","3M 5200 is the gold standard for marine bonding. Forza M-OS789 covers the same structural marine sealant application at direct manufacturer pricing, plus MC739 for infusion spray. 3M does not make a canister spray adhesive."],
+      ["To the Distributor","Your margin on 3M is compressed — everyone knows the price. Forza is direct manufacturer, better margin, Iowa-made, same chemistry, and gives you the full shelf: adhesive, sealant, tape, and cleaner."]
+    ],
+    objections:[
+      ["3M Super 77 is what we have always used","Forza IC933/IC936 covers the same application. Direct pricing, Iowa-made, and Forza also supplies sealant and tape for the same job on one PO."],
+      ["3M 5200 is spec'd for marine","Spec'd by name or chemistry? 3M 5200 is 1-part PU marine structural. Forza M-OS789 is the same chemistry. Let us compare TDS."],
+      ["VHB is the only tape we trust","Forza T-205/T-215/T-220 are UHB acrylic foam tapes. We have a full comparison doc — Forza publishes more ASTM data than 3M on the public TDS."],
+      ["3M has the brand behind it","3M brand is real. So is the premium. When the chemistry is equivalent, that premium goes to Maplewood, MN. With Forza it stays in your budget."]
+    ],
+    seeds:[
+      "3M is a $32B+ diversified technology company. The rep calling with Super 77 also covers Scotch-Brite, traffic safety film, and Post-it Notes. Forza entire operation is adhesives, sealants, and tapes. That is the difference between a specialist and a line item in a conglomerate portfolio.",
+      "3M brand premium is real and documented. Contractors and distributors pay it because 3M is convenient and trusted, not because the chemistry is different. Forza makes the same chemistry Iowa-made at direct manufacturer pricing — the premium disappears and the performance stays.",
+      "3M does not make a canister spray adhesive. Super 77 and HoldFast are aerosol and small-volume cans. Forza IC/MC/TC/RC canister system is purpose-built for production volume — 50+ canisters a month is not an aerosol conversation."
+    ],
+    landmines:[
+      ["Canister System","Plant this: 3M aerosols work at retail and small-volume. For production volume, aerosol cans are the wrong format. Forza canister system delivers the same chemistry in industrial volume. Ask 3M: For your spray adhesive volume — how many cans per month, and has anyone compared your total adhesive cost in aerosol versus a canister system at the same chemistry?"],
+      ["Brand Premium","Plant this: 3M brand premium is visible at every counter in town. When a distributor sells 3M, the margin is capped by brand price awareness. Forza is a direct manufacturer — the distributor margin is theirs to own. Ask 3M: On your 3M spray adhesive — what is your margin versus what you would make on a comparable product from a direct manufacturer where the price is not publicly known at every counter?"],
+      ["5200 Marine Sealant","Plant this: 3M 5200 is the most recognized marine structural sealant — and among the most expensive. The chemistry is not unique to 3M. Ask 3M: The 3M 5200 you are using for marine structural bonding — is that a chemistry specification or a brand preference, and have you compared its TDS against a competing 1-part PU marine sealant at direct manufacturer pricing?"],
+      ["VHB Tape","Plant this: Forza has built a full TDS comparison of T-205, T-215, and T-220 against VHB. Forza publishes more ASTM-tested data than 3M on the same product page. Ask 3M: For the VHB tape applications on your panel attachment — have you compared the 3M VHB TDS against a competing UHB acrylic foam tape side by side on peel, shear, and temperature data?"],
+      ["Technical Depth","Plant this: 3M adhesive rep is a generalist covering electronics, healthcare, traffic safety, and abrasives. Forza technical team covers adhesives, sealants, and tapes only. Ask 3M: When you have a technical question on your 3M spray adhesive — how specialized is the person who answers in spray adhesives specifically versus the broader 3M product line?"]
+    ],
+    wins:["No 3M canister spray system — Forza IC/MC/TC/RC unchallenged","Direct manufacturer pricing — no 3M brand premium","Iowa-made vs. Maplewood MN / global manufacturing","Forza publishes more ASTM data than 3M on VHB TDS","Single-source: adhesive + sealant + tape + cleaner"],
+    moats:["Masking / electrical / UHMW / carton sealing / strapping tapes — no Forza equivalent","Scotch-Weld aerospace / electronics epoxies — outside Forza portfolio","Automotive body filler and refinish line — outside Forza portfolio"]
+  },
+  {
+    id:"sika",name:"Sika",brands:"Sikaflex / SikaFast / Sika Aktivator / Sikasil",
+    hq:"Baar, Switzerland / Lyndhurst NJ",rev:"CHF 11.76B",threat:"HIGH",
+    pitch:"Sika is a CHF 11.76B Swiss construction chemistry platform. Their rep manages concrete, roofing, waterproofing, flooring, and pipeline alongside Sikaflex. Forza entire operation is adhesives, sealants, and tapes. Specialist vs. line item.",
+    msgs:[
+      ["To the Transportation Fabricator","Sikaflex-252 and Forza T-OA156 are both 1-part hybrid polymer structural adhesives. Same chemistry, Iowa-made, and your Forza rep only job is adhesives and sealants — not concrete, not roofing."],
+      ["To the Marine Fabricator","Sikaflex-291 covers marine sealing. Forza M-OS789 covers the same application — plus ForzaBond MC-series spray adhesive for foam and upholstery on the same build. Sika does not make a spray adhesive."],
+      ["To the Distributor","You carry Sikaflex for sealant. Sika makes no spray adhesive, no tape, no industrial cleaner. Forza fills all four — and the sealant competes directly with Sikaflex chemistry."]
+    ],
+    objections:[
+      ["Sikaflex-252 is spec'd on our vehicle line","Spec'd by brand or chemistry? Sikaflex-252 and Forza T-OA156 are both 1-part moisture cure hybrid polymer structural adhesives. If it is chemistry-based, Forza qualifies."],
+      ["Sikaflex-291 is what we use for marine","Application-compatible. ForzaBond M-OS789 covers the same marine sealing. Forza also supplies spray adhesive and tape for the same build — Sika cannot."],
+      ["Sika Aktivator is already approved","Both Sika Aktivator-100 and Forza OSA are IPA-based surface activators for the same substrate prep. If it is chemistry-approved, Forza OSA qualifies."],
+      ["Sika has global technical support","Global support means a rep covering concrete, roofing, and flooring. Forza technical team covers adhesives, sealants, and tapes only. Council Bluffs, Iowa. Direct line."]
+    ],
+    seeds:[
+      "Sikaflex is one product family inside a CHF 11.76 billion Swiss construction chemistry platform that also makes concrete admixtures, roofing systems, waterproofing, and flooring. Forza entire operation is adhesives, sealants, and tapes. When a Forza rep shows up, that is all they know.",
+      "Sika makes a great sealant. They do not make a spray adhesive, a bonding tape, or an industrial cleaner. The marine fabricator on Sikaflex-291 still needs spray adhesive for foam bonding and tape for the same build. Sika cannot supply either. Forza supplies all four from one Iowa manufacturer.",
+      "The Sika rep on your account is managing concrete, roofing, waterproofing, and flooring products alongside Sikaflex. Sikaflex is a line item on a very long list. At Forza, adhesives, sealants, and tapes are the whole company."
+    ],
+    landmines:[
+      ["Rep Specialization","Plant this: Sika rep selling Sikaflex is the same rep responsible for concrete repair and roofing on the next call. Ask Sika: When you have a technical question about your Sikaflex application — how specialized is the person who answers in adhesives and sealants specifically?"],
+      ["Sikaflex-252 Chemistry","Plant this: Sikaflex-252 is a 1-part moisture cure polyurethane structural adhesive. Forza T-OA156 is a 1-part moisture cure hybrid polymer structural adhesive. Same application chemistry, same substrate range, Iowa-made. Ask Sika: The Sikaflex-252 you are using — is that a chemistry specification or a brand preference, and have you compared it against a competing 1-part hybrid polymer structural adhesive TDS?"],
+      ["Spray Adhesive Gap","Plant this: Sika makes zero spray adhesive products. A marine fabricator using Sikaflex-291 for sealing still needs spray adhesive for foam bonding on the same boat build. That spray adhesive is coming from a second supplier. Ask Sika: For the foam bonding and upholstery on the same build — what spray adhesive are you using, and is that coming from Sika or a second supplier?"],
+      ["Aktivator Chemistry","Plant this: Sika Aktivator-100 and Forza OSA are both IPA-based surface activators. The same chemistry, the same application. Ask Sika: The Sika Aktivator you are using — is that specified by brand name or by chemistry, and have you compared it against a competing IPA-based adhesion promoter from a dedicated adhesive and sealant manufacturer?"],
+      ["Domestic Content","Plant this: Sika is headquartered in Baar, Switzerland, US HQ in Lyndhurst, New Jersey. No Midwest manufacturing. Forza manufactures 100% in Council Bluffs, Iowa. Ask Sika: Where is Sikaflex manufactured for the US market — which facility, which country — and do you have domestic content documentation if a customer or government contract requires it?"]
+    ],
+    wins:["Sika makes ZERO spray adhesives — Forza unchallenged","Sika makes ZERO tapes — Forza 22 SKUs unchallenged","Iowa-made vs. Swiss-owned, US HQ New Jersey","Entry: sell spray adhesive first, earn sealant conversation","Single-source: four categories vs. Sika sealant-only"],
+    moats:["Concrete admixtures, repair, roofing, waterproofing, flooring — outside Forza","SikaLastomer butyl sealants — no Forza butyl equivalent","SikaDamp NVH / SikaPower heat-cure OEM — outside Forza portfolio","SikaMelt hot melt lamination — different application than Forza H-series"]
+  },
+  {
+    id:"henkel",name:"Henkel",brands:"Loctite / Teroson / Technomelt / Bonderite",
+    hq:"Dusseldorf, Germany",rev:"$11B+ adhesives",threat:"HIGH",
+    pitch:"Loctite is a $10B+ German conglomerate sold through a multi-tier distribution chain. Forza is a family-owned manufacturer in Council Bluffs, Iowa. When you call Forza, you get the chemist. When you call Loctite, you get a distributor rep. Forza has won business directly from Loctite — on performance and relationship.",
+    msgs:[
+      ["To the Structural Adhesive Buyer","Loctite H8000 is a proven methacrylate. So is Forza IC951 and TC471. The difference is when you have a technical question on a structural bond, you call Forza and get an Iowa chemist. You call Loctite and you get a distributor."],
+      ["To the Transportation Sealant Buyer","Teroson MS 930 and Forza T-OS151 are both 1-part MS polymer sealants. Same chemistry, same application. The difference is direct manufacturer pricing vs. distributor margin, and a Council Bluffs phone number vs. a German corporate chain."],
+      ["To the Distributor","You are selling Loctite at distributor margin. Forza is a direct manufacturer. Same chemistries, better margin, Iowa-made, and your customers get direct technical support — not a Henkel call center."]
+    ],
+    objections:[
+      ["Loctite is the industry standard","Standard means familiar, not optimal. Forza IC951 and TC471 match Loctite H8000 chemistry and have displaced it in the field. Ask us for the reference."],
+      ["We have been spec'd on Loctite","Spec'd by chemistry or brand name? Most specs call for 2-part methacrylate. Forza IC951 meets the same chemistry requirement — let us compare TDS."],
+      ["Teroson is approved on our trailer line","Approved by chemistry or by name? Teroson MS 930 is 1-part SMP — so is Forza T-OS151. If the spec is chemistry-based, Forza qualifies. Get us the approval documentation."],
+      ["Henkel has global technical support","Global support means a ticket system and a distributor in the middle. Forza technical team is in Council Bluffs, IA. Direct line. Same day."]
+    ],
+    seeds:[
+      "Loctite is the world largest adhesive brand — owned by a $20B+ German conglomerate with over 50,000 employees. That scale means a deep product catalog, a multi-tier distribution chain, and a technical support system built around ticket queues. Forza is a family-owned manufacturer in Council Bluffs, Iowa. When you call with a structural bond problem at 7am, you get a chemist.",
+      "Teroson MS polymer sealants and Forza T-OS151 are the same chemistry — 1-part moisture cure SMP. The difference is that Teroson is a Henkel brand sold through industrial distribution at distributor margin. Forza is the manufacturer. Same chemistry, direct pricing, Iowa-made.",
+      "Henkel US distribution is built around Fastenal, Grainger, and regional industrial distributors. Every one of those relationships has a margin layer between Henkel and the end customer. Forza sells direct. That margin goes back to the distributor or to the customer."
+    ],
+    landmines:[
+      ["Distribution Chain","Plant this: Loctite is distributed through a multi-tier chain — Henkel to master distributor to regional distributor to contractor. Every tier adds margin and removes direct manufacturer access. Ask Loctite: When you have a technical question on a structural bond — who do you actually call, and how long does it take to get a chemist on the phone versus a distributor rep?"],
+      ["Chemistry vs. Brand Name Spec","Plant this: Loctite H8000 SpeedBonder is specified by name on a lot of structural adhesive drawings. Most engineers spec'd it by name because it was the first 2-part methacrylate they qualified, not because it is the only one that meets the chemistry requirement. Ask Loctite: Is the Loctite H8000 requirement spec'd by brand name or by chemistry — and if it is chemistry-based, have you ever evaluated a second source?"],
+      ["Teroson MS Chemistry","Plant this: Teroson MS polymer chemistry is the same as Forza T-OS151. Most contractors on Teroson are on it because their Fastenal rep put it on the shelf, not because they evaluated alternatives. Ask Teroson: The Teroson MS sealant you are buying — is that a chemistry specification or a brand preference, and have you compared it against Forza T-OS151 TDS on peel, shear, and elongation?"],
+      ["Rep Generalist","Plant this: Henkel product catalog has thousands of SKUs across five brands. A Loctite rep calling on a transportation fabricator is the same rep calling on a semiconductor plant. Ask Loctite: The Loctite rep calling on your account — how many different industries do they cover, and when was the last time they brought you a solution specific to your fabrication application?"],
+      ["Technomelt Distribution Cost","Plant this: Technomelt is Henkel hot melt sold through distribution — packaging, hygiene, and woodworking at scale. The contractor buying Technomelt through distribution is paying three margin layers for a product with a domestic equivalent. Ask Technomelt: The Technomelt you are running — have you compared the total delivered cost against a domestically manufactured equivalent sourced direct from the manufacturer?"]
+    ],
+    wins:["Iowa family manufacturer vs. German conglomerate — the frame works","Forza has won business directly from Loctite accounts","Direct manufacturer relationship — chemist on the phone","ForzaTape: Loctite has no tape product line","RuggedRed: Henkel has no dedicated industrial cleaner brand"],
+    moats:["Loctite threadlockers (222/242/271/277) — no Forza equivalent","Loctite anaerobic sealants — no Forza equivalent","Teroson RB rubber seam sealer — narrow automotive OEM channel","Bonderite metal treatment / phosphating — outside Forza portfolio"]
+  },
+  {
+    id:"manus",name:"Manus Products",brands:"Manus-Bond STP / Silicone / PU",
+    hq:"Waconia, MN",rev:"Independent / Private",threat:"MODERATE-HIGH",
+    pitch:"Manus is a Midwest sealant manufacturer — ISO 9001, 65+ years, Waconia, MN. Solid sealant line, zero spray adhesives, zero tapes, zero industrial cleaners. Every contractor buying Manus 75-AM still needs bonding tape and cleaner for the same job. Forza supplies all four from Council Bluffs, Iowa.",
+    msgs:[
+      ["To the Construction Contractor","Manus 75-AM and Forza OS2/C-OS9 are both STP polyether sealants. Same chemistry. The difference is that Forza also supplies bonding tape and surface cleaner for the same job from the same Iowa manufacturer. Manus cannot."],
+      ["To the Transportation Fabricator","Manus 75-AM-HV and Forza T-OA156 are both high green strength STP sealant/adhesives for transportation assembly. Forza also supplies the bonding tape and spray adhesive for the same vehicle build. Manus makes neither."],
+      ["To the Distributor","You carry Manus for sealant. Your customer still needs bonding tape and industrial cleaner from a second supplier. Forza fills all four categories — adhesive, sealant, tape, cleaner — from one Iowa manufacturer."]
+    ],
+    objections:[
+      ["Manus 75-AM is what we have always used","Application-compatible. Forza OS2/C-OS9 is the same STP polyether chemistry. The difference is Forza also supplies bonding tape and cleaner for the same job on the same PO."],
+      ["Manus has more sealant variants","True. Their 75-AM family is deep. So is ForzaSeal across six verticals. Where Manus cannot follow is tape, spray adhesive, and cleaner. What does your full supply list actually look like?"],
+      ["Manus is also a Midwest manufacturer","They are. Waconia, MN. Forza is Council Bluffs, Iowa. Both solid independents. The difference is Forza makes adhesive, sealant, tape, and cleaner. Manus makes two of those four."],
+      ["Manus does not serve Marine","Correct — Manus has no Marine vertical. Forza M-OS789 and MC-series cover every marine sealing and bonding application with no Manus competition at all."]
+    ],
+    seeds:[
+      "Manus Products is an independent sealant manufacturer in Waconia, MN — 65 years in business, ISO 9001, good reputation. Their 75-AM STP polyether sealant is solid. They make zero spray adhesives, zero tapes, and no industrial cleaner line. Every contractor buying Manus still needs all three from somewhere else.",
+      "The small Midwest manufacturer story is Manus story too — Waconia, MN. You cannot out-Midwest them on geography. What you can do is out-breadth them: Forza makes adhesive, sealant, tape, and cleaner. Manus makes two of those four.",
+      "Manus has no Marine vertical and no Composites vertical. Zero products, zero coverage. Every marine fabricator and composites shop is already buying from someone other than Manus for those applications. Forza covers both."
+    ],
+    landmines:[
+      ["Full Job Supply","Plant this: Manus makes sealants and adhesives. The contractor buying Manus 75-AM for sealing still needs bonding tape, spray adhesive, and surface cleaner for the same job. Ask Manus: For a job that needs sealant, bonding tape, spray adhesive, and surface cleaner — how many separate suppliers are you currently ordering from?"],
+      ["STP Depth vs. Breadth","Plant this: Manus 75-AM STP family has 30+ variants — deep chemistry family. Forza OS2/C-OS9/T-OS151 covers the same chemistry and applications — plus the tape and cleaner Manus cannot supply for the same job. Ask Manus: For the same jobs where you need bonding tape and surface cleaner, are those coming from Manus or a separate supplier?"],
+      ["Marine and Composites","Plant this: Manus has no Marine vertical and no Composites vertical. Not a limited selection — no products at all. Ask Manus: For your marine and composites customers — what are they buying for sealant and adhesive, and is Manus in that conversation at all?"],
+      ["Single Source","Plant this: Manus positions as a quality independent manufacturer. They are. But sealant-only. The inherited shelf is real: most contractors buying Manus have never asked whether a single manufacturer could supply their sealant, bonding tape, and surface cleaner from the same source. Ask Manus: Has any adhesive and sealant supplier ever offered to also supply your bonding tape and surface cleaner from the same manufacturer?"],
+      ["Spray Adhesive Gap","Plant this: Manus makes no spray adhesive. A construction contractor buying Manus sealant still needs a spray adhesive for foam board insulation on the same job. That spray adhesive is coming from a second supplier. Ask Manus: For the spray adhesive applications on the same jobs where you are using Manus sealant — what product are you using, and is that coming from Manus or a second supplier?"]
+    ],
+    wins:["Forza makes spray adhesives — Manus makes ZERO","Forza makes tapes — Manus makes ZERO","RuggedRed cleaners — Manus has no cleaner line","Marine vertical — Manus has no Marine products at all","Single-source: four categories vs. Manus two"],
+    moats:["Butyl sealant line (501-A, 64A-MBG, 50A-HV) — no Forza butyl equivalent","Acrylic latex caulk line — no Forza latex equivalent","PU foam sealant line — no Forza foam sealant equivalent","75-AM variant depth (30+ SKUs) — Manus has more STP variants"]
+  },
+  {
+    id:"quin",name:"Quin Global Americas",brands:"Tensorgrip / QDEK",
+    hq:"UK HQ / Omaha NE",rev:"Global / Private",threat:"HIGH",
+    pitch:"Quin Global Americas runs a UK-headquartered spray adhesive operation out of Omaha, Nebraska — same metro as Forza. Their canister system is compatible with Forza hardware. The switch from Tensorgrip to Forza is a product decision, not a hardware decision. Forza makes the same adhesives plus the sealants, tapes, and cleaners Quin cannot supply.",
+    msgs:[
+      ["To the Industrial Contractor","Your canister gun already runs ForzaBond. The chemistry is the same application range as Tensorgrip P-series — Iowa-made, and Forza also supplies the sealant and tape for the same job. Quin cannot."],
+      ["To the Marine Fabricator","Tensorgrip M-series covers marine spray adhesive. So does ForzaBond MC-series — same applications, Iowa-made, and the gun already runs Forza. Add ForzaSeal marine sealant on the same order. Quin has no sealant to offer."],
+      ["To the Distributor","You carry Tensorgrip. Your customers guns already run ForzaBond. Add Forza and you are adding sealant, tape, and cleaner to the same shelf — without asking your customer to change equipment."]
+    ],
+    objections:[
+      ["Tensorgrip is what we have always run","Your canister system already runs ForzaBond. The switch is a product decision, not a hardware decision. ForzaBond IC/MC/TC-series covers the same applications — plus you get sealant and tape from the same manufacturer."],
+      ["Quin is local — they are in Omaha","Forza is in Council Bluffs, Iowa — same metro. And Forza is Iowa-made, family-owned. Quin Global is a UK-headquartered company operating a US sales office out of Omaha."],
+      ["Tensorgrip has 100+ distributors","The question for your distributor is not who has more partners — it is who gives the distributor a complete shelf: adhesive, sealant, tape, and cleaner. Quin can only fill one of those four."],
+      ["Quin has a good marine line","Tensorgrip M-series is solid. ForzaBond MC-series covers the same marine adhesive applications. Forza also supplies ForzaSeal marine sealant and ForzaTape for the same boat build. Quin cannot."]
+    ],
+    seeds:[
+      "Tensorgrip is a solid spray adhesive — Quin Global has built a real product line across industrial, marine, and transportation. The canister system is compatible with Forza hardware, which means a contractor on Tensorgrip can run ForzaBond adhesive tomorrow without changing a single piece of equipment. The switch is a product decision, not an infrastructure decision.",
+      "Quin Global Americas operates out of Omaha, Nebraska. Forza is in Council Bluffs, Iowa — same metro, same regional distributors, same contractor base. The difference is Quin is a UK-headquartered global company running a US sales office. Forza is a family-owned Iowa manufacturer. Every SKU, made here.",
+      "Quin makes adhesives. Their Tensorgrip P-series, M-series, and EPO-series are legitimate industrial spray adhesives. They make zero sealants, zero tapes, and no industrial cleaner. Every contractor buying Tensorgrip still needs all three from somewhere else. Forza supplies all four from one Iowa manufacturer, and the gun already runs Forza."
+    ],
+    landmines:[
+      ["Canister Compatibility","Plant this: Quin canister system is compatible with Forza hardware. A contractor currently running Tensorgrip can load ForzaBond in the same gun tomorrow — no hardware change. Ask Quin: Has anyone ever told you that your existing canister gun system is compatible with ForzaBond adhesive — meaning the switch from Tensorgrip to Forza is purely a product decision with no equipment change required?"],
+      ["Full Job Supply","Plant this: Tensorgrip is an adhesive line. The contractor buying Tensorgrip P-series still needs sealant, bonding tape, and surface cleaner for the same job. Quin cannot supply any of those. Ask Quin: For a job that needs spray adhesive, sealant, bonding tape, and surface cleaner — how many separate suppliers are you currently ordering from?"],
+      ["Domestic Content","Plant this: Quin Global is headquartered in the UK. Their US entity operates a sales office out of Omaha. Forza is manufactured 100% in Council Bluffs, Iowa. Ask Quin: Where is Tensorgrip actually manufactured — which country, which facility — and do you have domestic content documentation if a customer or contract requires it?"],
+      ["Marine Gap","Plant this: Tensorgrip M-series covers marine spray adhesive. ForzaBond MC-series covers the same marine adhesive applications — plus ForzaSeal marine sealant and ForzaTape for the same boat build. Ask Quin: For the sealant and bonding tape applications on the same boat build where you are using Tensorgrip M-series — what are you buying for those, and is that coming from Quin or a separate supplier?"],
+      ["EPO Reefer","Plant this: Quin EPO-series is positioned specifically for reefer trailer repair — a narrow transportation application. Forza TC452, TC453, and TC456 cover the same reefer repair applications plus the full Transportation vertical. Ask Quin: For a reefer trailer repair job — beyond the Tensorgrip adhesive, what are you using for sealant, bonding tape, and surface primer, and are all of those coming from one supplier?"]
+    ],
+    wins:["Compatible canister system — the switch is a product decision, not hardware","ForzaSeal: 24 sealant SKUs. Quin makes ZERO sealants","ForzaTape: 22 tape SKUs. Quin makes ZERO tapes","RuggedRed industrial cleaners. Quin has no cleaner line","Iowa-made. Quin is UK-headquartered, US sales office in Omaha"],
+    moats:["No sealants of any kind — no Forza equivalent gap here","No tape products of any kind — no Forza equivalent gap here","QDEK roofing adhesive — no Forza roofing spray adhesive equivalent","100+ US/Americas distributor relationships — established footprint"]
+  },
+  {
+    id:"newstar",name:"NewStar Adhesives",brands:"EverStrong / EverHold / EverBond",
+    hq:"Massachusetts",rev:"Independent / Private",threat:"MODERATE",
+    pitch:"NewStar does one thing — contact and spray adhesives. They are proud of it. But every contractor buying EverStrong still needs sealant, tape, and cleaner for the same job. Forza makes the adhesive and everything else from Council Bluffs, Iowa.",
+    msgs:[
+      ["To the Industrial Contractor","EverStrong is a solid spray adhesive. The moment you need sealant, tape, or cleaner for the same job — you are calling someone else. ForzaBond covers the same applications, Iowa-made, and gives you the rest from one manufacturer."],
+      ["To the Distributor","You carry NewStar for adhesive. You have no sealant, tape, or cleaner to put next to it. Forza fills all four categories — and the adhesive competes directly with EverStrong across every application."]
+    ],
+    objections:[
+      ["EverStrong is what we have always used","Application-compatible. ForzaBond IC/MC-series covers the same substrates. The difference is you get sealant, tape, and cleaner from the same manufacturer on the same PO."],
+      ["NewStar canister return program saves money","Returnable canisters require return freight scheduling and tracking. Forza ships standard with no return logistics. Compare total cost of ownership, not just unit cost."],
+      ["NewStar specializes — that is better","Forza adhesive line has been in market since 1979. Specialization is their pitch. Single-source supply is ours. Which one reduces your supplier count?"]
+    ],
+    seeds:[
+      "NewStar makes a great contact and spray adhesive — EverStrong has been in the market for decades and it performs. But they make adhesives. The contractor buying ES10+ still needs sealant, tape, and cleaner for the same job. NewStar cannot supply any of it. Forza makes all four from Council Bluffs, Iowa.",
+      "NewStar returnable canister program is a real feature — and a real logistics dependency. Return freight, scheduling, tracking, overhead on every canister. Forza ships standard packaging with no return program required. Same chemistry, less supply chain complexity.",
+      "NewStar is headquartered in Massachusetts with operations in Georgia and North Carolina. No Midwest manufacturing. Forza is manufactured 100% in Council Bluffs, Iowa — every SKU, no exceptions."
+    ],
+    landmines:[
+      ["Single Source","Plant this: NewStar tagline is We do one thing and we do it well. That is their ceiling. The contractor buying EverStrong for a job still needs sealant, tape, and surface cleaner. NewStar cannot supply any of those. Ask NewStar: For a job that needs spray adhesive, sealant, bonding tape, and surface cleaner — how many separate suppliers are you currently ordering from?"],
+      ["Canister Return Cost","Plant this: NewStar returnable canister program is a feature they lead with — and a logistics obligation. Every returnable canister requires coordinated return freight, tracking, and scheduling. Ask NewStar: With the returnable canister program — what does the full return process look like on your end? Who coordinates return freight, how do you track it, and what does that cost in time and labor per month?"],
+      ["Geography","Plant this: NewStar operates out of Massachusetts, Georgia, and North Carolina. No Midwest manufacturing. Ask NewStar: Where is EverStrong actually manufactured — which facility, which state — and do you have documentation for domestic content compliance if a customer or spec requires it?"],
+      ["Cross-Category Support","Plant this: NewStar is an adhesive specialist — their technical support is built around one category. When a contractor question crosses into sealant compatibility or tape selection, NewStar routes that somewhere else. Ask NewStar: If I have a question about how my spray adhesive interacts with the sealant and tape I am using on the same assembly — does NewStar have technical support for that cross-category question?"],
+      ["EverBond Private Label","Plant this: NewStar EverBond line is a private-label version of EverStrong chemistry sold through distribution. Most contractors buying EverBond do not know they are buying NewStar chemistry under a different name — with a distributor margin stacked on top. Ask NewStar: The adhesive you are buying — is it branded EverStrong, EverBond, Pionite, or Nevamar? Do you know who actually manufactures it?"]
+    ],
+    wins:["Single-source: Forza supplies 4 categories vs. NewStar 1","Iowa-made vs. MA/GA/NC manufacturing","ForzaBond covers every EverStrong application","EverBond private-label — distributors may not know it is NewStar","No canister return logistics dependency with Forza"],
+    moats:["EverStrong brand recognition in industrial/marine adhesive channel","EverHold well-established in marine fabrication shops","30+ years of adhesive-specialist positioning","Pionite/Nevamar HPL channel relationships deeply entrenched"]
+  }
 ];
 var D=[{"f":"3M_Battle_Card_v1.docx","n":"3M Battle Card v1","t":"battle","c":"3M","d":"2-page field card — Super 77, Scotch-Weld, VHB, PU sealants, Hot Melt","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/3M_Battle_Card_v1.docx"},{"f":"Sika_Battle_Card_v1.docx","n":"Sika Battle Card v1","t":"battle","c":"Sika","d":"2-page — Sikaflex, SikaFast, Aktivator, Sikasil","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Sika_Battle_Card_v1.docx"},{"f":"Henkel_Battle_Card_v1.docx","n":"Henkel Battle Card v1","t":"battle","c":"Henkel","d":"2-page — Loctite, Teroson, Technomelt, Bonderite","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Henkel_Battle_Card_v1.docx"},{"f":"Manus_Battle_Card_v1.docx","n":"Manus Battle Card v1","t":"battle","c":"Manus","d":"2-page — Manus-Bond STP, silicone, PU, neoprene","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Manus_Battle_Card_v1.docx"},{"f":"Quin_Global_Battle_Card_v1.docx","n":"Quin Global Battle Card v1","t":"battle","c":"Quin","d":"2-page — Tensorgrip P/M/EPO series, canister compatibility","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Quin_Global_Battle_Card_v1.docx"},{"f":"NewStar_Battle_Card_v3.docx","n":"NewStar Battle Card v3","t":"battle","c":"NewStar","d":"2-page — EverStrong, EverHold, EverBond, Pionite, Nevamar","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/NewStar_Battle_Card_v3.docx"},{"f":"Carlisle_HVAC_Battle_Card_v3.docx","n":"Carlisle HVAC Battle Card v3","t":"battle","c":"Carlisle","d":"2-page — HVAC/insulation vertical","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Carlisle_HVAC_Battle_Card_v3.docx"},{"f":"Novagard_Battle_Card_v3.docx","n":"Novagard Battle Card v3","t":"battle","c":"Novagard","d":"2-page — silicone sealant competition","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Novagard_Battle_Card_v3.docx"},{"f":"Design_Polymerics_Battle_Card_v3.docx","n":"Design Polymerics Battle Card v3","t":"battle","c":"Design Polymerics","d":"2-page — construction sealant competition","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Design_Polymerics_Battle_Card_v3.docx"},{"f":"Meridian_Battle_Card_v3.docx","n":"Meridian Battle Card v3","t":"battle","c":"Meridian","d":"2-page — insulation/construction vertical","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Meridian_Battle_Card_v3.docx"},{"f":"GIC_Channel_Battle_Card_v3.docx","n":"GIC Channel Partner Brief v3","t":"battle","c":"GIC","d":"2-page — channel partner positioning","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/GIC_Channel_Battle_Card_v3.docx"},{"f":"Forza_Battle_Card_How_To_Guide.docx","n":"Battle Card How-To Guide","t":"battle","c":"All","d":"Rep coaching guide — anatomy, sequence, landmine usage","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_Battle_Card_How_To_Guide.docx"},{"f":"3M_Executive_Brief_v1.docx","n":"3M Executive Brief v1","t":"brief","c":"3M","d":"Company overview, competitive positioning, strategic assessment","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/3M_Executive_Brief_v1.docx"},{"f":"Sika_Executive_Brief_v1.docx","n":"Sika Executive Brief v1","t":"brief","c":"Sika","d":"Sikaflex/SikaFast deep dive, construction platform, entry strategy","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Sika_Executive_Brief_v1.docx"},{"f":"Henkel_Executive_Brief_v1.docx","n":"Henkel Executive Brief v1","t":"brief","c":"Henkel","d":"Iowa vs. Germany frame, Loctite/Teroson/Technomelt deep dive","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Henkel_Executive_Brief_v1.docx"},{"f":"Manus_Executive_Brief_v1.docx","n":"Manus Executive Brief v1","t":"brief","c":"Manus","d":"Midwest competitor analysis, STP depth, strategic assessment","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Manus_Executive_Brief_v1.docx"},{"f":"Quin_Global_Executive_Brief_v1.docx","n":"Quin Global Executive Brief v1","t":"brief","c":"Quin","d":"Canister compatibility intel, Omaha metro competitive analysis","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Quin_Global_Executive_Brief_v1.docx"},{"f":"NewStar_Executive_Brief_v1.docx","n":"NewStar Executive Brief v1","t":"brief","c":"NewStar","d":"Single-source argument, EverBond private-label dynamic","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/NewStar_Executive_Brief_v1.docx"},{"f":"Carlisle_HVAC_Executive_Brief_v2.docx","n":"Carlisle HVAC Executive Brief v2","t":"brief","c":"Carlisle","d":"HVAC/insulation vertical analysis and competitive positioning","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Carlisle_HVAC_Executive_Brief_v2.docx"},{"f":"Novagard_Executive_Brief_v2.docx","n":"Novagard Executive Brief v2","t":"brief","c":"Novagard","d":"Silicone sealant competitor overview and strategic assessment","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Novagard_Executive_Brief_v2.docx"},{"f":"Design_Polymerics_Executive_Brief_v1.docx","n":"Design Polymerics Executive Brief v1","t":"brief","c":"Design Polymerics","d":"Construction sealant competitor overview and strategic assessment","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Design_Polymerics_Executive_Brief_v1.docx"},{"f":"3M_Forza_SKU_Crosswalk.xlsx","n":"3M Forza SKU Crosswalk","t":"crosswalk","c":"3M","d":"53+ rows — spray, VHB, sealants, Scotch-Weld, hot melt","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/3M_Forza_SKU_Crosswalk.xlsx"},{"f":"Sika_Forza_SKU_Crosswalk.xlsx","n":"Sika Forza SKU Crosswalk","t":"crosswalk","c":"Sika","d":"50 rows — Sikaflex, SikaFast, Aktivator, Sikasil","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Sika_Forza_SKU_Crosswalk.xlsx"},{"f":"Henkel_Forza_SKU_Crosswalk.xlsx","n":"Henkel Forza SKU Crosswalk","t":"crosswalk","c":"Henkel","d":"45 rows — Loctite, Teroson, Technomelt, Bonderite","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Henkel_Forza_SKU_Crosswalk.xlsx"},{"f":"Manus_Forza_SKU_Crosswalk.xlsx","n":"Manus Forza SKU Crosswalk","t":"crosswalk","c":"Manus","d":"50 rows — full STP family, silicone, epoxy, neoprene","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Manus_Forza_SKU_Crosswalk.xlsx"},{"f":"Quin_Global_Forza_SKU_Crosswalk.xlsx","n":"Quin Global Forza SKU Crosswalk","t":"crosswalk","c":"Quin","d":"36 rows — P/M/EPO Tensorgrip, QDEK","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Quin_Global_Forza_SKU_Crosswalk.xlsx"},{"f":"NewStar_Forza_SKU_Crosswalk.xlsx","n":"NewStar Forza SKU Crosswalk","t":"crosswalk","c":"NewStar","d":"98 rows — EverStrong, EverHold, EverBond, Pionite, Nevamar","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/NewStar_Forza_SKU_Crosswalk.xlsx"},{"f":"Design_Polymerics_Forza_Crosswalk.xlsx","n":"Design Polymerics Forza Crosswalk","t":"crosswalk","c":"Design Polymerics","d":"Construction sealant competitor crosswalk","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Design_Polymerics_Forza_Crosswalk.xlsx"},{"f":"Forza_Industrial_Vertical_Crosswalk.xlsx","n":"Forza Industrial Vertical Crosswalk","t":"crosswalk","c":"All","d":"6 tabs — Industrial, Transportation, Marine, Construction, Insulation, Composites","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_Industrial_Vertical_Crosswalk.xlsx"},{"f":"Fastenal_Forza_Field_Substitution_Guide.xlsx","n":"Fastenal Field Substitution Guide","t":"guide","c":"3M / Sika / Henkel / Manus","d":"4 tabs — Industrial and Transportation SKUs side-by-side","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Fastenal_Forza_Field_Substitution_Guide.xlsx"},{"f":"CompositesOne_Forza_Field_Substitution_Guide.xlsx","n":"Composites One Field Substitution Guide","t":"guide","c":"3M / Sika / Quin / NewStar","d":"4 tabs — Marine SKUs only","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/CompositesOne_Forza_Field_Substitution_Guide.xlsx"},{"f":"Forza_T205_T215_T220_vs_3M_VHB_Comparison.docx","n":"T-205 T-215 T-220 vs 3M VHB Comparison","t":"comparison","c":"3M","d":"Full TDS comparison — peel, shear, temp. Forza publishes more ASTM data.","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_T205_T215_T220_vs_3M_VHB_Comparison.docx"},{"f":"Forza_REV_Group_Competitive_Crosswalk.xlsx","n":"REV Group Competitive Crosswalk","t":"crosswalk","c":"REV Group","d":"Transportation crosswalk tailored for REV Group account","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_REV_Group_Competitive_Crosswalk.xlsx"},{"f":"Forza_REV_Group_Full_Competitive_Crosswalk.xlsx","n":"REV Group Full Competitive Crosswalk","t":"crosswalk","c":"REV Group","d":"Full competitive crosswalk for REV Group","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_REV_Group_Full_Competitive_Crosswalk.xlsx"},{"f":"Forza_REV_Group_Transportation_Crosswalk.xlsx","n":"REV Group Transportation Crosswalk","t":"crosswalk","c":"REV Group","d":"Transportation-specific crosswalk for REV Group","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_REV_Group_Transportation_Crosswalk.xlsx"},{"f":"Forza_GIC_Channel_Partner_Brief.docx","n":"GIC Channel Partner Brief","t":"other","c":"GIC","d":"Channel partner positioning document","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_GIC_Channel_Partner_Brief.docx"},{"f":"Forza_Competitive_Intelligence_System.xlsx","n":"Competitive Intelligence Master Workbook","t":"other","c":"All","d":"Master CI system workbook — all competitors, all verticals","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/Forza_Competitive_Intelligence_System.xlsx"},{"f":"3M_Forza_Transportation_Crosswalk_Fastenal.xlsx","n":"3M Transportation Crosswalk Fastenal","t":"crosswalk","c":"3M","d":"Standalone 3M Transportation crosswalk for Fastenal","url":"https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Mike's%20Competitive%20Intelligence/Forza_CI_System/3M_Forza_Transportation_Crosswalk_Fastenal.xlsx"}];
 var VERT=[
@@ -331,13 +519,68 @@ function selectComp(id){
     c.classList.toggle("active",COMP[i].id===id);
   });
   var c=COMP.filter(function(x){return x.id===id;})[0];
-  var h="<div class=\"detail-panel\"><div class=\"dp-title\">"+c.name+" <span style=\"font-size:.72rem;color:#888;font-weight:400\">&mdash; "+c.rev+" &mdash; "+c.hq+"</span></div><div class=\"dp-meta\">"+c.brands+"</div><div class=\"pitch-box\">"+c.pitch+"</div><div class=\"sw-grid\"><div class=\"sw-box\"><div class=\"sw-label sw-win\">Where Forza Wins</div>";
+  var h="<div class=\"detail-panel\">";
+
+  // Header
+  h+="<div class=\"dp-title\">"+c.name+" <span style=\"font-size:.72rem;color:#888;font-weight:400\">&mdash; "+c.rev+" &mdash; "+c.hq+"</span></div>";
+  h+="<div class=\"dp-meta\">"+c.brands+"</div>";
+
+  // Pitch
+  h+="<div class=\"bc-section-label\">Pitch</div>";
+  h+="<div class=\"pitch-box\">"+c.pitch+"</div>";
+
+  // Key Messages
+  if(c.msgs&&c.msgs.length){
+    h+="<div class=\"bc-section-label\">Key Messages</div><div class=\"bc-msgs\">";
+    c.msgs.forEach(function(m){
+      h+="<div class=\"bc-msg\"><div class=\"bc-msg-who\">"+m[0]+"</div><div class=\"bc-msg-txt\">"+m[1]+"</div></div>";
+    });
+    h+="</div>";
+  }
+
+  // Quick Seeds
+  if(c.seeds&&c.seeds.length){
+    h+="<div class=\"bc-section-label\">Quick Dismisses &#9889;</div><div class=\"bc-seeds\">";
+    c.seeds.forEach(function(s){
+      h+="<div class=\"bc-seed\">"+s+"</div>";
+    });
+    h+="</div>";
+  }
+
+  // Landmines
+  if(c.landmines&&c.landmines.length){
+    h+="<div class=\"bc-section-label\">Landmines &#128163;</div><div class=\"bc-landmines\">";
+    c.landmines.forEach(function(l){
+      h+="<div class=\"bc-landmine\"><div class=\"bc-lm-title\">"+l[0]+"</div><div class=\"bc-lm-body\">"+l[1]+"</div></div>";
+    });
+    h+="</div>";
+  }
+
+  // Objections
+  if(c.objections&&c.objections.length){
+    h+="<div class=\"bc-section-label\">Objection Handling</div><div class=\"bc-objections\">";
+    c.objections.forEach(function(o){
+      h+="<div class=\"bc-obj\"><div class=\"bc-obj-q\">&ldquo;"+o[0]+"&rdquo;</div><div class=\"bc-obj-a\">"+o[1]+"</div></div>";
+    });
+    h+="</div>";
+  }
+
+  // Wins & Moats grid
+  h+="<div class=\"sw-grid\">";
+  h+="<div class=\"sw-box\"><div class=\"sw-label sw-win\">Where Forza Wins</div>";
   c.wins.forEach(function(w){h+="<div class=\"sw-item win\">"+w+"</div>";});
-  h+="</div><div class=\"sw-box\"><div class=\"sw-label sw-gap\">Difficult to Displace</div>";
-  c.gaps.forEach(function(g){h+="<div class=\"sw-item gap\">"+g+"</div>";});
-  h+="</div></div></div>";
+  h+="</div>";
+  if(c.moats&&c.moats.length){
+    h+="<div class=\"sw-box\"><div class=\"sw-label sw-gap\">Do Not Fight These</div>";
+    c.moats.forEach(function(m){h+="<div class=\"sw-item gap\">"+m+"</div>";});
+    h+="</div>";
+  }
+  h+="</div>";
+
+  h+="</div>";
   document.getElementById("compDetail").innerHTML=h;
 }
+// DOCUMENTS
 
 // DOCUMENTS
 var TL={battle:"Battle Card",crosswalk:"Crosswalk",brief:"Exec Brief",guide:"Field Guide",comparison:"Comparison",other:"Other"};
@@ -389,8 +632,16 @@ function selectVert(i){
 
 function showVertDetail(i){
   var v=VERT[i];
-  var h="<div class=\"detail-panel\" style=\"margin-top:0;\"><div class=\"dp-title\" style=\"color:"+v.color+"\">"+v.name+" Vertical &mdash; "+v.skus.length+" SKUs</div><table class=\"sku-table\"><thead><tr><th>Forza SKU</th><th>Description</th></tr></thead><tbody>";
-  v.skus.forEach(function(s){h+="<tr><td>"+s.s+"</td><td>"+s.d+"</td></tr>";});
+  var isInd=v.name==="Industrial";
+  var h="<div class=\"detail-panel\" style=\"margin-top:0;\"><div class=\"dp-title\" style=\"color:"+v.color+"\">"+v.name+" Vertical &mdash; "+v.skus.length+" SKUs</div><table class=\"sku-table\"><thead><tr><th>Forza SKU</th><th>Description</th>"+(isInd?"":"<th>Industrial Equivalent</th>")+"</tr></thead><tbody>";
+  var IND_EQ={"TC452":"IC932","TC453":"IC933","TC454":"IC934","TC456":"IC936","TC466":"IC946","TC467":"IC947","TC471":"IC951","T-OS151":"OS2","T-OA156":"OA4","T-OS164":"OS35","T-R682":"R160","T-OSA155":"OSA","T-T415":"T-205","T-T420":"T-215","MC722":"IC932","MC723":"IC933","MC724":"IC934","MC726":"IC936","MC736":"IC946","MC737":"IC947","MC739":"IC951","MC741":"IC951","M-OS789":"OS2","M-OS796":"OS2","M-OA755":"OA4","M-OSA783":"OSA","M-R420":"R160","M-R445":"R160","C-OS9":"OS2","C-OS55":"OS2","C-OA5":"OA4","C-OSA":"OSA","RC826":"IC936","RC863":"IC933","RC862":"IC932","RC886":"IC946","RC887":"IC947","R-OSA":"OSA","R-C661":"IC933","R-A2000":"IC936","TAC-734G":"IC933","TAC-735R":"IC934","TAC-850GR":"IC951","TAC-OS7":"OS2","TAC-T700":"T-205"};
+  v.skus.forEach(function(s){
+    var ieq=IND_EQ[s.s]||"";
+    h+="<tr><td>"+s.s+"</td><td>"+s.d+"</td>"+(isInd?"":"<td style=\"font-weight:600;color:#F16022;\">"+(ieq||"&mdash;")+"</td>")+"</tr>";
+  });
+  h+="</tbody></table></div>";
+  document.getElementById("vertDetail").innerHTML=h;
+});
   h+="</tbody></table></div>";
   document.getElementById("vertDetail").innerHTML=h;
 }
