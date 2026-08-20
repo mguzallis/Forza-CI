@@ -437,9 +437,11 @@ function showManualEntry(imgData,prefill,rawUpc){
     if(m.length){
       showSingle(m[0],el);
       // Always offer save when coming from a scan (rawUpc present OR manual fallback)
-      var alreadySaved=rawUpc&&(UPC_BUILTIN[rawUpc]||getRepo()[rawUpc]);
+      // Use lastUpc if rawUpc is 'manual' — lastUpc always holds the numeric UPC from the scan
+      var effectiveUpc=(rawUpc&&rawUpc!=='manual')?rawUpc:lastUpc;
+      var alreadySaved=effectiveUpc&&(UPC_BUILTIN[effectiveUpc]||getRepo()[effectiveUpc]);
       if(!alreadySaved){
-        offerSave(rawUpc||'manual',v,m[0].ind||'');
+        offerSave(effectiveUpc||'',v,m[0].ind||'');
       }
     } else {el.appendChild(mk('div','info','No match for "'+v+'". Try a different spelling.'));}
   });
@@ -453,8 +455,8 @@ function showManualEntry(imgData,prefill,rawUpc){
 }
 function offerSave(upc,name,ind){
   var bar=mk('div','save-bar');
-  var isUpc=upc&&upc!=='manual'&&/^[0-9]{8,14}$/.test(upc);
-  var label=isUpc?'Save UPC '+upc+' = "'+name+'" to repository?':'Save "'+name+'" to repository?';
+  var isUpc=upc&&/^[0-9]{8,14}$/.test(upc);
+  var label=isUpc?'Save UPC '+upc+' → "'+name+'" to repository?':'Save "'+name+'" to repository?';
   bar.appendChild(mk('div','save-label',label));
   var btn=mk('button','save-btn','Save');
   btn.addEventListener('click',function(){
@@ -508,6 +510,10 @@ function renderRepo(){
     td.appendChild(db);tr.appendChild(td);tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);wrap.appendChild(tbl);
+  // Small debug line showing raw keys stored
+  var dbg=mk('div','');dbg.style.cssText='font-size:.62rem;color:#bbb;margin-top:6px;';
+  dbg.textContent='Stored keys: '+keys.join(', ');
+  wrap.appendChild(dbg);
 }
 renderRepo();
 
