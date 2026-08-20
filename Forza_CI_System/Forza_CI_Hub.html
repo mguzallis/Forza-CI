@@ -218,10 +218,13 @@ function showSingle(d,container){
     ['Vertical','Forza SKU'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
     thead.appendChild(hrow);tbl.appendChild(thead);
     var tbody=mk('tbody');
+    var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#B8860B','Insulation':'#D0157D','Composites':'#888'};
     VO.forEach(function(v){
       var tr=mk('tr');tr.appendChild(mk('td',null,v));
-      var val=cr[v]||'';tr.appendChild(mk('td',val?'orange':'dim',val||'-'));
-      tbody.appendChild(tr);
+      var val=cr[v]||'';
+      var td=mk('td',val?'':'dim',val||'-');
+      if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
+      tr.appendChild(td);tbody.appendChild(tr);
     });
     tbl.appendChild(tbody);cards.appendChild(tbl);
   }
