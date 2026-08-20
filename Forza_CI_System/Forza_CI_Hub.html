@@ -258,6 +258,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
       <div class="scanner-overlay"><div class="scanner-frame"></div></div>
     </div>
     <div class="scanner-hint-bar" id="scannerHint">Point camera at barcode, then tap Capture</div>
+    <div id="scanLog" style="display:none;font-size:.65rem;color:#aaa;background:#111;padding:6px 14px;max-height:80px;overflow-y:auto;font-family:monospace;"></div>
     <div class="scanner-capture-bar">
       <button class="scanner-capture-btn" id="captureBtn">Capture</button>
     </div>
@@ -404,15 +405,29 @@ function scanFail(c){
   var imgData=c?c.toDataURL('image/jpeg',0.7):'';
   closeScan();showManualEntry(imgData,'',lastUpc);
 }
+function slog(msg){
+  var el=document.getElementById('scanLog');
+  if(!el)return;
+  el.style.display='block';
+  el.innerHTML+=msg+'<br>';
+  el.scrollTop=el.scrollHeight;
+}
 function handleScan(raw){
   var cl=raw.trim(),nz=cl.replace(/^0+/,'');
   lastUpc=/^[0-9]{8,14}$/.test(cl)?cl:'';
+  slog('Decoded: '+cl);
+  slog('Stripped: '+nz);
+  slog('lastUpc: '+lastUpc);
   var repo=getRepo();
+  slog('Repo keys: '+Object.keys(repo).join(', '));
   var repoEntry=repo[cl]||repo[nz]||null;
+  slog('Repo hit: '+(repoEntry?JSON.stringify(repoEntry).substring(0,60):'none'));
   var sn=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||(repoEntry?repoEntry.name:null)||null;
+  slog('Product name: '+(sn||'none'));
   var el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){
     var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});
+    slog('SKU matches: '+m.length);
     if(m.length){closeScan();document.getElementById('skuInput').value=sn;showSingle(m[0],el);return;}
   }
   var dm=SKU.filter(function(d){return nm(d.comp).indexOf(nm(cl))>-1||nm(cl).indexOf(nm(d.comp))>-1;});
@@ -467,6 +482,7 @@ function offerSave(upc,name,ind){
     var key=isUpc?upc:'name:'+nm(name);
     repo[key]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:imgData,upc:isUpc?upc:''};
     try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
+    console.log('Saved key:',key,'name:',name,'ind:',ind);
     bar.innerHTML='';
     var msg=mk('span','save-label',isUpc?'Saved! Next rep who scans this UPC gets an instant cross.':'Saved to repository!');
     bar.appendChild(msg);
