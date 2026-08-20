@@ -98,6 +98,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .vtbl tr:hover td{background:#F8F9FC;}
 .del-btn{background:none;border:none;color:#ccc;font-size:1rem;cursor:pointer;padding:0;}
 .del-btn:hover{color:#C0390D;}
+.repo-thumb{width:48px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;display:block;}
+.repo-thumb:hover{opacity:.8;}
+.repo-no-photo{color:#ccc;font-size:.7rem;}
+.vtbl td:first-child{font-weight:600;color:var(--blue);width:60px;}
+.del-btn:hover{color:#C0390D;}
 /* Competitors */
 .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
 .ccard{border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;background:#fff;transition:all .15s;}
@@ -447,7 +452,11 @@ function offerSave(upc,name,ind){
   bar.appendChild(mk('div','save-label','Save UPC '+upc+' = "'+name+'" for all reps?'));
   var btn=mk('button','save-btn','Save');
   btn.addEventListener('click',function(){
-    var repo=getRepo();repo[upc]={name:name,ind:ind,date:new Date().toLocaleDateString()};
+    var repo=getRepo();
+    var imgData='';
+    // Grab last captured image from canvas if available
+    try{var c=document.getElementById('scanCanvas');if(c&&c.width>0)imgData=c.toDataURL('image/jpeg',0.5);}catch(e){}
+    repo[upc]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:imgData};
     try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
     bar.innerHTML='';bar.appendChild(mk('span','save-label','Saved! Next rep who scans this UPC gets an instant cross.'));
     renderRepo();
@@ -464,11 +473,23 @@ function renderRepo(){
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No UPCs saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-  ['UPC','Product','Forza Cross','Date',''].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+  ['Photo','UPC','Product','Forza Cross','Date',''].forEach(function(h){hrow.appendChild(mk('th',null,h));});
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tbody=mk('tbody');
   keys.forEach(function(upc){
     var e=repo[upc],tr=mk('tr');
+    // Photo cell
+    var photoTd=mk('td');
+    if(e.img){
+      var thumb=mk('img','repo-thumb');thumb.src=e.img;thumb.title='Click to save photo';
+      // Download link
+      var dl=document.createElement('a');
+      dl.href=e.img;dl.download=(e.name||upc).replace(/[^a-z0-9]/gi,'_')+'.jpg';
+      dl.title='Save photo';dl.appendChild(thumb);photoTd.appendChild(dl);
+    } else {
+      photoTd.appendChild(mk('span','repo-no-photo','-'));
+    }
+    tr.appendChild(photoTd);
     tr.appendChild(mk('td',null,upc));
     tr.appendChild(mk('td',null,e.name||e));
     tr.appendChild(mk('td','orange',e.ind||'-'));
