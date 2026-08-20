@@ -407,7 +407,9 @@ function scanFail(c){
 function handleScan(raw){
   var cl=raw.trim(),nz=cl.replace(/^0+/,'');
   lastUpc=/^[0-9]{8,14}$/.test(cl)?cl:'';
-  var repo=getRepo(),sn=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||repo[cl]||repo[nz]||null;
+  var repo=getRepo();
+  var repoEntry=repo[cl]||repo[nz]||null;
+  var sn=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||(repoEntry?repoEntry.name:null)||null;
   var el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){
     var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});
@@ -434,8 +436,10 @@ function showManualEntry(imgData,prefill,rawUpc){
     el.innerHTML='';
     if(m.length){
       showSingle(m[0],el);
-      if(rawUpc&&/^[0-9]{8,14}$/.test(rawUpc)&&!UPC_BUILTIN[rawUpc]&&!getRepo()[rawUpc]){
-        offerSave(rawUpc,v,m[0].ind||'');
+      // Always offer save when coming from a scan (rawUpc present OR manual fallback)
+      var alreadySaved=rawUpc&&(UPC_BUILTIN[rawUpc]||getRepo()[rawUpc]);
+      if(!alreadySaved){
+        offerSave(rawUpc||'manual',v,m[0].ind||'');
       }
     } else {el.appendChild(mk('div','info','No match for "'+v+'". Try a different spelling.'));}
   });
@@ -449,16 +453,21 @@ function showManualEntry(imgData,prefill,rawUpc){
 }
 function offerSave(upc,name,ind){
   var bar=mk('div','save-bar');
-  bar.appendChild(mk('div','save-label','Save UPC '+upc+' = "'+name+'" for all reps?'));
+  var isUpc=upc&&upc!=='manual'&&/^[0-9]{8,14}$/.test(upc);
+  var label=isUpc?'Save UPC '+upc+' = "'+name+'" to repository?':'Save "'+name+'" to repository?';
+  bar.appendChild(mk('div','save-label',label));
   var btn=mk('button','save-btn','Save');
   btn.addEventListener('click',function(){
     var repo=getRepo();
     var imgData='';
-    // Grab last captured image from canvas if available
     try{var c=document.getElementById('scanCanvas');if(c&&c.width>0)imgData=c.toDataURL('image/jpeg',0.5);}catch(e){}
-    repo[upc]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:imgData};
+    // Use UPC as key if available, otherwise use product name as key
+    var key=isUpc?upc:'name:'+nm(name);
+    repo[key]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:imgData,upc:isUpc?upc:''};
     try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
-    bar.innerHTML='';bar.appendChild(mk('span','save-label','Saved! Next rep who scans this UPC gets an instant cross.'));
+    bar.innerHTML='';
+    var msg=mk('span','save-label',isUpc?'Saved! Next rep who scans this UPC gets an instant cross.':'Saved to repository!');
+    bar.appendChild(msg);
     renderRepo();
   });
   bar.appendChild(btn);document.getElementById('skuResult').appendChild(bar);
