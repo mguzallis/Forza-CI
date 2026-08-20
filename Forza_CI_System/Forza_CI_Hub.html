@@ -37,14 +37,14 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
 .r-brand{font-family:'Kallisto','Poppins',sans-serif;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
 .r-sku{font-size:1.05rem;font-weight:700;color:var(--blue);margin-bottom:8px;}
 .r-app{font-size:.8rem;color:#555;margin-bottom:14px;}
-.r-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.r-cards{display:grid;grid-template-columns:1fr;gap:10px;max-width:340px;}
 .r-card{background:#fff;border-radius:6px;padding:12px 16px;border:1px solid var(--border);}
 .r-card-label{font-family:'Kallisto','Poppins',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:4px;}
 .r-card-sku{font-size:1.1rem;font-weight:700;color:var(--blue);}
 .r-card-sku.empty{color:#bbb;font-size:.8rem;font-weight:400;font-style:italic;}
 .multi-hdr{font-size:.68rem;font-weight:600;color:#888;letter-spacing:.06em;text-transform:uppercase;margin:14px 0 8px;}
-.multi-cols{display:grid;grid-template-columns:1.8fr 1.1fr 1.1fr;gap:12px;padding:0 16px 6px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;}
-.rrow{display:grid;grid-template-columns:1.8fr 1.1fr 1.1fr;gap:12px;background:var(--surface);border-radius:6px;padding:12px 16px;margin-bottom:6px;border-left:3px solid var(--blue);cursor:pointer;}
+.multi-cols{display:grid;grid-template-columns:1.8fr 1.2fr;gap:12px;padding:0 16px 6px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;}
+.rrow{display:grid;grid-template-columns:1.8fr 1.2fr;gap:12px;background:var(--surface);border-radius:6px;padding:12px 16px;margin-bottom:6px;border-left:3px solid var(--blue);cursor:pointer;}
 .rrow:hover{background:#E4E8F0;}
 .rr-sku{font-size:.86rem;font-weight:600;color:var(--blue);}
 .rr-app{font-size:.74rem;color:#666;}
@@ -235,7 +235,7 @@ function showResults(m, q) {
   var hdr = el('div', 'multi-hdr', m.length + ' results — click to expand');
   el2.appendChild(hdr);
   var cols = el('div', 'multi-cols');
-  ['Competitor SKU','Industrial','Transportation'].forEach(function(h) {
+  ['Competitor SKU','Forza Industrial Equivalent'].forEach(function(h) {
     cols.appendChild(el('span', null, h));
   });
   el2.appendChild(cols);
@@ -246,7 +246,6 @@ function showResults(m, q) {
     left.appendChild(el('div', 'rr-app', d.brand + ' — ' + d.app.substring(0, 55)));
     row.appendChild(left);
     row.appendChild(el('div', 'rr-forza', d.ind || '—'));
-    row.appendChild(el('div', 'rr-forza', d.trans || '—'));
     row.addEventListener('click', (function(dd) { return function() {
       document.getElementById('skuInput').value = dd.comp;
       showSingle(dd, el2);
@@ -262,14 +261,11 @@ function showSingle(d, container) {
   box.appendChild(el('div', 'r-sku', d.comp));
   box.appendChild(el('div', 'r-app', d.app));
   var cards = el('div', 'r-cards');
-  ['Industrial','Transportation'].forEach(function(label, i) {
-    var card = el('div', 'r-card');
-    card.appendChild(el('div', 'r-card-label', 'Forza Equivalent — ' + label));
-    var val = i === 0 ? d.ind : d.trans;
-    var sku = el('div', val ? 'r-card-sku' : 'r-card-sku empty', val || 'No ' + label.toLowerCase() + ' equivalent');
-    card.appendChild(sku);
-    cards.appendChild(card);
-  });
+  var card = el('div', 'r-card');
+  card.appendChild(el('div', 'r-card-label', 'Forza Equivalent — Industrial'));
+  var sku = el('div', d.ind ? 'r-card-sku' : 'r-card-sku empty', d.ind || 'No industrial equivalent');
+  card.appendChild(sku);
+  cards.appendChild(card);
   box.appendChild(cards);
   container.appendChild(box);
 }
