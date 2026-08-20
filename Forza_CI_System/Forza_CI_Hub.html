@@ -322,25 +322,28 @@ function showSingle(d,container){
 document.getElementById('scanFileInput').addEventListener('click',function(){
   this.value='';
 });
-
+// Backup change listener for iOS
 document.getElementById('scanFileInput').addEventListener('change',function(e){
-  var file=e.target.files&&e.target.files[0];
+  processFile(e.target.files&&e.target.files[0]);
+});
+document.getElementById('scanFileInput').addEventListener('input',function(e){
+  processFile(e.target.files&&e.target.files[0]);
+});
+
+function processFile(file){
   if(!file)return;
+  // Immediately show feedback
+  document.getElementById('skuResult').innerHTML='';
+  document.getElementById('skuResult').appendChild(mk('div','scan-processing','Photo received — reading barcode...'));
   var reader=new FileReader();
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      // Show immediate feedback so user knows photo was received
-      document.getElementById('skuResult').innerHTML='';
-      var proc=mk('div','scan-processing','Photo received — reading barcode...');
-      document.getElementById('skuResult').appendChild(proc);
-      // Draw to canvas for decode + save as captured image
       var c=document.getElementById('scanCanvas');
       c.width=img.naturalWidth;c.height=img.naturalHeight;
       c.getContext('2d').drawImage(img,0,0);
       var imgData=c.toDataURL('image/jpeg',0.5);
       lastUpc='';
-      // Try BarcodeDetector (Chrome Android)
       if('BarcodeDetector' in window){
         new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code','data_matrix','itf','aztec']})
           .detect(c)
@@ -353,12 +356,17 @@ document.getElementById('scanFileInput').addEventListener('change',function(e){
         tryZXFile(img,imgData);
       }
     };
-      img.crossOrigin='anonymous';
     img.src=ev.target.result;
   };
-  // Use readAsDataURL so ZXing can access the image
+  reader.onerror=function(){
+    document.getElementById('skuResult').innerHTML='';
+    document.getElementById('skuResult').appendChild(mk('div','info','Could not read photo. Please try again.'));
+  };
   reader.readAsDataURL(file);
-});
+}
+// Listeners - belt and suspenders for iOS
+document.getElementById('scanFileInput').addEventListener('change',function(e){processFile(e.target.files&&e.target.files[0]);});
+document.getElementById('scanFileInput').addEventListener('input',function(e){processFile(e.target.files&&e.target.files[0]);});
 
 function tryZXFile(img,imgData){
   // Show processing status
