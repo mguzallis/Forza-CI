@@ -479,12 +479,12 @@ document.getElementById("skuInput").addEventListener("keydown",function(e){if(e.
 
 function showResults(m,q){
   var el=document.getElementById("searchResult");
-  if(!m.length){el.innerHTML="<div class=\"info-box\">No match for <strong>"+q+"</strong>. Try a partial name.</div>";return;}
+  if(!m.length){el.innerHTML="<div class='info-box'>No match for <strong>"+q+"</strong>. Try a partial name.</div>";return;}
   if(m.length===1){showSingle(m[0],el);return;}
-  var h="<div class=\"multi-header\">"+m.length+" results - click to expand</div>";
-  h+="<div class=\"multi-cols\"><span>Competitor SKU</span><span>Industrial</span><span>Transportation</span></div>";
+  var h="<div class='multi-header'>"+m.length+" results - click to expand</div>";
+  h+="<div class='multi-cols'><span>Competitor SKU</span><span>Industrial</span><span>Transportation</span></div>";
   m.forEach(function(d,i){
-    h+="<div class=\"result-row\" data-idx=\""+i+"\"><div><div class=\"rr-sku\">"+d.comp+"</div><div class=\"rr-app\">"+d.brand+" &mdash; "+d.app.substring(0,50)+"</div></div><div class=\"rr-forza\">"+(d.ind||"&mdash;")+"</div><div class=\"rr-forza\">"+(d.trans||"&mdash;")+"</div></div>";
+    h+="<div class='result-row' data-idx='"+i+"'><div><div class='rr-sku'>"+d.comp+"</div><div class='rr-app'>"+d.brand+" &mdash; "+d.app.substring(0,50)+"</div></div><div class='rr-forza'>"+(d.ind||"&mdash;")+"</div><div class='rr-forza'>"+(d.trans||"&mdash;")+"</div></div>";
   });
   el.innerHTML=h;
   el.querySelectorAll(".result-row").forEach(function(row){
@@ -497,14 +497,14 @@ function showResults(m,q){
 }
 
 function showSingle(d,el){
-  el.innerHTML="<div class=\"result-box\"><div class=\"result-brand\">"+d.brand+"</div><div class=\"result-sku\">"+d.comp+"</div><div class=\"result-app\">"+d.app+"</div><div class=\"result-cards\"><div class=\"result-card\"><div class=\"rc-label\">Forza Equivalent &mdash; Industrial</div><div class=\"rc-sku"+(d.ind?"":" empty")+"\">"+( d.ind||"No industrial equivalent")+"</div></div><div class=\"result-card\"><div class=\"rc-label\">Forza Equivalent &mdash; Transportation</div><div class=\"rc-sku"+(d.trans?"":" empty")+"\">"+(d.trans||"No transportation equivalent")+"</div></div></div></div>";
+  el.innerHTML="<div class='result-box'><div class='result-brand'>"+d.brand+"</div><div class='result-sku'>"+d.comp+"</div><div class='result-app'>"+d.app+"</div><div class='result-cards'><div class='result-card'><div class='rc-label'>Forza Equivalent &mdash; Industrial</div><div class='rc-sku"+(d.ind?"":" empty")+"'>"+( d.ind||"No industrial equivalent")+"</div></div><div class='result-card'><div class='rc-label'>Forza Equivalent &mdash; Transportation</div><div class='rc-sku"+(d.trans?"":" empty")+"'>"+(d.trans||"No transportation equivalent")+"</div></div></div></div>";
 }
 
 // COMPETITORS
 function buildComps(){
   var h="";
   COMP.forEach(function(c){
-    h+="<div class=\"comp-card"+(activeComp===c.id?" active":"")+"\"><div class=\"cc-name\">"+c.name+"</div><div class=\"cc-brands\">"+c.brands+"</div><div class=\"cc-tags\"><span class=\"cc-tag "+(c.threat==="HIGH"?"tag-high":"tag-mod")+"\">Threat: "+c.threat+"</span><span class=\"cc-tag tag-loc\">"+c.hq.split("/")[0].trim()+"</span></div></div>";
+    h+="<div class='comp-card"+(activeComp===c.id?" active":"")+"'><div class='cc-name'>"+c.name+"</div><div class='cc-brands'>"+c.brands+"</div><div class='cc-tags'><span class='cc-tag "+(c.threat==="HIGH"?"tag-high":"tag-mod")+"'>Threat: "+c.threat+"</span><span class='cc-tag tag-loc'>"+c.hq.split("/")[0].trim()+"</span></div></div>";
   });
   var grid=document.getElementById("compGrid");
   grid.innerHTML=h;
@@ -519,60 +519,60 @@ function selectComp(id){
     c.classList.toggle("active",COMP[i].id===id);
   });
   var c=COMP.filter(function(x){return x.id===id;})[0];
-  var h="<div class=\"detail-panel\">";
+  var h="<div class='detail-panel'>";
 
   // Header
-  h+="<div class=\"dp-title\">"+c.name+" <span style=\"font-size:.72rem;color:#888;font-weight:400\">&mdash; "+c.rev+" &mdash; "+c.hq+"</span></div>";
-  h+="<div class=\"dp-meta\">"+c.brands+"</div>";
+  h+="<div class='dp-title'>"+c.name+" <span style='font-size:.72rem;color:#888;font-weight:400'>&mdash; "+c.rev+" &mdash; "+c.hq+"</span></div>";
+  h+="<div class='dp-meta'>"+c.brands+"</div>";
 
   // Pitch
-  h+="<div class=\"bc-section-label\">Pitch</div>";
-  h+="<div class=\"pitch-box\">"+c.pitch+"</div>";
+  h+="<div class='bc-section-label'>Pitch</div>";
+  h+="<div class='pitch-box'>"+c.pitch+"</div>";
 
   // Key Messages
   if(c.msgs&&c.msgs.length){
-    h+="<div class=\"bc-section-label\">Key Messages</div><div class=\"bc-msgs\">";
+    h+="<div class='bc-section-label'>Key Messages</div><div class='bc-msgs'>";
     c.msgs.forEach(function(m){
-      h+="<div class=\"bc-msg\"><div class=\"bc-msg-who\">"+m[0]+"</div><div class=\"bc-msg-txt\">"+m[1]+"</div></div>";
+      h+="<div class='bc-msg'><div class='bc-msg-who'>"+m[0]+"</div><div class='bc-msg-txt'>"+m[1]+"</div></div>";
     });
     h+="</div>";
   }
 
   // Quick Seeds
   if(c.seeds&&c.seeds.length){
-    h+="<div class=\"bc-section-label\">Quick Dismisses &#9889;</div><div class=\"bc-seeds\">";
+    h+="<div class='bc-section-label'>Quick Dismisses &#9889;</div><div class='bc-seeds'>";
     c.seeds.forEach(function(s){
-      h+="<div class=\"bc-seed\">"+s+"</div>";
+      h+="<div class='bc-seed'>"+s+"</div>";
     });
     h+="</div>";
   }
 
   // Landmines
   if(c.landmines&&c.landmines.length){
-    h+="<div class=\"bc-section-label\">Landmines &#128163;</div><div class=\"bc-landmines\">";
+    h+="<div class='bc-section-label'>Landmines &#128163;</div><div class='bc-landmines'>";
     c.landmines.forEach(function(l){
-      h+="<div class=\"bc-landmine\"><div class=\"bc-lm-title\">"+l[0]+"</div><div class=\"bc-lm-body\">"+l[1]+"</div></div>";
+      h+="<div class='bc-landmine'><div class='bc-lm-title'>"+l[0]+"</div><div class='bc-lm-body'>"+l[1]+"</div></div>";
     });
     h+="</div>";
   }
 
   // Objections
   if(c.objections&&c.objections.length){
-    h+="<div class=\"bc-section-label\">Objection Handling</div><div class=\"bc-objections\">";
+    h+="<div class='bc-section-label'>Objection Handling</div><div class='bc-objections'>";
     c.objections.forEach(function(o){
-      h+="<div class=\"bc-obj\"><div class=\"bc-obj-q\">&ldquo;"+o[0]+"&rdquo;</div><div class=\"bc-obj-a\">"+o[1]+"</div></div>";
+      h+="<div class='bc-obj'><div class='bc-obj-q'>&ldquo;"+o[0]+"&rdquo;</div><div class='bc-obj-a'>"+o[1]+"</div></div>";
     });
     h+="</div>";
   }
 
   // Wins & Moats grid
-  h+="<div class=\"sw-grid\">";
-  h+="<div class=\"sw-box\"><div class=\"sw-label sw-win\">Where Forza Wins</div>";
-  c.wins.forEach(function(w){h+="<div class=\"sw-item win\">"+w+"</div>";});
+  h+="<div class='sw-grid'>";
+  h+="<div class='sw-box'><div class='sw-label sw-win'>Where Forza Wins</div>";
+  c.wins.forEach(function(w){h+="<div class='sw-item win'>"+w+"</div>";});
   h+="</div>";
   if(c.moats&&c.moats.length){
-    h+="<div class=\"sw-box\"><div class=\"sw-label sw-gap\">Do Not Fight These</div>";
-    c.moats.forEach(function(m){h+="<div class=\"sw-item gap\">"+m+"</div>";});
+    h+="<div class='sw-box'><div class='sw-label sw-gap'>Do Not Fight These</div>";
+    c.moats.forEach(function(m){h+="<div class='sw-item gap'>"+m+"</div>";});
     h+="</div>";
   }
   h+="</div>";
@@ -595,9 +595,9 @@ function buildDocs(){
   document.getElementById("docCount").textContent=fl.length+" of "+D.length+" documents";
   var h="";
   fl.forEach(function(d){
-    h+="<div class=\"doc-row\"><div class=\"doc-info\"><div class=\"doc-name\">"+d.n+"</div><div class=\"doc-meta\">"+d.c+" &mdash; "+d.d+"</div></div><div class=\"doc-right\"><span class=\"doc-badge b-"+d.t+"\">"+(TL[d.t]||d.t)+"</span><a class=\"doc-open\" href=\""+d.url+"\" target=\"_blank\">Open</a></div></div>";
+    h+="<div class='doc-row'><div class='doc-info'><div class='doc-name'>"+d.n+"</div><div class='doc-meta'>"+d.c+" &mdash; "+d.d+"</div></div><div class='doc-right'><span class='doc-badge b-"+d.t+"'>"+(TL[d.t]||d.t)+"</span><a class='doc-open' href='"+d.url+"' target='_blank'>Open</a></div></div>";
   });
-  document.getElementById("docList").innerHTML=h||"<div class=\"info-box\">No documents match your search.</div>";
+  document.getElementById("docList").innerHTML=h||"<div class='info-box'>No documents match your search.</div>";
 }
 
 document.getElementById("docSearch").addEventListener("input",function(){buildDocs();});
@@ -614,7 +614,7 @@ document.querySelectorAll(".filter-btn").forEach(function(btn){
 function buildVerts(){
   var h="";
   VERT.forEach(function(v,i){
-    h+="<div class=\"vert-card"+(activeVert===i?" sel":"")+(v.dark?" vc-dark":"")+"\" style=\"background:"+v.color+"\"><div class=\"vc-label\">"+v.name+"</div><div class=\"vc-count\">"+v.skus.length+"</div><div class=\"vc-sub\">SKUs</div></div>";
+    h+="<div class='vert-card"+(activeVert===i?" sel":"")+(v.dark?" vc-dark":"")+"' style='background:"+v.color+"'><div class='vc-label'>"+v.name+"</div><div class='vc-count'>"+v.skus.length+"</div><div class='vc-sub'>SKUs</div></div>";
   });
   var grid=document.getElementById("vertGrid");
   grid.innerHTML=h;
@@ -633,11 +633,11 @@ function selectVert(i){
 function showVertDetail(i){
   var v=VERT[i];
   var isInd=v.name==="Industrial";
-  var h="<div class=\"detail-panel\" style=\"margin-top:0;\"><div class=\"dp-title\" style=\"color:"+v.color+"\">"+v.name+" Vertical &mdash; "+v.skus.length+" SKUs</div><table class=\"sku-table\"><thead><tr><th>Forza SKU</th><th>Description</th>"+(isInd?"":"<th>Industrial Equivalent</th>")+"</tr></thead><tbody>";
+  var h="<div class='detail-panel' style='margin-top:0;'><div class='dp-title' style='color:"+v.color+"'>"+v.name+" Vertical &mdash; "+v.skus.length+" SKUs</div><table class='sku-table'><thead><tr><th>Forza SKU</th><th>Description</th>"+(isInd?"":"<th>Industrial Equivalent</th>")+"</tr></thead><tbody>";
   var IND_EQ={"TC452":"IC932","TC453":"IC933","TC454":"IC934","TC456":"IC936","TC466":"IC946","TC467":"IC947","TC471":"IC951","T-OS151":"OS2","T-OA156":"OA4","T-OS164":"OS35","T-R682":"R160","T-OSA155":"OSA","T-T415":"T-205","T-T420":"T-215","MC722":"IC932","MC723":"IC933","MC724":"IC934","MC726":"IC936","MC736":"IC946","MC737":"IC947","MC739":"IC951","MC741":"IC951","M-OS789":"OS2","M-OS796":"OS2","M-OA755":"OA4","M-OSA783":"OSA","M-R420":"R160","M-R445":"R160","C-OS9":"OS2","C-OS55":"OS2","C-OA5":"OA4","C-OSA":"OSA","RC826":"IC936","RC863":"IC933","RC862":"IC932","RC886":"IC946","RC887":"IC947","R-OSA":"OSA","R-C661":"IC933","R-A2000":"IC936","TAC-734G":"IC933","TAC-735R":"IC934","TAC-850GR":"IC951","TAC-OS7":"OS2","TAC-T700":"T-205"};
   v.skus.forEach(function(s){
     var ieq=IND_EQ[s.s]||"";
-    h+="<tr><td>"+s.s+"</td><td>"+s.d+"</td>"+(isInd?"":"<td style=\"font-weight:600;color:#F16022;\">"+(ieq||"&mdash;")+"</td>")+"</tr>";
+    h+="<tr><td>"+s.s+"</td><td>"+s.d+"</td>"+(isInd?"":"<td style='font-weight:600;color:#F16022;'>"+(ieq||"&mdash;")+"</td>")+"</tr>";
   });
   h+="</tbody></table></div>";
   document.getElementById("vertDetail").innerHTML=h;
