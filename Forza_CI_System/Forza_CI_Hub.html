@@ -14,8 +14,8 @@
 :root{--blue:#1B3764;--orange:#F16022;--rusty:#D35127;--grey:#BFBFBF;--surface:#F0F2F6;--border:#E0E4EA;--muted:#666;}
 body{font-family:'Poppins',sans-serif;background:#fff;color:var(--blue);min-height:100vh;}
 .app{max-width:900px;margin:0 auto;padding:28px 24px 60px;}
-.header{text-align:center;margin-bottom:20px;}
-.logo{width:300px;max-width:85%;}
+.header{text-align:center;margin-bottom:20px;min-height:160px;}
+.logo{width:300px;max-width:85%;display:block;margin:0 auto;}
 .app-title{font-family:'Kallisto','Poppins',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-top:10px;margin-bottom:3px;}
 .app-sub{font-size:.84rem;color:var(--muted);}
 hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
@@ -37,7 +37,15 @@ hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
 .r-brand{font-family:'Kallisto','Poppins',sans-serif;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
 .r-sku{font-size:1.05rem;font-weight:700;color:var(--blue);margin-bottom:8px;}
 .r-app{font-size:.8rem;color:#555;margin-bottom:14px;}
-.r-cards{display:grid;grid-template-columns:1fr;gap:10px;max-width:340px;}
+.r-cards{display:flex;flex-direction:column;gap:10px;}
+.r-vert-tbl{width:100%;border-collapse:collapse;margin-top:4px;background:#fff;border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.r-vert-tbl th{text-align:left;font-family:'Kallisto','Poppins',sans-serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#888;padding:8px 12px;border-bottom:1px solid var(--border);background:#fff;}
+.r-vert-tbl td{font-size:.8rem;padding:7px 12px;border-bottom:1px solid #F0F2F6;color:#333;}
+.r-vert-tbl td:first-child{font-weight:600;color:var(--blue);width:130px;}
+.r-vert-tbl td:last-child{font-weight:700;color:var(--orange);}
+.r-vert-tbl td.empty-cross{color:#ccc;font-style:italic;font-weight:400;}
+.r-vert-tbl tr:last-child td{border-bottom:none;}
+.r-vert-tbl tr:hover td{background:#F8F9FC;}
 .r-card{background:#fff;border-radius:6px;padding:12px 16px;border:1px solid var(--border);}
 .r-card-label{font-family:'Kallisto','Poppins',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:4px;}
 .r-card-sku{font-size:1.1rem;font-weight:700;color:var(--blue);}
@@ -254,6 +262,36 @@ function showResults(m, q) {
   });
 }
 
+var VERT_CROSSES = {
+  'IC932':{'Industrial':'IC932','Transportation':'TC452','Marine':'MC722','Construction':'RC862','Insulation':'RC862','Composites':''},
+  'IC933':{'Industrial':'IC933','Transportation':'TC453','Marine':'MC723','Construction':'RC863','Insulation':'RC863','Composites':'TAC-734G'},
+  'IC934':{'Industrial':'IC934','Transportation':'TC454','Marine':'MC724','Construction':'RC864','Insulation':'RC864','Composites':'TAC-735R'},
+  'IC936':{'Industrial':'IC936','Transportation':'TC456','Marine':'MC726','Construction':'RC826','Insulation':'RC826','Composites':''},
+  'IC946':{'Industrial':'IC946','Transportation':'TC466','Marine':'MC736','Construction':'RC886','Insulation':'RC886','Composites':''},
+  'IC947':{'Industrial':'IC947','Transportation':'TC467','Marine':'MC737','Construction':'RC887','Insulation':'RC887','Composites':''},
+  'IC951':{'Industrial':'IC951','Transportation':'TC471','Marine':'MC741','Construction':'','Insulation':'','Composites':'TAC-850GR'},
+  'MC739':{'Industrial':'','Transportation':'','Marine':'MC739','Construction':'','Insulation':'','Composites':''},
+  'OS2':{'Industrial':'OS2','Transportation':'T-OS151','Marine':'M-OS789','Construction':'C-OS9','Insulation':'','Composites':'TAC-OS7'},
+  'OA4':{'Industrial':'OA4','Transportation':'T-OA156','Marine':'M-OA755','Construction':'C-OA5','Insulation':'','Composites':''},
+  'OS35':{'Industrial':'OS35','Transportation':'T-OS164','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'OSA':{'Industrial':'OSA','Transportation':'T-OSA155','Marine':'M-OSA783','Construction':'C-OSA','Insulation':'R-OSA','Composites':''},
+  'R160':{'Industrial':'R160','Transportation':'T-R682','Marine':'M-R420','Construction':'','Insulation':'','Composites':''},
+  'T-205':{'Industrial':'T-205','Transportation':'T-T415','Marine':'','Construction':'','Insulation':'','Composites':'TAC-T700'},
+  'T-215':{'Industrial':'T-215','Transportation':'T-T420','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'T-220':{'Industrial':'T-220','Transportation':'T-T420','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'CA1000':{'Industrial':'CA1000','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'CA1500':{'Industrial':'CA1500','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'CA2400':{'Industrial':'CA2400','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H103':{'Industrial':'H103','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H117':{'Industrial':'H117','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H163':{'Industrial':'H163','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H167':{'Industrial':'H167','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H164':{'Industrial':'H164','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'H176':{'Industrial':'H176','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''},
+  'RuggedRed Citrus':{'Industrial':'RuggedRed Citrus','Transportation':'','Marine':'','Construction':'','Insulation':'','Composites':''}
+};
+var VERT_ORDER = ['Industrial','Transportation','Marine','Construction','Insulation','Composites'];
+
 function showSingle(d, container) {
   container.innerHTML = '';
   var box = el('div', 'result-box');
@@ -261,11 +299,35 @@ function showSingle(d, container) {
   box.appendChild(el('div', 'r-sku', d.comp));
   box.appendChild(el('div', 'r-app', d.app));
   var cards = el('div', 'r-cards');
-  var card = el('div', 'r-card');
-  card.appendChild(el('div', 'r-card-label', 'Forza Equivalent — Industrial'));
-  var sku = el('div', d.ind ? 'r-card-sku' : 'r-card-sku empty', d.ind || 'No industrial equivalent');
-  card.appendChild(sku);
-  cards.appendChild(card);
+
+  // Industrial label
+  var icard = el('div', 'r-card');
+  icard.appendChild(el('div', 'r-card-label', 'Forza Equivalent — Industrial'));
+  icard.appendChild(el('div', d.ind ? 'r-card-sku' : 'r-card-sku empty', d.ind || 'No industrial equivalent'));
+  cards.appendChild(icard);
+
+  // Full vertical cross table
+  if (d.ind && VERT_CROSSES[d.ind]) {
+    var crosses = VERT_CROSSES[d.ind];
+    var tbl = el('table', 'r-vert-tbl');
+    var thead = el('thead');
+    var hrow = el('tr');
+    hrow.appendChild(el('th', null, 'Vertical'));
+    hrow.appendChild(el('th', null, 'Forza SKU'));
+    thead.appendChild(hrow);
+    tbl.appendChild(thead);
+    var tbody = el('tbody');
+    VERT_ORDER.forEach(function(v) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, v));
+      var val = crosses[v] || '';
+      tr.appendChild(el('td', val ? '' : 'empty-cross', val || '—'));
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    cards.appendChild(tbl);
+  }
+
   box.appendChild(cards);
   container.appendChild(box);
 }
