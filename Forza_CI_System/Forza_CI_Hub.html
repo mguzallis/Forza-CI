@@ -443,7 +443,6 @@ function showManualEntry(imgData,prefill,rawUpc){
   var el=document.getElementById('skuResult');el.innerHTML='';
   var wrap=mk('div','manual-wrap');
 
-  // Photo
   if(imgData){
     wrap.appendChild(mk('div','manual-label','Captured image — type what you see:'));
     var img=mk('img','manual-img');img.src=imgData;wrap.appendChild(img);
@@ -455,7 +454,7 @@ function showManualEntry(imgData,prefill,rawUpc){
   var upcInp=mk('input','sinput');
   upcInp.type='tel';
   upcInp.placeholder='e.g. 051111072783';
-  upcInp.value='';
+  upcInp.value=rawUpc||'';
   upcInp.style.fontFamily='monospace';
   upcRow.appendChild(upcInp);
   wrap.appendChild(upcRow);
@@ -477,9 +476,8 @@ function showManualEntry(imgData,prefill,rawUpc){
     el.innerHTML='';
     if(m.length){
       showSingle(m[0],el);
-      var effectiveUpc=upc||'';
-      var alreadySaved=effectiveUpc&&(UPC_BUILTIN[effectiveUpc]||getRepo()[effectiveUpc]);
-      if(!alreadySaved){offerSave(effectiveUpc,m[0].comp,m[0].ind||'',imgData);}
+      // Always offer save when coming from scan - lets rep store photo + UPC
+      offerSave(upc||'',m[0].comp,m[0].ind||'',imgData);
     } else {
       el.appendChild(mk('div','info','No match for "'+v+'". Try a different spelling.'));
     }
@@ -498,16 +496,20 @@ function showManualEntry(imgData,prefill,rawUpc){
 }
 
 function offerSave(upc,name,ind,imgData){
+  // Don't show if already saved in repo under this UPC
+  if(upc&&getRepo()[upc])return;
   var bar=mk('div','save-bar');
   var isUpc=upc&&/^[0-9]{8,14}$/.test(upc);
-  bar.appendChild(mk('div','save-label',(isUpc?'Save UPC '+upc+' → ':'Save “')+name+(isUpc?'':'”')+' to repository?'));
+  var lbl=isUpc?'Save UPC '+upc+' → "'+name+'" to repository?':'Save "'+name+'" to repository?';
+  bar.appendChild(mk('div','save-label',lbl));
   var btn=mk('button','save-btn','Save');
   btn.addEventListener('click',function(){
     var repo=getRepo();
     var key=isUpc?upc:'name:'+nm(name);
     repo[key]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:imgData||'',upc:isUpc?upc:''};
     try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
-    bar.innerHTML='';bar.appendChild(mk('span','save-label','✓ Saved! This product is now in the repository.'));
+    bar.innerHTML='';
+    bar.appendChild(mk('span','save-label','✓ Saved! UPC and photo stored.'));
     renderRepo();
   });
   bar.appendChild(btn);
