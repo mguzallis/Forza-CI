@@ -255,7 +255,9 @@ function showTab(t){
 
 // SKU LOOKUP
 document.getElementById('skuInput').addEventListener('input',function(){
-  var v=this.value;if(v.length<2){document.getElementById('skuResult').innerHTML='';return;}
+  var v=this.value;
+  var isUpc=/^[0-9 ]+$/.test(v)&&v.replace(/[^0-9]/g,'').length>=6;
+  if(v.length<2&&!isUpc){document.getElementById('skuResult').innerHTML='';return;}
   showRes(searchSKU(v).slice(0,10),v);
 });
 document.getElementById('skuBtn').addEventListener('click',function(){
@@ -266,10 +268,27 @@ document.getElementById('skuInput').addEventListener('keydown',function(e){if(e.
 
 function searchSKU(v){
   var q=nm(v);
-  // Exact/partial match first
+  var clean=v.replace(/[^0-9]/g,'');
+
+  // Check UPC_BUILTIN and saved repo first if input looks like a UPC
+  if(clean.length>=6){
+    var upcName=UPC_BUILTIN[clean]||UPC_BUILTIN[clean.replace(/^0+/,'')];
+    if(!upcName){
+      var repo=getRepo();
+      var entry=repo[clean]||repo[clean.replace(/^0+/,'')];
+      if(entry)upcName=entry.name||'';
+    }
+    if(upcName){
+      var upcMatches=SKU.filter(function(d){return nm(d.comp).indexOf(nm(upcName))>-1||nm(d.brand).indexOf(nm(upcName))>-1;});
+      if(upcMatches.length)return upcMatches;
+    }
+  }
+
+  // Exact/partial match
   var exact=SKU.filter(function(d){return nm(d.comp).indexOf(q)>-1||nm(d.brand).indexOf(q)>-1||nm(d.app).indexOf(q)>-1;});
   if(exact.length)return exact;
-  // Token match - split query into words and match any
+
+  // Token match
   var tokens=v.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){return t.length>1;});
   if(!tokens.length)return [];
   return SKU.filter(function(d){
