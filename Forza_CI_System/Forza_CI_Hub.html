@@ -347,7 +347,7 @@ function processFile(file){
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      // Draw full image for manual entry
+      // Draw full image for manual entry fallback
       var fc=document.getElementById('scanCanvas');
       var fs=Math.min(1,1200/img.naturalWidth);
       fc.width=Math.round(img.naturalWidth*fs);
@@ -356,25 +356,42 @@ function processFile(file){
       var imgData=fc.toDataURL('image/jpeg',0.5);
       lastUpc='';
 
-      // Try EAN decoder at multiple scales
-      var scales=[1,0.5,0.75,0.35,0.25];
-      var decoded=null;
-      for(var s=0;s<scales.length&&!decoded;s++){
-        var sc=scales[s];
-        var c=document.createElement('canvas');
-        c.width=Math.round(img.naturalWidth*sc);
-        c.height=Math.round(img.naturalHeight*sc);
-        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-        decoded=EANDecoder.decode(c);
-      }
+      // Try scales one at a time with setTimeout to avoid freezing iOS
+      var scales=[0.25,0.35,0.5,0.75,1];
+      var scaleIdx=0;
 
-      el.innerHTML='';
-      if(decoded){
-        lastUpc=decoded;
-        handleScan(decoded,imgData);
-      } else {
-        showManualEntry(imgData,'',lastUpc);
+      function tryNextScale(){
+        if(scaleIdx>=scales.length){
+          // All scales failed - go to manual entry
+          el.innerHTML='';
+          showManualEntry(imgData,'',lastUpc);
+          return;
+        }
+        var sc=scales[scaleIdx++];
+        el.innerHTML='';
+        el.appendChild(mk('div','scan-processing','Scanning ('+scaleIdx+'/'+scales.length+')...'));
+
+        // Use setTimeout to yield UI thread between attempts
+        setTimeout(function(){
+          try{
+            var c=document.createElement('canvas');
+            c.width=Math.round(img.naturalWidth*sc);
+            c.height=Math.round(img.naturalHeight*sc);
+            c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+            var decoded=EANDecoder.decode(c);
+            if(decoded){
+              lastUpc=decoded;
+              el.innerHTML='';
+              handleScan(decoded,imgData);
+            } else {
+              tryNextScale();
+            }
+          }catch(e){
+            tryNextScale();
+          }
+        },50);
       }
+      tryNextScale();
     };
     img.src=ev.target.result;
   };
