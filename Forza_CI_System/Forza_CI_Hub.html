@@ -660,8 +660,28 @@ function renderRepo(){
   var hdr=mk('div','upc-repo-hdr');
   hdr.appendChild(mk('div','upc-repo-title','Field UPC Repository'));
   var syncStatus=mk('div','upc-repo-count');
-  syncStatus.textContent=keys.length+' saved'+(window.fbReady?' • ☁ Synced':'');
+  syncStatus.textContent=keys.length+' saved'+(window.fbReady?' • ☁ Live Sync ON':'');
   hdr.appendChild(syncStatus);
+  if(window.fbReady&&keys.length){
+    var syncAllBtn=mk('button','save-btn','☁ Sync All');
+    syncAllBtn.style.cssText='padding:5px 12px;font-size:.68rem;margin-left:8px;';
+    syncAllBtn.addEventListener('click',function(){
+      var r=getRepo(),count=0;
+      Object.keys(r).forEach(function(key){
+        var e=r[key];
+        try{
+          window.fbDb.ref('upc_repo/'+key).set({
+            name:e.name||'',ind:e.ind||'',date:e.date||'',upc:e.upc||key
+          });
+          count++;
+        }catch(ex){}
+      });
+      syncAllBtn.textContent='✓ Synced '+count+' entries!';
+      syncAllBtn.style.background='#1A6B35';
+      setTimeout(function(){renderRepo();},1500);
+    });
+    hdr.appendChild(syncAllBtn);
+  }
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
