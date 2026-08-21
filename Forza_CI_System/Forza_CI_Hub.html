@@ -318,58 +318,59 @@ function processFile(file){
   var el=document.getElementById('skuResult');
   el.innerHTML='';
   el.appendChild(mk('div','scan-processing','Reading barcode...'));
+
+  // Use Blob URL instead of data URL - works better on iOS Safari with Quagga
+  var blobUrl=URL.createObjectURL(file);
+
+  // Also read as data URL for canvas/manual entry fallback
   var reader=new FileReader();
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      var scales=[800,500,1200,400];
-      var attempt=0;
-      var fullImgData='';
-
-      // Draw full image for manual entry fallback
-      var fc=document.getElementById('scanCanvas');
-      var fs=Math.min(1,1200/img.naturalWidth);
-      fc.width=Math.round(img.naturalWidth*fs);
-      fc.height=Math.round(img.naturalHeight*fs);
-      fc.getContext('2d').drawImage(img,0,0,fc.width,fc.height);
-      fullImgData=fc.toDataURL('image/jpeg',0.5);
+      // Draw scaled version for manual entry fallback
+      var c=document.getElementById('scanCanvas');
+      var s=Math.min(1,1200/img.naturalWidth);
+      c.width=Math.round(img.naturalWidth*s);
+      c.height=Math.round(img.naturalHeight*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      var imgData=c.toDataURL('image/jpeg',0.5);
       lastUpc='';
 
       if(typeof Quagga==='undefined'){
+        URL.revokeObjectURL(blobUrl);
         el.innerHTML='';
-        showManualEntry(fullImgData,'',lastUpc);
+        showManualEntry(imgData,'',lastUpc);
         return;
       }
 
+      var scales=[1,0.5,0.75,0.3];
+      var attempt=0;
+
       function tryNext(){
         if(attempt>=scales.length){
+          URL.revokeObjectURL(blobUrl);
           el.innerHTML='';
-          showManualEntry(fullImgData,'',lastUpc);
+          showManualEntry(imgData,'',lastUpc);
           return;
         }
-        var maxW=scales[attempt++];
-        var c=document.createElement('canvas');
-        var s=Math.min(1,maxW/img.naturalWidth);
-        c.width=Math.round(img.naturalWidth*s);
-        c.height=Math.round(img.naturalHeight*s);
-        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-        var src=c.toDataURL('image/jpeg',0.9);
+        var sc=scales[attempt++];
         el.innerHTML='';
         el.appendChild(mk('div','scan-processing','Scanning ('+attempt+'/'+scales.length+')...'));
         try{
           Quagga.decodeSingle({
-            inputStream:{size:maxW},
+            inputStream:{size:Math.round(img.naturalWidth*sc)},
             decoder:{
               readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader'],
               multiple:false
             },
             numOfWorkers:0,
             locate:true,
-            src:src
+            src:blobUrl
           },function(result){
             if(result&&result.codeResult&&result.codeResult.code){
+              URL.revokeObjectURL(blobUrl);
               el.innerHTML='';
-              handleScan(result.codeResult.code,fullImgData);
+              handleScan(result.codeResult.code,imgData);
             } else {
               tryNext();
             }
