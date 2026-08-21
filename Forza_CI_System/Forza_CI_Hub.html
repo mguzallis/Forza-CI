@@ -819,8 +819,22 @@ function showVD(i){
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tbody=mk('tbody');
   v.skus.forEach(function(s){
-    var tr=mk('tr');tr.appendChild(mk('td',null,s.s));tr.appendChild(mk('td',null,s.d));
-    if(!isI){var ieq=IE[s.s]||'';tr.appendChild(mk('td',ieq?'orange':'dim',ieq||'-'));}
+    var tr=mk('tr');
+    // SKU cell - color in vertical's own color
+    var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=v.color;
+    if(v.dark)skuTd.style.color='#1B3764';
+    tr.appendChild(skuTd);
+    tr.appendChild(mk('td',null,s.d));
+    if(!isI){
+      var ieq=IE[s.s]||'';
+      var ieqTd=mk('td',ieq?'':'dim',ieq||'-');
+      if(ieq){
+        // Color the industrial equivalent in Industrial color
+        ieqTd.style.fontWeight='700';
+        ieqTd.style.color='#F16A26';
+      }
+      tr.appendChild(ieqTd);
+    }
     tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);dp.appendChild(tbl);det.appendChild(dp);
