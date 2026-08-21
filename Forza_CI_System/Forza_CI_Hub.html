@@ -185,7 +185,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
   </div>
   <div id="sec-lookup" class="sec active">
     <span class="slabel">Competitor SKU or Product Name</span>
-    <input type="file" id="scanInput" accept="image/*" capture="environment" style="display:none;">
     <div class="srow">
       <input class="sinput" id="skuInput" type="text" placeholder="e.g. Super 77, Sikaflex-252, H8000, 75-AM-HV...">
       <button class="sbtn" id="skuBtn">Search</button>
@@ -707,5 +706,7 @@ function showVD(i){
 }
 buildDocs();
 </script>
+<input type="file" id="scanInput" accept="image/*" capture="environment" 
+  style="position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;">
 </body>
 </html>
