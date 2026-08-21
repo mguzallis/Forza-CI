@@ -440,10 +440,11 @@ function searchSKU(v){
 
   // Check UPC_BUILTIN and saved repo first if input looks like a UPC
   if(clean.length>=6){
-    var upcName=UPC_BUILTIN[clean]||UPC_BUILTIN[clean.replace(/^0+/,'')];
+    var cleanNz=clean.replace(/^0+/,'');
+    var upcName=UPC_BUILTIN[cleanNz]||UPC_BUILTIN[clean];
     if(!upcName){
       var repo=getRepo();
-      var entry=repo[clean]||repo[clean.replace(/^0+/,'')];
+      var entry=repo[cleanNz]||repo[clean];
       if(entry)upcName=entry.name||'';
     }
     if(upcName){
@@ -548,21 +549,26 @@ function processFile(file){
 }
 
 function handleScan(raw,imgData){
-  var cl=raw.trim(),nz=cl.replace(/^0+/,'');
-  lastUpc=/^[0-9]{8,14}$/.test(cl)?cl:'';
+  var cl=raw.trim();
+  // Normalize: strip leading zeros for consistent matching
+  // UPC-A (12 digit) and EAN-13 (13 digit with leading 0) are the same product
+  var nz=cl.replace(/^0+/,'');
+  // Use normalized (no leading zero) as canonical key
+  var canonical=nz||cl;
+  lastUpc=canonical;
   var repo=getRepo();
-  var repoEntry=repo[cl]||repo[nz]||null;
-  var sn=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||(repoEntry?repoEntry.name:null)||null;
+  var repoEntry=repo[canonical]||repo[cl]||null;
+  var sn=UPC_BUILTIN[canonical]||UPC_BUILTIN[cl]||(repoEntry?repoEntry.name:null)||null;
   var el=document.getElementById('skuResult');el.innerHTML='';
   if(sn){
     var m=SKU.filter(function(d){return nm(d.comp).indexOf(nm(sn))>-1||nm(d.brand).indexOf(nm(sn))>-1;});
     if(m.length){
       document.getElementById('skuInput').value=sn;
       showSingle(m[0],el);
-      // Offer save if not already saved with this UPC
-      var alreadySaved=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||repoEntry;
+      // Offer save if not already saved
+      var alreadySaved=UPC_BUILTIN[canonical]||UPC_BUILTIN[cl]||repoEntry;
       if(!alreadySaved){
-        offerSave(cl,m[0].comp,m[0].ind||'',imgData);
+        offerSave(canonical,m[0].comp,m[0].ind||'',imgData);
       }
       return;
     }
