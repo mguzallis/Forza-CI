@@ -656,6 +656,26 @@ function offerSave(upc,name,ind,imgData){
 
 function getRepo(){try{return JSON.parse(localStorage.getItem('fz_upc')||'{}');}catch(e){return {};}}
 
+function lookupUPC(upc,callback){
+  // UPCitemdb free trial - no key needed, 100/day limit
+  var url='https://api.upcitemdb.com/prod/trial/lookup?upc='+upc;
+  fetch(url,{headers:{'Accept':'application/json','Content-Type':'application/json'}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data&&data.items&&data.items.length){
+        var item=data.items[0];
+        callback(null,{
+          name:item.title||'',
+          brand:item.brand||'',
+          description:item.description||''
+        });
+      } else {
+        callback('Not found');
+      }
+    })
+    .catch(function(e){callback('API error: '+e.message);});
+}
+
 function renderRepo(){
   var wrap=document.getElementById('upcRepo');wrap.innerHTML='';
   var repo=getRepo(),keys=Object.keys(repo);
@@ -685,6 +705,58 @@ function renderRepo(){
     hdr.appendChild(syncAllBtn);
   }
   wrap.appendChild(hdr);
+  // UPC Lookup tool
+  var lookupWrap=mk('div','');lookupWrap.style.cssText='margin:10px 0 14px;padding:12px 14px;background:#F5F7FB;border-radius:8px;border:1px solid var(--border);';
+  lookupWrap.appendChild(mk('div','slabel','Look Up a Competitor UPC'));
+  var lrow=mk('div','srow');lrow.style.marginTop='6px';
+  var lupc=mk('input','sinput');lupc.type='tel';lupc.placeholder='Enter UPC to look up...';lupc.style.fontFamily='monospace';
+  var lbtn=mk('button','sbtn','Look Up');lbtn.style.fontSize='.74rem';
+  var lresult=mk('div','');lresult.style.cssText='margin-top:8px;font-size:.76rem;color:#333;';
+  lbtn.addEventListener('click',function(){
+    var upc=lupc.value.replace(/[^0-9]/g,'');
+    if(!upc||upc.length<6){lresult.textContent='Please enter a valid UPC.';return;}
+    lresult.textContent='Looking up...';
+    lookupUPC(upc,function(err,item){
+      if(err){lresult.textContent='Not found in database. Try scanning the physical product.';return;}
+      lresult.innerHTML='';
+      var nameRow=mk('div','');nameRow.style.cssText='margin-bottom:6px;';
+      nameRow.appendChild(mk('strong',null,item.brand?item.brand+' - '+item.name:item.name));
+      lresult.appendChild(nameRow);
+      // Search for Forza match
+      var m=searchSKU(item.name);
+      if(!m.length&&item.brand)m=searchSKU(item.brand+' '+item.name);
+      var forzaMatch=m.length?m[0]:null;
+      if(forzaMatch){
+        var matchRow=mk('div','');matchRow.style.cssText='color:#F16A26;font-weight:700;margin-bottom:8px;';
+        matchRow.textContent='Forza Equivalent: '+forzaMatch.ind;
+        lresult.appendChild(matchRow);
+      }
+      // Save to repo button
+      var saveRow=mk('div','save-bar');saveRow.style.marginTop='6px';
+      var saveLbl=mk('div','save-label','Save UPC '+upc+' → "'+item.name+'" to repository?');
+      saveRow.appendChild(saveLbl);
+      var saveBtn=mk('button','save-btn','Save');
+      saveBtn.addEventListener('click',function(){
+        var repo=getRepo();
+        var ind=forzaMatch?forzaMatch.ind:'';
+        repo[upc]={name:item.name,ind:ind,date:new Date().toLocaleDateString(),img:'',upc:upc};
+        try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
+        if(window.fbDb){
+          try{window.fbDb.ref('upc_repo/'+upc).set({name:item.name,ind:ind,date:new Date().toLocaleDateString(),upc:upc});}catch(e){}
+        }
+        saveRow.innerHTML='';saveRow.appendChild(mk('span','save-label','✓ Saved and synced!'));
+        lupc.value='';lresult.innerHTML='';
+        renderRepo();
+      });
+      saveRow.appendChild(saveBtn);
+      lresult.appendChild(saveRow);
+    });
+  });
+  lupc.addEventListener('keydown',function(e){if(e.key==='Enter')lbtn.click();});
+  lrow.appendChild(lupc);lrow.appendChild(lbtn);
+  lookupWrap.appendChild(lrow);lookupWrap.appendChild(lresult);
+  wrap.appendChild(lookupWrap);
+
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
   ['Photo','UPC / Key','Product','Forza Cross','Date','Actions'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
