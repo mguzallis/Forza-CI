@@ -315,65 +315,70 @@ function showSingle(d,container){
 function processFile(file){
   if(!file)return;
   var el=document.getElementById('skuResult');
-  function log(msg){
-    var p=mk('div','scan-processing',msg);
-    p.style.marginBottom='4px';
-    el.appendChild(p);
-  }
   el.innerHTML='';
-  log('Step 1: Photo received ('+Math.round(file.size/1024)+'KB)');
+  el.appendChild(mk('div','scan-processing','Reading barcode...'));
   var reader=new FileReader();
-  reader.onerror=function(){log('ERROR: FileReader failed');};
   reader.onload=function(ev){
-    log('Step 2: File read OK');
     var img=new Image();
-    img.onerror=function(){log('ERROR: Image load failed');};
     img.onload=function(){
-      log('Step 3: Image loaded ('+img.naturalWidth+'x'+img.naturalHeight+')');
-      var c=document.getElementById('scanCanvas');
-      var maxW=1200,scale=Math.min(1,maxW/img.naturalWidth);
-      c.width=Math.round(img.naturalWidth*scale);
-      c.height=Math.round(img.naturalHeight*scale);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      log('Step 4: Canvas drawn ('+c.width+'x'+c.height+')');
-      var imgData=c.toDataURL('image/jpeg',0.6);
-      log('Step 5: imgData length='+imgData.length);
-      lastUpc='';
-      log('Step 6: Quagga available? '+(typeof Quagga!=='undefined'));
-      if(typeof Quagga!=='undefined'){
-        log('Step 7: Calling Quagga.decodeSingle...');
+      // Try multiple scales — Quagga works better at different resolutions
+      var scales=[800,1200,600,400];
+      var attempts=0;
+
+      function tryScale(scaleIdx){
+        if(scaleIdx>=scales.length){
+          // All scales failed — show manual entry
+          el.innerHTML='';
+          var c=document.getElementById('scanCanvas');
+          var imgData=c.toDataURL('image/jpeg',0.6);
+          showManualEntry(imgData,'',lastUpc);
+          return;
+        }
+        var maxW=scales[scaleIdx];
+        var c=document.getElementById('scanCanvas');
+        var scale=Math.min(1,maxW/img.naturalWidth);
+        c.width=Math.round(img.naturalWidth*scale);
+        c.height=Math.round(img.naturalHeight*scale);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        var imgData=c.toDataURL('image/jpeg',0.85);
+        attempts++;
+        el.innerHTML='';
+        el.appendChild(mk('div','scan-processing','Scanning (attempt '+attempts+' of '+scales.length+')...'));
+
         try{
           Quagga.decodeSingle({
-            decoder:{readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader']},
+            decoder:{
+              readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader','i2of5_reader'],
+              multiple:false
+            },
             locate:true,
+            patchSize:'medium',
+            halfSample:false,
             src:imgData
           },function(result){
-            log('Step 8: Quagga callback fired');
             if(result&&result.codeResult&&result.codeResult.code){
-              log('DECODED: '+result.codeResult.code);
-              setTimeout(function(){
-                el.innerHTML='';
-                handleScan(result.codeResult.code,imgData);
-              },1000);
+              el.innerHTML='';
+              lastUpc='';
+              handleScan(result.codeResult.code,imgData);
             } else {
-              log('No barcode found - showing manual entry');
-              setTimeout(function(){
-                el.innerHTML='';
-                showManualEntry(imgData,'',lastUpc);
-              },1000);
+              // Try next scale
+              tryScale(scaleIdx+1);
             }
           });
         }catch(err){
-          log('ERROR in Quagga: '+err.message);
-          el.innerHTML='';
-          showManualEntry(imgData,'',lastUpc);
+          tryScale(scaleIdx+1);
         }
+      }
+
+      lastUpc='';
+      if(typeof Quagga!=='undefined'){
+        tryScale(0);
       } else {
-        log('Quagga not available - manual entry');
-        setTimeout(function(){
-          el.innerHTML='';
-          showManualEntry(imgData,'',lastUpc);
-        },500);
+        var c=document.getElementById('scanCanvas');
+        c.width=img.naturalWidth;c.height=img.naturalHeight;
+        c.getContext('2d').drawImage(img,0,0);
+        el.innerHTML='';
+        showManualEntry(c.toDataURL('image/jpeg',0.5),'',lastUpc);
       }
     };
     img.src=ev.target.result;
