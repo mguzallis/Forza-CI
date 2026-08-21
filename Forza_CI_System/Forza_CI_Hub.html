@@ -321,65 +321,63 @@ function processFile(file){
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      // Try multiple scales — Quagga works better at different resolutions
-      var scales=[800,1200,600,400];
-      var attempts=0;
+      var scales=[800,500,1200,400];
+      var attempt=0;
+      var fullImgData='';
 
-      function tryScale(scaleIdx){
-        if(scaleIdx>=scales.length){
-          // All scales failed — show manual entry
+      // Draw full image for manual entry fallback
+      var fc=document.getElementById('scanCanvas');
+      var fs=Math.min(1,1200/img.naturalWidth);
+      fc.width=Math.round(img.naturalWidth*fs);
+      fc.height=Math.round(img.naturalHeight*fs);
+      fc.getContext('2d').drawImage(img,0,0,fc.width,fc.height);
+      fullImgData=fc.toDataURL('image/jpeg',0.5);
+      lastUpc='';
+
+      if(typeof Quagga==='undefined'){
+        el.innerHTML='';
+        showManualEntry(fullImgData,'',lastUpc);
+        return;
+      }
+
+      function tryNext(){
+        if(attempt>=scales.length){
           el.innerHTML='';
-          var c=document.getElementById('scanCanvas');
-          var imgData=c.toDataURL('image/jpeg',0.6);
-          showManualEntry(imgData,'',lastUpc);
+          showManualEntry(fullImgData,'',lastUpc);
           return;
         }
-        var maxW=scales[scaleIdx];
-        var c=document.getElementById('scanCanvas');
-        var scale=Math.min(1,maxW/img.naturalWidth);
-        c.width=Math.round(img.naturalWidth*scale);
-        c.height=Math.round(img.naturalHeight*scale);
+        var maxW=scales[attempt++];
+        var c=document.createElement('canvas');
+        var s=Math.min(1,maxW/img.naturalWidth);
+        c.width=Math.round(img.naturalWidth*s);
+        c.height=Math.round(img.naturalHeight*s);
         c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-        var imgData=c.toDataURL('image/jpeg',0.85);
-        attempts++;
+        var src=c.toDataURL('image/jpeg',0.9);
         el.innerHTML='';
-        el.appendChild(mk('div','scan-processing','Scanning (attempt '+attempts+' of '+scales.length+')...'));
-
+        el.appendChild(mk('div','scan-processing','Scanning ('+attempt+'/'+scales.length+')...'));
         try{
           Quagga.decodeSingle({
+            inputStream:{size:maxW},
             decoder:{
-              readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader','i2of5_reader'],
+              readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader'],
               multiple:false
             },
+            numOfWorkers:0,
             locate:true,
-            patchSize:'medium',
-            halfSample:false,
-            src:imgData
+            src:src
           },function(result){
             if(result&&result.codeResult&&result.codeResult.code){
               el.innerHTML='';
-              lastUpc='';
-              handleScan(result.codeResult.code,imgData);
+              handleScan(result.codeResult.code,fullImgData);
             } else {
-              // Try next scale
-              tryScale(scaleIdx+1);
+              tryNext();
             }
           });
-        }catch(err){
-          tryScale(scaleIdx+1);
+        }catch(e){
+          tryNext();
         }
       }
-
-      lastUpc='';
-      if(typeof Quagga!=='undefined'){
-        tryScale(0);
-      } else {
-        var c=document.getElementById('scanCanvas');
-        c.width=img.naturalWidth;c.height=img.naturalHeight;
-        c.getContext('2d').drawImage(img,0,0);
-        el.innerHTML='';
-        showManualEntry(c.toDataURL('image/jpeg',0.5),'',lastUpc);
-      }
+      tryNext();
     };
     img.src=ev.target.result;
   };
