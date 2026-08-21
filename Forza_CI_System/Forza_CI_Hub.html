@@ -33,7 +33,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .sbtn{padding:10px 18px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:700;font-family:'K','Poppins',sans-serif;cursor:pointer;}
 .sbtn:hover{background:var(--rusty);}
 /* Scan button - mobile only */
-.scan-btn-wrap{display:none;position:relative;height:40px;width:80px;background:#1B3764;border-radius:6px;flex-shrink:0;overflow:hidden;}
+.scan-btn-wrap{display:none;position:relative;height:40px;width:80px;background:#1B3764;border-radius:6px;flex-shrink:0;}
 .scan-btn-wrap:hover{background:#142d55;}
 @media(max-width:768px){.scan-btn-wrap{display:block;}}
 /* Result */
@@ -206,7 +206,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
       <div class="scan-btn-wrap">
           <svg width="15" height="15" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;z-index:1;"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
           <span style="position:absolute;left:36px;top:50%;transform:translateY(-50%);color:#fff;font-size:.78rem;font-weight:700;font-family:Poppins,sans-serif;pointer-events:none;z-index:1;white-space:nowrap;">Scan</span>
-          <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;">
+          <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="position:absolute;top:-2px;left:-2px;width:calc(100% + 4px);height:calc(100% + 4px);opacity:0.01;cursor:pointer;z-index:2;font-size:16px;">
         </div>
     </div>
     <div id="skuResult"></div>
