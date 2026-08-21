@@ -342,20 +342,39 @@ function processFile(file){
   if(!file)return;
   var el=document.getElementById('skuResult');
   el.innerHTML='';
-  el.appendChild(mk('div','scan-processing','Loading photo...'));
+  el.appendChild(mk('div','scan-processing','Reading barcode...'));
   var reader=new FileReader();
   reader.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      var c=document.getElementById('scanCanvas');
-      var s=Math.min(1,1200/img.naturalWidth);
-      c.width=Math.round(img.naturalWidth*s);
-      c.height=Math.round(img.naturalHeight*s);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      var imgData=c.toDataURL('image/jpeg',0.5);
+      // Draw full image for manual entry
+      var fc=document.getElementById('scanCanvas');
+      var fs=Math.min(1,1200/img.naturalWidth);
+      fc.width=Math.round(img.naturalWidth*fs);
+      fc.height=Math.round(img.naturalHeight*fs);
+      fc.getContext('2d').drawImage(img,0,0,fc.width,fc.height);
+      var imgData=fc.toDataURL('image/jpeg',0.5);
       lastUpc='';
+
+      // Try EAN decoder at multiple scales
+      var scales=[1,0.5,0.75,0.35,0.25];
+      var decoded=null;
+      for(var s=0;s<scales.length&&!decoded;s++){
+        var sc=scales[s];
+        var c=document.createElement('canvas');
+        c.width=Math.round(img.naturalWidth*sc);
+        c.height=Math.round(img.naturalHeight*sc);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        decoded=EANDecoder.decode(c);
+      }
+
       el.innerHTML='';
-      showManualEntry(imgData,'',lastUpc);
+      if(decoded){
+        lastUpc=decoded;
+        handleScan(decoded,imgData);
+      } else {
+        showManualEntry(imgData,'',lastUpc);
+      }
     };
     img.src=ev.target.result;
   };
@@ -401,32 +420,57 @@ document.getElementById('scanInput').addEventListener('change',function(){
 function showManualEntry(imgData,prefill,rawUpc){
   var el=document.getElementById('skuResult');el.innerHTML='';
   var wrap=mk('div','manual-wrap');
+
+  // Photo
   if(imgData){
-    wrap.appendChild(mk('div','manual-label','Captured image — find the product name on the label:'));
+    wrap.appendChild(mk('div','manual-label','Captured image — type what you see:'));
     var img=mk('img','manual-img');img.src=imgData;wrap.appendChild(img);
   }
-  wrap.appendChild(mk('div','manual-label','Type the product name or SKU you see:'));
-  var row=mk('div','srow');row.style.marginTop='8px';
-  var inp=mk('input','sinput');inp.type='text';inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';inp.value=prefill||'';
+
+  // UPC field
+  wrap.appendChild(mk('div','manual-label','Barcode / UPC number (optional):'));
+  var upcRow=mk('div','srow');upcRow.style.marginBottom='10px';
+  var upcInp=mk('input','sinput');
+  upcInp.type='tel';
+  upcInp.placeholder='e.g. 051111072783';
+  upcInp.value='';
+  upcInp.style.fontFamily='monospace';
+  upcRow.appendChild(upcInp);
+  wrap.appendChild(upcRow);
+
+  // Product name field
+  wrap.appendChild(mk('div','manual-label','Product name or SKU:'));
+  var row=mk('div','srow');row.style.marginTop='0';
+  var inp=mk('input','sinput');
+  inp.type='text';
+  inp.placeholder='e.g. Super 77, Sikaflex-252, H8000...';
+  inp.value=prefill||'';
+
   var btn=mk('button','sbtn','Search');
   btn.addEventListener('click',function(){
     var v=inp.value.trim();if(!v)return;
+    var upc=upcInp.value.replace(/[^0-9]/g,'');
     document.getElementById('skuInput').value=v;
     var m=searchSKU(v);
     el.innerHTML='';
     if(m.length){
       showSingle(m[0],el);
-      var effectiveUpc=rawUpc&&rawUpc!=='manual'?rawUpc:lastUpc;
+      var effectiveUpc=upc||'';
       var alreadySaved=effectiveUpc&&(UPC_BUILTIN[effectiveUpc]||getRepo()[effectiveUpc]);
-      if(!alreadySaved){offerSave(effectiveUpc||'',m[0].comp,m[0].ind||'',imgData);}
+      if(!alreadySaved){offerSave(effectiveUpc,m[0].comp,m[0].ind||'',imgData);}
     } else {
       el.appendChild(mk('div','info','No match for "'+v+'". Try a different spelling.'));
     }
   });
   inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
-  row.appendChild(inp);row.appendChild(btn);wrap.appendChild(row);
-  var retry=mk('label','retry-scan-btn');retry.setAttribute('for','scanInput');retry.textContent='Take Another Photo';
+  row.appendChild(inp);row.appendChild(btn);
+  wrap.appendChild(row);
+
+  var retry=mk('label','retry-scan-btn');
+  retry.setAttribute('for','scanInput');
+  retry.textContent='Take Another Photo';
   wrap.appendChild(retry);
+
   el.appendChild(wrap);
   inp.focus();
 }
