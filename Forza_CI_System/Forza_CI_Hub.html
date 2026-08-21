@@ -322,15 +322,6 @@ function showSingle(d,container){
 }
 
 // SCANNER - iOS compatible via file input
-// File input listeners - both change and input for iOS compatibility
-document.getElementById('scanFileInput').addEventListener('change',function(e){
-  processFile(e.target.files&&e.target.files[0]);
-  this.value=''; // reset so same file can be re-selected
-});
-document.getElementById('scanFileInput').addEventListener('input',function(e){
-  processFile(e.target.files&&e.target.files[0]);
-});
-
 function processFile(file){
   if(!file)return;
   // Immediately show feedback
@@ -365,7 +356,15 @@ function processFile(file){
   };
   reader.readAsDataURL(file);
 }
-// Listeners - belt and suspenders for iOS
+
+// File input listeners - both change and input for iOS compatibility
+document.getElementById('scanFileInput').addEventListener('change',function(e){
+  processFile(e.target.files&&e.target.files[0]);
+  this.value=''; // reset so same file can be re-selected
+});
+document.getElementById('scanFileInput').addEventListener('input',function(e){
+  processFile(e.target.files&&e.target.files[0]);
+});// Listeners - belt and suspenders for iOS
 document.getElementById('scanFileInput').addEventListener('change',function(e){processFile(e.target.files&&e.target.files[0]);});
 document.getElementById('scanFileInput').addEventListener('input',function(e){processFile(e.target.files&&e.target.files[0]);});
 
