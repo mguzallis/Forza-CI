@@ -387,8 +387,19 @@ function tryZXFile(img,imgData){
   var rd=new ZXing.BrowserMultiFormatReader();
   var c=document.createElement('canvas');
 
+  var statusEl=document.getElementById('skuResult');
+  var msgs=['Scanning full image...','Scanning center strip...','Scanning center crop...'];
+
   function tryAttempt(i){
-    if(i>=attempts.length){showManualEntry(imgData,'',lastUpc);return;}
+    if(i>=attempts.length){
+      statusEl.innerHTML='';
+      showManualEntry(imgData,'',lastUpc);
+      return;
+    }
+    // Show status message
+    statusEl.innerHTML='';
+    statusEl.appendChild(mk('div','scan-processing',msgs[i]||'Scanning...'));
+
     var a=attempts[i];
     var aw=Math.min(MAX,a.sw);
     var ah=Math.round(a.sh*(aw/a.sw));
@@ -399,7 +410,10 @@ function tryZXFile(img,imgData){
     var tmpImg=new Image();
     tmpImg.onload=function(){
       rd.decodeFromImageElement(tmpImg)
-        .then(function(result){handleScan(result.getText(),imgData);})
+        .then(function(result){
+          statusEl.innerHTML='';
+          handleScan(result.getText(),imgData);
+        })
         .catch(function(){tryAttempt(i+1);});
     };
     tmpImg.src=c.toDataURL('image/jpeg',0.92);
