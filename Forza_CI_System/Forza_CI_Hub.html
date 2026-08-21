@@ -410,6 +410,11 @@ function handleScan(raw,imgData){
     if(m.length){
       document.getElementById('skuInput').value=sn;
       showSingle(m[0],el);
+      // Offer save if not already saved with this UPC
+      var alreadySaved=UPC_BUILTIN[cl]||UPC_BUILTIN[nz]||repoEntry;
+      if(!alreadySaved){
+        offerSave(cl,m[0].comp,m[0].ind||'',imgData);
+      }
       return;
     }
   }
