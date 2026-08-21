@@ -77,6 +77,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .vtbl tr:last-child td{border-bottom:none;}
 .vtbl tr:hover td{background:#F8F9FC;}
 .del-btn{background:none;border:none;color:#ccc;font-size:1rem;cursor:pointer;padding:0;}
+.clr-btn{background:none;border:none;color:#aaa;font-size:.64rem;cursor:pointer;padding:2px 6px;border:1px solid #ddd;border-radius:4px;font-family:'Poppins',sans-serif;margin-bottom:3px;display:block;width:100%;}
+.clr-btn:hover{color:#B83D35;border-color:#B83D35;}
 .del-btn:hover{color:#C0390D;}
 .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
 .ccard{border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;background:#fff;transition:all .15s;}
@@ -684,7 +686,7 @@ function renderRepo(){
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-  ['Photo','UPC / Key','Product','Forza Cross','Date',''].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+  ['Photo','UPC / Key','Product','Forza Cross','Date','Actions'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tbody=mk('tbody');
   keys.forEach(function(key){
@@ -728,17 +730,21 @@ function renderRepo(){
     tr.appendChild(mk('td',null,e.name||''));
     tr.appendChild(mk('td','orange',e.ind||'-'));
     tr.appendChild(mk('td',null,e.date||''));
-    var delTd=mk('td');var db=mk('button','del-btn','×');
-    db.addEventListener('click',(function(k){return function(){
-  var r=getRepo();delete r[k];
-  try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(ex){}
-  // Delete from Firebase
-  if(window.fbDb&&window.fbRef&&window.fbRemove){
-    try{window.fbRemove(window.fbRef(window.fbDb,'upc_repo/'+k));}catch(e){}
-  }
-  renderRepo();
-};})(key));
-    delTd.appendChild(db);tr.appendChild(delTd);
+    var delTd=mk('td');
+    delTd.style.cssText='min-width:80px;';
+    // Clear photo button (only show if photo exists) - only local action allowed
+    if(e.img){
+      var clrBtn=mk('button','clr-btn','Clear Photo');
+      clrBtn.title='Remove photo from this device only. Entry stays in shared database.';
+      clrBtn.addEventListener('click',(function(k){return function(){
+        var r=getRepo();
+        if(r[k]){r[k].img='';}
+        try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(ex){}
+        renderRepo();
+      };})(key));
+      delTd.appendChild(clrBtn);
+    }
+    tr.appendChild(delTd);
     tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);wrap.appendChild(tbl);
@@ -1003,6 +1009,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .vtbl tr:last-child td{border-bottom:none;}
 .vtbl tr:hover td{background:#F8F9FC;}
 .del-btn{background:none;border:none;color:#ccc;font-size:1rem;cursor:pointer;padding:0;}
+.clr-btn{background:none;border:none;color:#aaa;font-size:.64rem;cursor:pointer;padding:2px 6px;border:1px solid #ddd;border-radius:4px;font-family:'Poppins',sans-serif;margin-bottom:3px;display:block;width:100%;}
+.clr-btn:hover{color:#B83D35;border-color:#B83D35;}
 .del-btn:hover{color:#C0390D;}
 .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
 .ccard{border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;background:#fff;transition:all .15s;}
