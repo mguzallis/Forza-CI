@@ -165,6 +165,61 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
   .dp{padding:12px 12px;}
 }
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA4JcZuEOavW8ld9Jw53OylzBl6BDivnM0",
+    authDomain: "forza-ci.firebaseapp.com",
+    databaseURL: "https://forza-ci-default-rtdb.firebaseio.com",
+    projectId: "forza-ci",
+    storageBucket: "forza-ci.firebasestorage.app",
+    messagingSenderId: "720268916384",
+    appId: "1:720268916384:web:b2d010775392dbaf973bc5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Expose Firebase functions to global scope for use in main script
+  window.fbDb = db;
+  window.fbRef = ref;
+  window.fbSet = set;
+  window.fbOnValue = onValue;
+  window.fbRemove = remove;
+
+  // Listen for changes from Firebase and sync to localStorage + re-render
+  const upcRef = ref(db, 'upc_repo');
+  onValue(upcRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    // Merge Firebase data into localStorage (Firebase is source of truth for shared fields)
+    let local = {};
+    try { local = JSON.parse(localStorage.getItem('fz_upc') || '{}'); } catch(e) {}
+    // For each Firebase entry, update local - preserve local photo if present
+    Object.keys(data).forEach(function(key) {
+      if (!local[key]) local[key] = {};
+      // Sync everything from Firebase except photo (photos stay local)
+      local[key].name = data[key].name || local[key].name || '';
+      local[key].ind  = data[key].ind  || local[key].ind  || '';
+      local[key].date = data[key].date || local[key].date || '';
+      local[key].upc  = data[key].upc  || local[key].upc  || '';
+      // Keep local photo if it exists
+      if (!local[key].img) local[key].img = '';
+    });
+    // Remove local entries that were deleted from Firebase (but keep entries with photos that aren't in Firebase yet)
+    Object.keys(local).forEach(function(key) {
+      if (!data[key] && !local[key].img) delete local[key];
+    });
+    try { localStorage.setItem('fz_upc', JSON.stringify(local)); } catch(e) {}
+    // Re-render repo if function is available
+    if (typeof window.renderRepo === 'function') window.renderRepo();
+  });
+
+  // Signal that Firebase is ready
+  window.fbReady = true;
+  window.dispatchEvent(new Event('fbReady'));
+</script>
 </head>
 <body>
 <div class="app">
@@ -617,7 +672,9 @@ function renderRepo(){
   var repo=getRepo(),keys=Object.keys(repo);
   var hdr=mk('div','upc-repo-hdr');
   hdr.appendChild(mk('div','upc-repo-title','Field UPC Repository'));
-  hdr.appendChild(mk('div','upc-repo-count',keys.length+' saved'));
+  var syncStatus=mk('div','upc-repo-count');
+  syncStatus.textContent=keys.length+' saved'+(window.fbReady?' • ☁ Synced':'');
+  hdr.appendChild(syncStatus);
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
@@ -647,6 +704,16 @@ function renderRepo(){
         r[upc]={name:ent.name,ind:ent.ind,date:ent.date,img:ent.img,upc:upc};
         delete r[k];
         try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(ex){}
+        // Sync new UPC key to Firebase
+        if(window.fbDb&&window.fbRef&&window.fbSet){
+          try{window.fbSet(window.fbRef(window.fbDb,'upc_repo/'+upc),{
+            name:ent.name,ind:ent.ind,date:ent.date,upc:upc
+          });}catch(e){}
+          // Remove old name-based key from Firebase if it existed
+          if(k.indexOf('name:')===0){
+            try{window.fbRemove(window.fbRef(window.fbDb,'upc_repo/'+k));}catch(e){}
+          }
+        }
         renderRepo();
       };})(key,e,ui));
       uw.appendChild(ui);uw.appendChild(ub);upcTd.appendChild(uw);
@@ -656,7 +723,15 @@ function renderRepo(){
     tr.appendChild(mk('td','orange',e.ind||'-'));
     tr.appendChild(mk('td',null,e.date||''));
     var delTd=mk('td');var db=mk('button','del-btn','×');
-    db.addEventListener('click',(function(k){return function(){var r=getRepo();delete r[k];try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(ex){}renderRepo();};})(key));
+    db.addEventListener('click',(function(k){return function(){
+  var r=getRepo();delete r[k];
+  try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(ex){}
+  // Delete from Firebase
+  if(window.fbDb&&window.fbRef&&window.fbRemove){
+    try{window.fbRemove(window.fbRef(window.fbDb,'upc_repo/'+k));}catch(e){}
+  }
+  renderRepo();
+};})(key));
     delTd.appendChild(db);tr.appendChild(delTd);
     tbody.appendChild(tr);
   });
