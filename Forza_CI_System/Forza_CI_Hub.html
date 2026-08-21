@@ -821,8 +821,9 @@ function showVD(i){
   v.skus.forEach(function(s){
     var tr=mk('tr');
     // SKU cell - color in vertical's own color
-    var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=v.color;
-    if(v.dark)skuTd.style.color='#1B3764';
+    // For dark-bg verticals use a readable version of their color
+    var skuColor={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
+    var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=skuColor[v.name]||v.color;
     tr.appendChild(skuTd);
     tr.appendChild(mk('td',null,s.d));
     if(!isI){
