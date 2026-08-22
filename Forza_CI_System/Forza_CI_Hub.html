@@ -660,6 +660,127 @@ function showManualEntry(imgData,prefill,rawUpc){
 }
 
 function offerSave(upc,name,ind,imgData){
+  if(upc&&getRepo()[upc])return;
+  var bar=mk('div','save-bar');
+  var isUpc=upc&&/^[0-9]{8,14}$/.test(upc);
+  var lbl=isUpc?'Save UPC '+upc+' \u2192 "'+name+'" to repository?':'Save "'+name+'" to repository?';
+  bar.appendChild(mk('div','save-label',lbl));
+  var btn=mk('button','save-btn','Save');
+  btn.addEventListener('click',function(){
+    var repo=getRepo();
+    var key=isUpc?upc:'name:'+nm(name);
+    // No photo - metadata only
+    repo[key]={name:name,ind:ind,date:new Date().toLocaleDateString(),img:'',upc:isUpc?upc:'',rep:getRepName()||'Unknown'};
+    try{localStorage.setItem('fz_upc',JSON.stringify(repo));}catch(e){}
+    if(window.fbDb){
+      try{window.fbDb.ref('upc_repo/'+key).set({
+        name:name,ind:ind,date:new Date().toLocaleDateString(),upc:isUpc?upc:'',rep:getRepName()||'Unknown'
+      });}catch(e){}
+    }
+    bar.innerHTML='';bar.appendChild(mk('span','save-label','\u2713 Saved! Synced across all devices.'));
+    renderRepo();
+  });
+  bar.appendChild(btn);
+  document.getElementById('skuResult').appendChild(bar);
+}
+
+function getRepo(){try{return JSON.parse(localStorage.getItem('fz_upc')||'{}');}catch(e){return {};}}
+
+
+
+function renderRepo(){
+  var wrap=document.getElementById('upcRepo');wrap.innerHTML='';
+  var repo=getRepo(),keys=Object.keys(repo);
+  var hdr=mk('div','upc-repo-hdr');
+  hdr.appendChild(mk('div','upc-repo-title','Field UPC Repository'));
+  var syncStatus=mk('div','upc-repo-count');
+  syncStatus.textContent=keys.length+' saved'+(window.fbReady?' \u2022 \u2601 Live Sync ON':'');
+  hdr.appendChild(syncStatus);
+  // Claim button - tags all existing entries with rep name and pushes to Firebase
+  if(isMobile()&&getRepName()&&keys.length){
+    var untagged=keys.filter(function(k){return !repo[k].rep||repo[k].rep==='Unknown';});
+    if(untagged.length){
+      var claimBtn=mk('button','save-btn','Claim '+untagged.length+' entr'+(untagged.length===1?'y':'ies'));
+      claimBtn.style.cssText='padding:5px 12px;font-size:.68rem;margin-left:8px;';
+      claimBtn.title='Tag your existing entries with your name and sync to Firebase';
+      claimBtn.addEventListener('click',function(){
+        var r=getRepo();
+        untagged.forEach(function(key){
+          r[key].rep=getRepName();
+          r[key].img='';
+          try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(e){}
+          if(window.fbDb){
+            try{window.fbDb.ref('upc_repo/'+key).set({
+              name:r[key].name||'',ind:r[key].ind||'',
+              date:r[key].date||'',upc:r[key].upc||key,
+              rep:getRepName()
+            });}catch(e){}
+          }
+        });
+        claimBtn.textContent='\u2713 Claimed!';
+        claimBtn.style.background='#1A6B35';
+        setTimeout(function(){renderRepo();},1000);
+      });
+      hdr.appendChild(claimBtn);
+    }
+  }
+  wrap.appendChild(hdr);
+  if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
+  var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+  ['UPC','Product','Forza Cross','Date','Rep'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+  thead.appendChild(hrow);tbl.appendChild(thead);
+  var tbody=mk('tbody');
+  keys.forEach(function(key){
+    var e=repo[key],tr=mk('tr');
+    // UPC cell
+    var hasUpc=e.upc||(key.indexOf('name:')===-1&&/^[0-9]+$/.test(key));
+    var upcTd=mk('td',null,hasUpc?(e.upc||key):'—');
+    if(!hasUpc)upcTd.style.color='#ccc';
+    tr.appendChild(upcTd);
+    tr.appendChild(mk('td',null,e.name||''));
+    var indTd=mk('td','orange',e.ind||'-');
+    if(e.ind){
+      indTd.style.cursor='pointer';
+      indTd.title='Tap to see full vertical cross';
+      indTd.addEventListener('click',(function(ind){return function(){
+        // Show full vertical cross in skuResult - switch to SKU Lookup tab first
+        showTab('lookup');
+        var el=document.getElementById('skuResult');
+        el.innerHTML='';
+        // Find in VC map
+        if(VC[ind]){
+          var box=mk('div','result-box');
+          box.appendChild(mk('div','r-brand','Forza Industrial'));
+          box.appendChild(mk('div','r-sku',ind));
+          box.appendChild(mk('div','r-app','Tap any vertical SKU to search'));
+          var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+          ['Vertical','Forza SKU'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+          thead.appendChild(hrow);tbl.appendChild(thead);
+          var tbody=mk('tbody');
+          VO.forEach(function(v){
+            var tr2=mk('tr');tr2.appendChild(mk('td',null,v));
+            var val=VC[ind][v]||'',td=mk('td',val?'':'dim',val||'-');
+            if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
+            tr2.appendChild(td);tbody.appendChild(tr2);
+          });
+          tbl.appendChild(tbody);box.appendChild(tbl);
+          el.appendChild(box);
+        } else {
+          // Fall back to SKU search
+          document.getElementById('skuInput').value=ind;
+          document.getElementById('skuBtn').click();
+        }
+      };})(e.ind));
+    }
+    tr.appendChild(indTd);
+    tr.appendChild(mk('td',null,e.date||''));
+    tr.appendChild(mk('td',null,e.rep||'-'));
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);
+}
+
+function offerSave(upc,name,ind,imgData){
   // Don't show if already saved in repo under this UPC
   if(upc&&getRepo()[upc])return;
   var bar=mk('div','save-bar');
@@ -737,7 +858,41 @@ function renderRepo(){
     }
     tr.appendChild(upcTd);
     tr.appendChild(mk('td',null,e.name||''));
-    tr.appendChild(mk('td','orange',e.ind||'-'));
+    var indTd=mk('td','orange',e.ind||'-');
+    if(e.ind){
+      indTd.style.cursor='pointer';
+      indTd.title='Tap to see full vertical cross';
+      indTd.addEventListener('click',(function(ind){return function(){
+        // Show full vertical cross in skuResult - switch to SKU Lookup tab first
+        showTab('lookup');
+        var el=document.getElementById('skuResult');
+        el.innerHTML='';
+        // Find in VC map
+        if(VC[ind]){
+          var box=mk('div','result-box');
+          box.appendChild(mk('div','r-brand','Forza Industrial'));
+          box.appendChild(mk('div','r-sku',ind));
+          box.appendChild(mk('div','r-app','Tap any vertical SKU to search'));
+          var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+          ['Vertical','Forza SKU'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+          thead.appendChild(hrow);tbl.appendChild(thead);
+          var tbody=mk('tbody');
+          VO.forEach(function(v){
+            var tr2=mk('tr');tr2.appendChild(mk('td',null,v));
+            var val=VC[ind][v]||'',td=mk('td',val?'':'dim',val||'-');
+            if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
+            tr2.appendChild(td);tbody.appendChild(tr2);
+          });
+          tbl.appendChild(tbody);box.appendChild(tbl);
+          el.appendChild(box);
+        } else {
+          // Fall back to SKU search
+          document.getElementById('skuInput').value=ind;
+          document.getElementById('skuBtn').click();
+        }
+      };})(e.ind));
+    }
+    tr.appendChild(indTd);
     tr.appendChild(mk('td',null,e.date||''));
     tr.appendChild(mk('td',null,e.rep||'-'));
     var delTd=mk('td');
