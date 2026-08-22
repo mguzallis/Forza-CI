@@ -435,6 +435,38 @@ function searchSKU(v){
   return SKU.filter(function(d){var s=nm(d.comp)+' '+nm(d.brand)+' '+nm(d.app);return tokens.every(function(t){return s.indexOf(t)>-1;});});
 }
 
+
+// GLOBAL SORT HELPER
+function makeSortable(tbl){
+  var ths=tbl.querySelectorAll('th');
+  var sortCol=-1,sortDir='asc';
+  ths.forEach(function(th,ci){
+    th.style.cursor='pointer';
+    th.style.userSelect='none';
+    var origText=th.textContent;
+    th.addEventListener('click',function(){
+      if(sortCol===ci){sortDir=sortDir==='asc'?'desc':'asc';}
+      else{sortCol=ci;sortDir='asc';}
+      // Update header arrows
+      ths.forEach(function(t,ti){
+        var base=t.textContent.replace(/ [\u25b2\u25bc]$/,'').trim();
+        t.textContent=base+(ti===sortCol?' '+(sortDir==='asc'?'\u25b2':'\u25bc'):'');
+      });
+      // Sort rows
+      var tbody=tbl.querySelector('tbody');
+      var rows=Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+      rows.sort(function(a,b){
+        var ac=a.cells[ci]?a.cells[ci].textContent.trim().toLowerCase():'';
+        var bc=b.cells[ci]?b.cells[ci].textContent.trim().toLowerCase():'';
+        // Try numeric sort
+        var an=parseFloat(ac.replace(/[^0-9.-]/g,'')),bn=parseFloat(bc.replace(/[^0-9.-]/g,''));
+        if(!isNaN(an)&&!isNaN(bn)){return sortDir==='asc'?an-bn:bn-an;}
+        return sortDir==='asc'?ac.localeCompare(bc):bc.localeCompare(ac);
+      });
+      rows.forEach(function(r){tbody.appendChild(r);});
+    });
+  });
+}
 function showRes(m,q){
   var el=document.getElementById('skuResult');el.innerHTML='';
   if(!m.length){el.appendChild(mk('div','info','No match for '+q+'. Try a partial name.'));return;}
@@ -471,7 +503,7 @@ function showSingle(d,container){
       if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
       tr.appendChild(td);tbody.appendChild(tr);
     });
-    tbl.appendChild(tbody);cards.appendChild(tbl);
+    tbl.appendChild(tbody);makeSortable(tbl);cards.appendChild(tbl);
   }
   box.appendChild(cards);container.appendChild(box);
 }
@@ -644,7 +676,7 @@ function renderRepo(){
     tr.appendChild(mk('td',null,e.rep||'-'));
     tbody.appendChild(tr);
   });
-  tbl.appendChild(tbody);wrap.appendChild(tbl);
+  tbl.appendChild(tbody);makeSortable(tbl);wrap.appendChild(tbl);
 }
 renderRepo();
 
@@ -681,7 +713,7 @@ function selBC(c){
     ['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
     thead.appendChild(hrow);tbl.appendChild(thead);
     var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));tr.appendChild(mk('td','orange',r.ind));tb.appendChild(tr);});
-    tbl.appendChild(tb);dp.appendChild(tbl);
+    tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
   }
   var swg=mk('div','sw-grid');
   var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
@@ -701,7 +733,7 @@ function selAN(c){
   hrow.appendChild(mk('th',null,'Category'));hrow.appendChild(mk('th',null,'Details'));
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tb=mk('tbody');c.glance.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tb.appendChild(tr);});
-  tbl.appendChild(tb);dp.appendChild(tbl);
+  tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
   dp.appendChild(mk('div','bc-label','Key Context'));dp.appendChild(mk('div','pitch-box',c.key_context));
   dp.appendChild(mk('div','bc-label','Company Overview'));dp.appendChild(mk('div','overview-box',c.overview));
   if(c.brands_detail&&c.brands_detail.length){
@@ -710,7 +742,7 @@ function selAN(c){
     ['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});
     bthead.appendChild(bhrow);btbl.appendChild(bthead);
     var btb=mk('tbody');c.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tr.appendChild(mk('td','orange',r[2]));btb.appendChild(tr);});
-    btbl.appendChild(btb);dp.appendChild(btbl);
+    btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);
   }
   dp.appendChild(mk('div','bc-label','Strategic Assessment'));dp.appendChild(mk('div','overview-box',c.assessment));
   dp.appendChild(mk('div','bc-label','Bottom Line'));dp.appendChild(mk('div','pitch-box',c.bottom_line));
@@ -747,7 +779,7 @@ function buildFG(){
     thead.appendChild(hr);tbl.appendChild(thead);
     var tb=mk('tbody');
     sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(mk('td','fg-f',row[2]||'-'));if(isFas)tr.appendChild(mk('td','fg-t',row[3]||'-'));tb.appendChild(tr);});
-    tbl.appendChild(tb);w.appendChild(tbl);el.appendChild(w);
+    tbl.appendChild(tb);makeSortable(tbl);w.appendChild(tbl);el.appendChild(w);
   });
 }
 
