@@ -821,7 +821,7 @@ function showVD(i){
     var h1=mk('th',null,'Industrial SKU');
     h1.style.cssText='cursor:pointer;user-select:none;';
     h1.title='Sort by Industrial SKU';
-    if(sortCol==='ind')h1.textContent='Forza SKU '+(sortDir==='asc'?'▲':'▼');
+    h1.textContent='Industrial SKU '+(sortCol==='ind'?(sortDir==='asc'?'▲':'▼'):'');
     h1.addEventListener('click',function(){
       if(sortCol==='ind')sortDir=sortDir==='asc'?'desc':'asc';
       else{sortCol='ind';sortDir='asc';}
