@@ -943,7 +943,7 @@ var REP_NAME_KEY='fz_rep_name';
 function getRepName(){return localStorage.getItem(REP_NAME_KEY)||'';}
 function setRepName(name){localStorage.setItem(REP_NAME_KEY,name);}
 
-function isMobile(){return window.innerWidth<=768||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}
+function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
 
 function initRepModal(){
   // Only show name prompt on mobile - desktop users don't scan
