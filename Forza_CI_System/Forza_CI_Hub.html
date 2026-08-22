@@ -657,23 +657,48 @@ function offerSave(upc,name,ind,imgData){
 function getRepo(){try{return JSON.parse(localStorage.getItem('fz_upc')||'{}');}catch(e){return {};}}
 
 function lookupUPC(upc,callback){
-  // UPCitemdb free trial - no key needed, 100/day limit
-  var url='https://api.upcitemdb.com/prod/trial/lookup?upc='+upc;
-  fetch(url,{headers:{'Accept':'application/json','Content-Type':'application/json'}})
+  // Try direct first, then CORS proxies as fallback
+  var directUrl='https://api.upcitemdb.com/prod/trial/lookup?upc='+upc;
+  var proxyUrl='https://corsproxy.io/?'+encodeURIComponent(directUrl);
+  var proxy2Url='https://api.allorigins.win/raw?url='+encodeURIComponent(directUrl);
+
+  function parseResponse(data){
+    if(data&&data.items&&data.items.length){
+      var item=data.items[0];
+      return{name:item.title||'',brand:item.brand||'',description:item.description||''};
+    }
+    return null;
+  }
+
+  // Try direct
+  fetch(directUrl)
     .then(function(r){return r.json();})
     .then(function(data){
-      if(data&&data.items&&data.items.length){
-        var item=data.items[0];
-        callback(null,{
-          name:item.title||'',
-          brand:item.brand||'',
-          description:item.description||''
-        });
-      } else {
-        callback('Not found');
-      }
+      var item=parseResponse(data);
+      if(item)callback(null,item);
+      else callback('Not found');
     })
-    .catch(function(e){callback('API error: '+e.message);});
+    .catch(function(){
+      // Try corsproxy.io
+      fetch(proxyUrl)
+        .then(function(r){return r.json();})
+        .then(function(data){
+          var item=parseResponse(data);
+          if(item)callback(null,item);
+          else callback('Not found');
+        })
+        .catch(function(){
+          // Try allorigins
+          fetch(proxy2Url)
+            .then(function(r){return r.json();})
+            .then(function(data){
+              var item=parseResponse(data);
+              if(item)callback(null,item);
+              else callback('Not found');
+            })
+            .catch(function(){callback('Not found');});
+        });
+    });
 }
 
 function renderRepo(){
