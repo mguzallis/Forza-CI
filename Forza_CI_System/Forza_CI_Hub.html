@@ -793,19 +793,82 @@ function showVD(i){
   var dp=mk('div','dp');dp.style.marginTop='0';
   var title=mk('div','dp-title');title.textContent=v.name+' Vertical - '+v.skus.length+' SKUs';title.style.color=v.color;dp.appendChild(title);
   var skuColors={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
-  var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-  hrow.appendChild(mk('th',null,'Forza SKU'));hrow.appendChild(mk('th',null,'Description'));
-  if(!isI)hrow.appendChild(mk('th',null,'Industrial Equivalent'));
-  thead.appendChild(hrow);tbl.appendChild(thead);
-  var tbody=mk('tbody');
-  v.skus.forEach(function(s){
-    var tr=mk('tr');
-    var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=skuColors[v.name]||v.color;
-    tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
-    if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
-    tbody.appendChild(tr);
-  });
-  tbl.appendChild(tbody);dp.appendChild(tbl);det.appendChild(dp);
+  var vertCol=skuColors[v.name]||v.color;
+
+  // Sort state: 'ind' or 'vert', 'asc' or 'desc'
+  var sortCol='ind',sortDir='asc';
+
+  function getSortVal(s,col){
+    if(col==='ind')return IE[s.s]||s.s;
+    return s.s;
+  }
+
+  function renderTable(){
+    // Remove old table if exists
+    var old=dp.querySelector('.vtbl');if(old)dp.removeChild(old);
+
+    var sorted=v.skus.slice().sort(function(a,b){
+      var av=getSortVal(a,sortCol).toLowerCase();
+      var bv=getSortVal(b,sortCol).toLowerCase();
+      if(av<bv)return sortDir==='asc'?-1:1;
+      if(av>bv)return sortDir==='asc'?1:-1;
+      return 0;
+    });
+
+    var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+
+    // Forza SKU (Industrial) header - sortable
+    var h1=mk('th',null,'Industrial SKU');
+    h1.style.cssText='cursor:pointer;user-select:none;';
+    h1.title='Sort by Industrial SKU';
+    if(sortCol==='ind')h1.textContent='Forza SKU '+(sortDir==='asc'?'▲':'▼');
+    h1.addEventListener('click',function(){
+      if(sortCol==='ind')sortDir=sortDir==='asc'?'desc':'asc';
+      else{sortCol='ind';sortDir='asc';}
+      renderTable();
+    });
+    hrow.appendChild(h1);
+    hrow.appendChild(mk('th',null,'Description'));
+
+    if(!isI){
+      // Vertical SKU header - sortable
+      var h3=mk('th',null,v.name+' SKU');
+      h3.style.cssText='cursor:pointer;user-select:none;';
+      h3.title='Sort by '+v.name+' SKU';
+      if(sortCol==='vert')h3.textContent=v.name+' SKU '+(sortDir==='asc'?'▲':'▼');
+      h3.addEventListener('click',function(){
+        if(sortCol==='vert')sortDir=sortDir==='asc'?'desc':'asc';
+        else{sortCol='vert';sortDir='asc';}
+        renderTable();
+      });
+      hrow.appendChild(h3);
+    }
+
+    thead.appendChild(hrow);tbl.appendChild(thead);
+    var tbody=mk('tbody');
+
+    sorted.forEach(function(s){
+      var tr=mk('tr');
+      // Industrial SKU (Forza SKU column)
+      var indSku=IE[s.s]||s.s;
+      var indTd=mk('td',null,indSku);
+      indTd.style.fontWeight='700';indTd.style.color='#F16A26';
+      tr.appendChild(indTd);
+      tr.appendChild(mk('td',null,s.d));
+      if(!isI){
+        // Vertical SKU column
+        var vertTd=mk('td',null,s.s);
+        vertTd.style.fontWeight='700';vertTd.style.color=vertCol;
+        tr.appendChild(vertTd);
+      }
+      tbody.appendChild(tr);
+    });
+
+    tbl.appendChild(tbody);dp.appendChild(tbl);
+  }
+
+  renderTable();
+  det.appendChild(dp);
 }
 
 // REP NAME
