@@ -698,31 +698,28 @@ function renderRepo(){
   hdr.appendChild(syncStatus);
   // Claim button - tags all existing entries with rep name and pushes to Firebase
   if(isMobile()&&getRepName()&&keys.length){
-    var untagged=keys.filter(function(k){return !repo[k].rep||repo[k].rep==='Unknown';});
-    if(untagged.length){
-      var claimBtn=mk('button','save-btn','Claim '+untagged.length+' entr'+(untagged.length===1?'y':'ies'));
-      claimBtn.style.cssText='padding:5px 12px;font-size:.68rem;margin-left:8px;';
-      claimBtn.title='Tag your existing entries with your name and sync to Firebase';
-      claimBtn.addEventListener('click',function(){
-        var r=getRepo();
-        untagged.forEach(function(key){
-          r[key].rep=getRepName();
-          r[key].img='';
-          try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(e){}
-          if(window.fbDb){
-            try{window.fbDb.ref('upc_repo/'+key).set({
-              name:r[key].name||'',ind:r[key].ind||'',
-              date:r[key].date||'',upc:r[key].upc||key,
-              rep:getRepName()
-            });}catch(e){}
-          }
-        });
-        claimBtn.textContent='\u2713 Claimed!';
-        claimBtn.style.background='#1A6B35';
-        setTimeout(function(){renderRepo();},1000);
+    var claimBtn=mk('button','save-btn','\u270D Claim All');
+    claimBtn.style.cssText='padding:5px 12px;font-size:.68rem;margin-left:8px;';
+    claimBtn.title='Tag all entries with your name and sync to Firebase';
+    claimBtn.addEventListener('click',function(){
+      var r=getRepo();
+      keys.forEach(function(key){
+        r[key].rep=getRepName();
+        r[key].img='';
+        try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(e){}
+        if(window.fbDb){
+          try{window.fbDb.ref('upc_repo/'+key).set({
+            name:r[key].name||'',ind:r[key].ind||'',
+            date:r[key].date||'',upc:r[key].upc||key,
+            rep:getRepName()
+          });}catch(e){}
+        }
       });
-      hdr.appendChild(claimBtn);
-    }
+      claimBtn.textContent='\u2713 Done!';
+      claimBtn.style.background='#1A6B35';
+      setTimeout(function(){renderRepo();},1000);
+    });
+    hdr.appendChild(claimBtn);
   }
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
