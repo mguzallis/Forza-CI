@@ -598,21 +598,7 @@ function renderRepo(){
   var syncStatus=mk('div','upc-repo-count');
   syncStatus.textContent=keys.length+' saved'+(window.fbReady?' • ☁ Live Sync ON':'');
   hdr.appendChild(syncStatus);
-  if(isMobile()&&getRepName()&&keys.length){
-    var claimBtn=mk('button','save-btn','✍ Claim All');
-    claimBtn.style.cssText='padding:5px 12px;font-size:.68rem;';
-    claimBtn.addEventListener('click',function(){
-      var r=getRepo();
-      keys.forEach(function(key){
-        r[key].rep=getRepName();r[key].img='';
-        try{localStorage.setItem('fz_upc',JSON.stringify(r));}catch(e){}
-        if(window.fbDb){try{window.fbDb.ref('upc_repo/'+key).set({name:r[key].name||'',ind:r[key].ind||'',date:r[key].date||'',upc:r[key].upc||key,rep:getRepName()});}catch(e){}}
-      });
-      claimBtn.textContent='✓ Done!';claimBtn.style.background='#1A6B35';
-      setTimeout(function(){renderRepo();},1000);
-    });
-    hdr.appendChild(claimBtn);
-  }
+
   wrap.appendChild(hdr);
   if(!keys.length){wrap.appendChild(mk('div','upc-repo-empty','No products saved yet. Scan a competitor product and save the match.'));return;}
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
