@@ -218,8 +218,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
   <div class="tabs">
     <button class="tab active" id="tb-lookup">SKU Lookup</button>
     <button class="tab" id="tb-verticals">Vertical Crosswalk</button>
-    <button class="tab" id="tb-analysis">Competitor Analysis</button>
-    <button class="tab" id="tb-battlecards">Battle Cards</button>
+    <button class="tab" id="tb-intel">Competitor Intel</button>
     <button class="tab" id="tb-fieldguides">Field Guides</button>
     <button class="tab" id="tb-documents">Documents</button>
   </div>
@@ -237,8 +236,13 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <div id="upcRepo" class="upc-repo-wrap"></div>
   </div>
   <div id="sec-verticals" class="sec"><div class="vgrid" id="vertGrid"></div><div id="vertDetail"></div></div>
-  <div id="sec-analysis" class="sec"><div class="comp-grid" id="anGrid"></div><div id="anDetail"></div></div>
-  <div id="sec-battlecards" class="sec"><div class="comp-grid" id="bcGrid"></div><div id="bcDetail"></div></div>
+  <div id="sec-intel" class="sec">
+    <div class="comp-grid" id="intelGrid"></div>
+    <div id="intelSubTabs" style="display:none;margin-bottom:12px;">
+      <div class="fg-selector" id="intelBtnRow"></div>
+    </div>
+    <div id="intelDetail"></div>
+  </div>
   <div id="sec-fieldguides" class="sec"><div id="fgContent"></div></div>
   <div id="sec-documents" class="sec">
     <div class="dtoolbar">
@@ -384,24 +388,23 @@ var VO=['Industrial','Transportation','Marine','Construction','Insulation','Comp
 var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
 var TL={battle:'Battle Card',crosswalk:'Crosswalk',brief:'Exec Brief',guide:'Field Guide',comparison:'Comparison',other:'Other'};
 var UPC_BUILTIN={'051111072783':'Hi-Strength 90','51111072783':'Hi-Strength 90','021200725715':'Super 77 Multi-Purpose','021200506995':'Super 77 Multi-Purpose','021200508524':'24 Foam & Fabric Spray','021200795626':'HoldFast 70','051135809793':'Sikaflex-252','51135809793':'Sikaflex-252','051135808000':'Sikaflex-221','051135808109':'Sikaflex-291','723513802656':'75-AM'};
-var aF='all',aV=null,aBC=null,aAN=null,bcB=false,vB=false,anB=false,fgB=false,fgG=0,fgC=0,lastUpc='';
+var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='';
 
 function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
 function nm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
 
 // TABS
-['lookup','verticals','analysis','battlecards','fieldguides','documents'].forEach(function(id){
+['lookup','verticals','intel','fieldguides','documents'].forEach(function(id){
   document.getElementById('tb-'+id).addEventListener('click',function(){showTab(id);});
 });
 function showTab(t){
-  ['lookup','verticals','analysis','battlecards','fieldguides','documents'].forEach(function(id){
+  ['lookup','verticals','intel','fieldguides','documents'].forEach(function(id){
     document.getElementById('sec-'+id).classList.toggle('active',id===t);
     document.getElementById('tb-'+id).classList.toggle('active',id===t);
   });
   if(t==='verticals'&&!vB){buildVerts();vB=true;}
-  if(t==='analysis'&&!anB){buildAN();anB=true;}
-  if(t==='battlecards'&&!bcB){buildBC();bcB=true;}
+  if(t==='intel'&&!intelB){buildIntel();intelB=true;}
   if(t==='fieldguides'&&!fgB){buildFG();fgB=true;}
   if(t==='documents'){buildDocs();}
 }
@@ -690,62 +693,119 @@ function buildCards(data,gridId,selFn,activeId){
   });
 }
 
-function buildBC(){buildCards(COMP,'bcGrid',selBC,aBC);}
-function selBC(c){
-  aBC=c.id;buildCards(COMP,'bcGrid',selBC,aBC);
-  var det=document.getElementById('bcDetail');det.innerHTML='';
-  var dp=mk('div','dp');
-  var title=mk('div','dp-title');title.innerHTML=c.name+' <span style="font-size:.7rem;color:#888;font-weight:400">- '+c.rev+' - '+c.hq+'</span>';
-  dp.appendChild(title);dp.appendChild(mk('div','dp-meta',c.brands));
-  dp.appendChild(mk('div','bc-label','Pitch'));dp.appendChild(mk('div','pitch-box',c.pitch));
-  if(c.msgs&&c.msgs.length){dp.appendChild(mk('div','bc-label','Key Messages'));c.msgs.forEach(function(m){var b=mk('div','msg-box');b.appendChild(mk('div','msg-who',m[0]));b.appendChild(mk('div','msg-txt',m[1]));dp.appendChild(b);});}
-  if(c.seeds&&c.seeds.length){dp.appendChild(mk('div','bc-label','Quick Dismisses'));c.seeds.forEach(function(s){var sb=mk('div','seed-box',s);sb.style.color='#333';sb.style.display='block';dp.appendChild(sb);});}
-  if(c.landmines&&c.landmines.length){dp.appendChild(mk('div','bc-label','Landmines'));c.landmines.forEach(function(l){var b=mk('div','lm-box');b.appendChild(mk('div','lm-title',l[0]));b.appendChild(mk('div','lm-body',l[1]));dp.appendChild(b);});}
-  if(c.objections&&c.objections.length){dp.appendChild(mk('div','bc-label','Objection Handling'));c.objections.forEach(function(o){var b=mk('div','obj-box');b.appendChild(mk('div','obj-q','"'+o[0]+'"'));b.appendChild(mk('div','obj-a',o[1]));dp.appendChild(b);});}
-  if(c.crosswalk&&c.crosswalk.length){
-    dp.appendChild(mk('div','bc-label','SKU Crosswalk'));
-    var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-    ['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
-    thead.appendChild(hrow);tbl.appendChild(thead);
-    var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));tr.appendChild(mk('td','orange',r.ind));tb.appendChild(tr);});
-    tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
+function buildIntel(){
+  var grid=document.getElementById('intelGrid');grid.innerHTML='';
+  COMP.forEach(function(c){
+    var card=document.getElementById('intelGrid') ? mk('div','ccard'+(aIntel===c.id?' active':'')) : mk('div','ccard');
+    card.appendChild(mk('div','cc-name',c.name));
+    card.appendChild(mk('div','cc-brands',c.brands));
+    var tags=mk('div','cc-tags');
+    tags.appendChild(mk('span','ctag '+(c.threat==='HIGH'?'t-high':'t-mod'),'Threat: '+c.threat));
+    tags.appendChild(mk('span','ctag t-loc',c.hq.split('/')[0].trim()));
+    card.appendChild(tags);
+    card.addEventListener('click',(function(cc){return function(){selIntel(cc);};})(c));
+    grid.appendChild(card);
+  });
+  if(aIntel){
+    var found=COMP.filter(function(c){return c.id===aIntel;});
+    if(found.length)showIntelDetail(found[0],aIntelView);
   }
-  var swg=mk('div','sw-grid');
-  var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
-  if(c.moats&&c.moats.length){var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Do Not Fight These'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);}
-  dp.appendChild(swg);det.appendChild(dp);
 }
 
-function buildAN(){buildCards(EXEC,'anGrid',selAN,aAN);}
-function selAN(c){
-  aAN=c.id;buildCards(EXEC,'anGrid',selAN,aAN);
-  var det=document.getElementById('anDetail');det.innerHTML='';
-  var dp=mk('div','dp');
-  var title=mk('div','dp-title');title.innerHTML=c.name+' <span style="font-size:.7rem;color:#888;font-weight:400">'+c.rev+' - '+c.hq+'</span>';
-  dp.appendChild(title);dp.appendChild(mk('div','dp-meta',c.brands));
-  dp.appendChild(mk('div','bc-label','Company at a Glance'));
-  var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-  hrow.appendChild(mk('th',null,'Category'));hrow.appendChild(mk('th',null,'Details'));
-  thead.appendChild(hrow);tbl.appendChild(thead);
-  var tb=mk('tbody');c.glance.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tb.appendChild(tr);});
-  tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
-  dp.appendChild(mk('div','bc-label','Key Context'));dp.appendChild(mk('div','pitch-box',c.key_context));
-  dp.appendChild(mk('div','bc-label','Company Overview'));dp.appendChild(mk('div','overview-box',c.overview));
-  if(c.brands_detail&&c.brands_detail.length){
-    dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));
-    var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');
-    ['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});
-    bthead.appendChild(bhrow);btbl.appendChild(bthead);
-    var btb=mk('tbody');c.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tr.appendChild(mk('td','orange',r[2]));btb.appendChild(tr);});
-    btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);
-  }
-  dp.appendChild(mk('div','bc-label','Strategic Assessment'));dp.appendChild(mk('div','overview-box',c.assessment));
-  dp.appendChild(mk('div','bc-label','Bottom Line'));dp.appendChild(mk('div','pitch-box',c.bottom_line));
-  var swg=mk('div','sw-grid');
-  var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
-  var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Difficult to Displace'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);
-  dp.appendChild(swg);det.appendChild(dp);
+function selIntel(c){
+  aIntel=c.id;
+  // Rebuild grid to highlight selected
+  var grid=document.getElementById('intelGrid');grid.innerHTML='';
+  COMP.forEach(function(cc){
+    var card=mk('div','ccard'+(cc.id===c.id?' active':''));
+    card.appendChild(mk('div','cc-name',cc.name));
+    card.appendChild(mk('div','cc-brands',cc.brands));
+    var tags=mk('div','cc-tags');
+    tags.appendChild(mk('span','ctag '+(cc.threat==='HIGH'?'t-high':'t-mod'),'Threat: '+cc.threat));
+    tags.appendChild(mk('span','ctag t-loc',cc.hq.split('/')[0].trim()));
+    card.appendChild(tags);
+    card.addEventListener('click',(function(ccc){return function(){selIntel(ccc);};})(cc));
+    grid.appendChild(card);
+  });
+  showIntelDetail(c,aIntelView);
 }
+
+function showIntelDetail(c,view){
+  aIntelView=view;
+  // Show sub-tab buttons
+  var subTabs=document.getElementById('intelSubTabs');subTabs.style.display='block';
+  var btnRow=document.getElementById('intelBtnRow');btnRow.innerHTML='';
+  var views=[['exec','Executive Summary'],['bc','Battle Card'],['crosswalk','SKU Crosswalk']];
+  views.forEach(function(v){
+    var btn=mk('button','fg-btn',v[1]);
+    btn.style.background=v[0]===view?'#1B3764':'#fff';
+    btn.style.color=v[0]===view?'#fff':'#333';
+    btn.style.borderColor=v[0]===view?'#1B3764':'';
+    btn.addEventListener('click',(function(vv){return function(){showIntelDetail(c,vv);};})(v[0]));
+    btnRow.appendChild(btn);
+  });
+
+  var det=document.getElementById('intelDetail');det.innerHTML='';
+
+  // Find exec data for this competitor
+  var ex=EXEC.filter(function(e){return e.id===c.id;})[0]||null;
+
+  if(view==='exec'&&ex){
+    var dp=mk('div','dp');
+    var title=mk('div','dp-title');title.innerHTML=ex.name+' <span style="font-size:.7rem;color:#888;font-weight:400">'+ex.rev+' — '+ex.hq+'</span>';
+    dp.appendChild(title);dp.appendChild(mk('div','dp-meta',ex.brands));
+    dp.appendChild(mk('div','bc-label','Company at a Glance'));
+    var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+    hrow.appendChild(mk('th',null,'Category'));hrow.appendChild(mk('th',null,'Details'));
+    thead.appendChild(hrow);tbl.appendChild(thead);
+    var tb=mk('tbody');ex.glance.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tb.appendChild(tr);});
+    tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
+    dp.appendChild(mk('div','bc-label','Key Context'));dp.appendChild(mk('div','pitch-box',ex.key_context));
+    dp.appendChild(mk('div','bc-label','Company Overview'));dp.appendChild(mk('div','overview-box',ex.overview));
+    if(ex.brands_detail&&ex.brands_detail.length){
+      dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));
+      var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');
+      ['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});
+      bthead.appendChild(bhrow);btbl.appendChild(bthead);
+      var btb=mk('tbody');ex.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tr.appendChild(mk('td','orange',r[2]));btb.appendChild(tr);});
+      btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);
+    }
+    dp.appendChild(mk('div','bc-label','Strategic Assessment'));dp.appendChild(mk('div','overview-box',ex.assessment));
+    dp.appendChild(mk('div','bc-label','Bottom Line'));dp.appendChild(mk('div','pitch-box',ex.bottom_line));
+    var swg=mk('div','sw-grid');
+    var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));ex.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
+    var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Difficult to Displace'));ex.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);
+    dp.appendChild(swg);det.appendChild(dp);
+  } else if(view==='bc'){
+    var dp=mk('div','dp');
+    var title=mk('div','dp-title');title.innerHTML=c.name+' <span style="font-size:.7rem;color:#888;font-weight:400">'+c.rev+' — '+c.hq+'</span>';
+    dp.appendChild(title);dp.appendChild(mk('div','dp-meta',c.brands));
+    dp.appendChild(mk('div','bc-label','Pitch'));dp.appendChild(mk('div','pitch-box',c.pitch));
+    if(c.msgs&&c.msgs.length){dp.appendChild(mk('div','bc-label','Key Messages'));c.msgs.forEach(function(m){var b=mk('div','msg-box');b.appendChild(mk('div','msg-who',m[0]));b.appendChild(mk('div','msg-txt',m[1]));dp.appendChild(b);});}
+    if(c.seeds&&c.seeds.length){dp.appendChild(mk('div','bc-label','Quick Dismisses'));c.seeds.forEach(function(s){var sb=mk('div','seed-box',s);dp.appendChild(sb);});}
+    if(c.landmines&&c.landmines.length){dp.appendChild(mk('div','bc-label','Landmines'));c.landmines.forEach(function(l){var b=mk('div','lm-box');b.appendChild(mk('div','lm-title',l[0]));b.appendChild(mk('div','lm-body',l[1]));dp.appendChild(b);});}
+    if(c.objections&&c.objections.length){dp.appendChild(mk('div','bc-label','Objection Handling'));c.objections.forEach(function(o){var b=mk('div','obj-box');b.appendChild(mk('div','obj-q','“'+o[0]+'”'));b.appendChild(mk('div','obj-a',o[1]));dp.appendChild(b);});}
+    var swg=mk('div','sw-grid');
+    var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
+    if(c.moats&&c.moats.length){var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Do Not Fight These'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);}
+    dp.appendChild(swg);det.appendChild(dp);
+  } else if(view==='crosswalk'){
+    var dp=mk('div','dp');
+    dp.appendChild(mk('div','dp-title',c.name+' SKU Crosswalk'));
+    dp.appendChild(mk('div','dp-meta',c.brands));
+    if(c.crosswalk&&c.crosswalk.length){
+      var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+      ['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+      thead.appendChild(hrow);tbl.appendChild(thead);
+      var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));tr.appendChild(mk('td','orange',r.ind));tb.appendChild(tr);});
+      tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
+    } else {
+      dp.appendChild(mk('div','info','No crosswalk data available for this competitor.'));
+    }
+    det.appendChild(dp);
+  }
+}
+
 
 function buildFG(){
   var el=document.getElementById('fgContent');el.innerHTML='';
