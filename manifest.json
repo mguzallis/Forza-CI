@@ -1,0 +1,22 @@
+{
+  "name": "Forza CI Hub",
+  "short_name": "Forza CI",
+  "description": "Forza Competitive Intelligence Hub",
+  "start_url": "/Forza-CI/Forza_CI_Hub.html",
+  "scope": "/Forza-CI/",
+  "display": "standalone",
+  "background_color": "#1B3764",
+  "theme_color": "#1B3764",
+  "icons": [
+    {
+      "src": "/Forza-CI/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Forza-CI/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
