@@ -694,9 +694,16 @@ function buildCards(data,gridId,selFn,activeId){
 }
 
 function buildIntel(){
+  aIntel=null;aIntelView='exec';
+  renderIntelGrid();
+  document.getElementById('intelSubTabs').style.display='none';
+  document.getElementById('intelDetail').innerHTML='';
+}
+
+function renderIntelGrid(){
   var grid=document.getElementById('intelGrid');grid.innerHTML='';
   COMP.forEach(function(c){
-    var card=document.getElementById('intelGrid') ? mk('div','ccard'+(aIntel===c.id?' active':'')) : mk('div','ccard');
+    var card=mk('div','ccard');
     card.appendChild(mk('div','cc-name',c.name));
     card.appendChild(mk('div','cc-brands',c.brands));
     var tags=mk('div','cc-tags');
@@ -706,33 +713,38 @@ function buildIntel(){
     card.addEventListener('click',(function(cc){return function(){selIntel(cc);};})(c));
     grid.appendChild(card);
   });
-  if(aIntel){
-    var found=COMP.filter(function(c){return c.id===aIntel;});
-    if(found.length)showIntelDetail(found[0],aIntelView);
-  }
 }
 
 function selIntel(c){
   aIntel=c.id;
-  // Rebuild grid to highlight selected
+
+  // Replace grid with single competitor header + back button
   var grid=document.getElementById('intelGrid');grid.innerHTML='';
-  COMP.forEach(function(cc){
-    var card=mk('div','ccard'+(cc.id===c.id?' active':''));
-    card.appendChild(mk('div','cc-name',cc.name));
-    card.appendChild(mk('div','cc-brands',cc.brands));
-    var tags=mk('div','cc-tags');
-    tags.appendChild(mk('span','ctag '+(cc.threat==='HIGH'?'t-high':'t-mod'),'Threat: '+cc.threat));
-    tags.appendChild(mk('span','ctag t-loc',cc.hq.split('/')[0].trim()));
-    card.appendChild(tags);
-    card.addEventListener('click',(function(ccc){return function(){selIntel(ccc);};})(cc));
-    grid.appendChild(card);
-  });
+
+  // Back button
+  var backBtn=mk('button','');
+  backBtn.style.cssText='display:flex;align-items:center;gap:6px;padding:7px 14px;background:none;border:1px solid var(--border);border-radius:6px;font-size:.74rem;font-weight:600;color:var(--blue);cursor:pointer;font-family:"Poppins",sans-serif;margin-bottom:12px;';
+  backBtn.innerHTML='← All Competitors';
+  backBtn.addEventListener('click',function(){buildIntel();});
+  grid.appendChild(backBtn);
+
+  // Single competitor card (non-clickable header style)
+  var card=mk('div','ccard active');
+  card.style.cssText='cursor:default;border-color:var(--orange);background:#FFF8F5;';
+  card.appendChild(mk('div','cc-name',c.name));
+  card.appendChild(mk('div','cc-brands',c.brands));
+  var tags=mk('div','cc-tags');
+  tags.appendChild(mk('span','ctag '+(c.threat==='HIGH'?'t-high':'t-mod'),'Threat: '+c.threat));
+  tags.appendChild(mk('span','ctag t-loc',c.hq.split('/')[0].trim()));
+  card.appendChild(tags);
+  grid.appendChild(card);
+
+  // Show sub-tab buttons
   showIntelDetail(c,aIntelView);
 }
 
 function showIntelDetail(c,view){
   aIntelView=view;
-  // Show sub-tab buttons
   var subTabs=document.getElementById('intelSubTabs');subTabs.style.display='block';
   var btnRow=document.getElementById('intelBtnRow');btnRow.innerHTML='';
   var views=[['exec','Executive Summary'],['bc','Battle Card'],['crosswalk','SKU Crosswalk']];
@@ -746,8 +758,6 @@ function showIntelDetail(c,view){
   });
 
   var det=document.getElementById('intelDetail');det.innerHTML='';
-
-  // Find exec data for this competitor
   var ex=EXEC.filter(function(e){return e.id===c.id;})[0]||null;
 
   if(view==='exec'&&ex){
@@ -776,31 +786,49 @@ function showIntelDetail(c,view){
     var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));ex.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
     var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Difficult to Displace'));ex.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);
     dp.appendChild(swg);det.appendChild(dp);
+
   } else if(view==='bc'){
     var dp=mk('div','dp');
     var title=mk('div','dp-title');title.innerHTML=c.name+' <span style="font-size:.7rem;color:#888;font-weight:400">'+c.rev+' — '+c.hq+'</span>';
     dp.appendChild(title);dp.appendChild(mk('div','dp-meta',c.brands));
     dp.appendChild(mk('div','bc-label','Pitch'));dp.appendChild(mk('div','pitch-box',c.pitch));
     if(c.msgs&&c.msgs.length){dp.appendChild(mk('div','bc-label','Key Messages'));c.msgs.forEach(function(m){var b=mk('div','msg-box');b.appendChild(mk('div','msg-who',m[0]));b.appendChild(mk('div','msg-txt',m[1]));dp.appendChild(b);});}
-    if(c.seeds&&c.seeds.length){dp.appendChild(mk('div','bc-label','Quick Dismisses'));c.seeds.forEach(function(s){var sb=mk('div','seed-box',s);dp.appendChild(sb);});}
+    if(c.seeds&&c.seeds.length){dp.appendChild(mk('div','bc-label','Quick Dismisses'));c.seeds.forEach(function(s){dp.appendChild(mk('div','seed-box',s));});}
     if(c.landmines&&c.landmines.length){dp.appendChild(mk('div','bc-label','Landmines'));c.landmines.forEach(function(l){var b=mk('div','lm-box');b.appendChild(mk('div','lm-title',l[0]));b.appendChild(mk('div','lm-body',l[1]));dp.appendChild(b);});}
     if(c.objections&&c.objections.length){dp.appendChild(mk('div','bc-label','Objection Handling'));c.objections.forEach(function(o){var b=mk('div','obj-box');b.appendChild(mk('div','obj-q','“'+o[0]+'”'));b.appendChild(mk('div','obj-a',o[1]));dp.appendChild(b);});}
-    var swg=mk('div','sw-grid');
-    var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
-    if(c.moats&&c.moats.length){var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Do Not Fight These'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);}
-    dp.appendChild(swg);det.appendChild(dp);
-  } else if(view==='crosswalk'){
-    var dp=mk('div','dp');
-    dp.appendChild(mk('div','dp-title',c.name+' SKU Crosswalk'));
-    dp.appendChild(mk('div','dp-meta',c.brands));
+    // Key SKU crosswalk on battle card
     if(c.crosswalk&&c.crosswalk.length){
+      dp.appendChild(mk('div','bc-label','Key SKU Crosswalk'));
       var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
       ['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
       thead.appendChild(hrow);tbl.appendChild(thead);
       var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));tr.appendChild(mk('td','orange',r.ind));tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
+    }
+    var swg=mk('div','sw-grid');
+    var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);
+    if(c.moats&&c.moats.length){var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Do Not Fight These'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);}
+    dp.appendChild(swg);det.appendChild(dp);
+
+  } else if(view==='crosswalk'){
+    var dp=mk('div','dp');
+    dp.appendChild(mk('div','dp-title',c.name+' — Full SKU Crosswalk'));
+    dp.appendChild(mk('div','dp-meta',c.brands));
+    // Pull ALL SKUs for this competitor from the global SKU array by matching brand name
+    var compName=c.name.toLowerCase().replace(/[^a-z0-9]/g,' ').trim();
+    var allSkus=SKU.filter(function(s){
+      var brand=s.brand.toLowerCase().replace(/[^a-z0-9]/g,' ').trim();
+      return brand===compName||brand.indexOf(compName)>-1||compName.indexOf(brand)>-1;
+    });
+    if(allSkus.length){
+      var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
+      ['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});
+      thead.appendChild(hrow);tbl.appendChild(thead);
+      var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));tr.appendChild(mk('td','orange',s.ind));tb.appendChild(tr);});
+      tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
+      dp.appendChild(mk('div','info',allSkus.length+' SKUs shown. For complete crosswalk documents, see the Documents tab.'));
     } else {
-      dp.appendChild(mk('div','info','No crosswalk data available for this competitor.'));
+      dp.appendChild(mk('div','info','No SKUs found for this competitor. Use SKU Lookup tab to search by product name.'));
     }
     det.appendChild(dp);
   }
