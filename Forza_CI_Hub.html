@@ -717,6 +717,7 @@ function renderIntelGrid(){
 
 function selIntel(c){
   aIntel=c.id;
+  window.scrollTo({top:0,behavior:'smooth'});
 
   // Replace grid with single competitor header + back button
   var grid=document.getElementById('intelGrid');grid.innerHTML='';
