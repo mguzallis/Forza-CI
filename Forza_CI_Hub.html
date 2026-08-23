@@ -900,7 +900,8 @@ function showVD(i){
   if(!isI)hrow.appendChild(mk('th',null,'Industrial Equivalent'));
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tbody=mk('tbody');
-  v.skus.forEach(function(s){
+  var filteredSkus=isI?v.skus:v.skus.filter(function(s){return IE[s.s]&&IE[s.s]!=='';});
+  filteredSkus.forEach(function(s){
     var tr=mk('tr');
     var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=skuColors[v.name]||v.color;
     tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
