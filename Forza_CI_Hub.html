@@ -907,7 +907,7 @@ function showVD(i){
     if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
     tbody.appendChild(tr);
   });
-  tbl.appendChild(tbody);dp.appendChild(tbl);det.appendChild(dp);
+  tbl.appendChild(tbody);makeSortable(tbl);dp.appendChild(tbl);det.appendChild(dp);
 }
 
 // REP NAME
