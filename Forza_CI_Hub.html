@@ -803,7 +803,7 @@ function showIntelDetail(c,view){
       thead.appendChild(hrow);tbl.appendChild(thead);
       var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));tr.appendChild(mk('td','orange',s.ind));tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
-      dp.appendChild(mk('div','info',allSkus.length+' SKUs shown. For complete crosswalk documents see the Documents tab.'));
+
     }else{dp.appendChild(mk('div','info','No SKUs found for this competitor.'));}
     det.appendChild(dp);
   }
