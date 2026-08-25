@@ -197,6 +197,20 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
   .sw-grid{grid-template-columns:1fr;}
   .dp{padding:12px 12px;}
 }
+
+.vert-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.vert-popup{background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.22);max-width:420px;width:100%;padding:0;overflow:hidden;}
+.vert-popup-hdr{background:#1B3764;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.vert-popup-title{font-size:.85rem;font-weight:700;font-family:'Poppins',sans-serif;}
+.vert-popup-close{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;line-height:1;padding:0 4px;}
+.vert-popup-body{padding:12px 16px 16px;}
+.vert-popup-note{font-size:.68rem;color:#888;margin-bottom:10px;}
+.vert-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;}
+.vert-row:last-child{border-bottom:none;}
+.vert-name{font-size:.68rem;color:#888;min-width:100px;font-family:'Poppins',sans-serif;}
+.vert-sku{font-size:.78rem;font-weight:700;color:#F16022;font-family:'Poppins',sans-serif;min-width:80px;}
+.vert-desc{font-size:.68rem;color:#555;flex:1;}
+.vert-link{font-size:.72rem;font-weight:600;color:#1B3764;cursor:pointer;text-decoration:underline;white-space:nowrap;}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -753,7 +767,10 @@ function showIntelDetail(c,view){
     var hasAsterisk=allSkus.some(function(s){return s.ind&&s.ind.endsWith('*');});
     if(allSkus.length){
       var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});thead.appendChild(hrow);tbl.appendChild(thead);
-      var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));var indCell=mk('td','orange',s.ind);if(s.ind&&s.ind.endsWith('*')){indCell.style.color='#B06010';}tr.appendChild(indCell);tb.appendChild(tr);});
+      var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));var indCell=mk('td','orange',s.ind);if(s.ind&&s.ind.endsWith('*')){indCell.style.color='#B06010';}
+        var baseInd=s.ind?s.ind.replace('*',''):'';indCell.style.cursor='pointer';indCell.title='Tap to see vertical equivalents';
+        indCell.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(baseInd));
+        tr.appendChild(indCell);tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
       if(hasAsterisk){var note=mk('div','');note.style.cssText='margin-top:10px;padding:8px 12px;background:#FFF8EC;border-left:3px solid #F16022;font-size:.72rem;color:#555;line-height:1.5;';note.textContent='* Chemistry family match — Forza equivalent is in the same product class but may differ in specific formulation, cure system, or performance characteristics. Verify application suitability and compare TDS before substituting.';dp.appendChild(note);}
     }else{dp.appendChild(mk('div','info','No SKUs found for this competitor.'));}
@@ -879,6 +896,58 @@ function initRepModal(){
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){buildDocs();initRepModal();renderRepo();});}
 else{buildDocs();initRepModal();renderRepo();}
+
+function buildVertMap(){
+  var map={};
+  VERT.forEach(function(v){
+    v.skus.forEach(function(s){
+      var ind=v.name==='Industrial'?s.s:(IE[s.s]||'');
+      if(!ind)return;
+      if(!map[ind])map[ind]={};
+      map[ind][v.name]={sku:s.s,desc:s.d};
+    });
+  });
+  return map;
+}
+var _vertMap=null;
+function getVertMap(){if(!_vertMap)_vertMap=buildVertMap();return _vertMap;}
+
+function showVertPopup(indSku){
+  var map=getVertMap();
+  var verts=map[indSku]||{};
+  var order=['Industrial','Transportation','Marine','Construction','Insulation','Composites'];
+  var title=document.getElementById('vertPopupTitle');
+  title.textContent=indSku+' — Vertical Equivalents';
+  var body=document.getElementById('vertPopupBody');
+  body.innerHTML='';
+  var note=document.createElement('div');note.className='vert-popup-note';note.textContent='Tap a vertical SKU to search for it in the SKU Lookup tab.';body.appendChild(note);
+  var hasAny=false;
+  order.forEach(function(vname){
+    if(!verts[vname])return;
+    hasAny=true;
+    var row=document.createElement('div');row.className='vert-row';
+    var nm=document.createElement('span');nm.className='vert-name';nm.textContent=vname;row.appendChild(nm);
+    var sk=document.createElement('span');sk.className='vert-sku';sk.textContent=verts[vname].sku;row.appendChild(sk);
+    var ds=document.createElement('span');ds.className='vert-desc';ds.textContent=verts[vname].desc;row.appendChild(ds);
+    var lk=document.createElement('span');lk.className='vert-link';lk.textContent='Search →';
+    lk.addEventListener('click',(function(sku){return function(){closeVertPopup();showTab('lookup');setTimeout(function(){var inp=document.getElementById('skuSearch');if(inp){inp.value=sku;inp.dispatchEvent(new Event('input'));}},100);};})(verts[vname].sku));
+    row.appendChild(lk);
+    body.appendChild(row);
+  });
+  if(!hasAny){var nm=document.createElement('div');nm.style.cssText='font-size:.75rem;color:#888;padding:8px 0;';nm.textContent='No vertical equivalents found for this SKU.';body.appendChild(nm);}
+  document.getElementById('vertPopupOverlay').style.display='flex';
+}
+function closeVertPopup(){document.getElementById('vertPopupOverlay').style.display='none';}
 </script>
+
+<div id="vertPopupOverlay" class="vert-popup-overlay" style="display:none;" onclick="if(event.target===this)closeVertPopup();">
+  <div class="vert-popup">
+    <div class="vert-popup-hdr">
+      <span class="vert-popup-title" id="vertPopupTitle">Vertical Equivalents</span>
+      <button class="vert-popup-close" onclick="closeVertPopup()">✕</button>
+    </div>
+    <div class="vert-popup-body" id="vertPopupBody"></div>
+  </div>
+</div>
 </body>
 </html>
