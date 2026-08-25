@@ -662,7 +662,8 @@ function renderRepo(){
           thead2.appendChild(hrow2);tbl2.appendChild(thead2);
           var tbody2=mk('tbody');
           VO.forEach(function(v){
-            var tr2=mk('tr');tr2.appendChild(mk('td',null,v));
+            var tr2=mk('tr');
+            var vtd2=mk('td','');var vbadge2=mk('span','',v);vbadge2.style.cssText='display:inline-block;padding:2px 9px;border-radius:10px;font-size:.64rem;font-weight:700;color:#fff;background:'+(VCOL[v]||'#888')+';font-family:\'Poppins\',sans-serif;white-space:nowrap;';vtd2.appendChild(vbadge2);tr2.appendChild(vtd2);
             var val=VC[ind][v]||'',td=mk('td',val?'':'dim',val||'-');
             if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
             tr2.appendChild(td);tbody2.appendChild(tr2);
