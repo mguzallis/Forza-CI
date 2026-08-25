@@ -858,6 +858,9 @@ function showVD(i){
   filteredSkus.forEach(function(s){
     var tr=mk('tr');
     var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=skuColors[v.name]||v.color;
+    skuTd.style.cursor='pointer';skuTd.title='Tap to see vertical equivalents';
+    var _indBase=isI?s.s:(IE[s.s]||s.s);
+    skuTd.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(_indBase));
     tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
     if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
     tbody.appendChild(tr);
