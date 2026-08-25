@@ -207,7 +207,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .vert-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f0f0;}
 .vert-row:last-child{border-bottom:none;}
 .vert-badge{font-size:.64rem;font-weight:700;color:#fff;padding:2px 7px;border-radius:10px;min-width:90px;text-align:center;font-family:'Poppins',sans-serif;white-space:nowrap;}
-.vert-sku{font-size:.78rem;font-weight:700;color:#F16022;font-family:'Poppins',sans-serif;min-width:76px;}
+.vert-sku{font-size:.78rem;font-weight:700;font-family:'Poppins',sans-serif;min-width:76px;}
 .vert-desc{font-size:.68rem;color:#555;flex:1;line-height:1.3;}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
@@ -923,7 +923,7 @@ function showVertPopup(indSku){
     hasAny=true;
     var row=document.createElement('div');row.className='vert-row';
     var badge=document.createElement('span');badge.className='vert-badge';badge.textContent=vname;badge.style.background=VCOL[vname]||'#888';row.appendChild(badge);
-    var sk=document.createElement('span');sk.className='vert-sku';sk.textContent=verts[vname].sku;row.appendChild(sk);
+    var sk=document.createElement('span');sk.className='vert-sku';sk.textContent=verts[vname].sku;sk.style.color=VCOL[vname]||'#888';row.appendChild(sk);
     var ds=document.createElement('span');ds.className='vert-desc';ds.textContent=verts[vname].desc;row.appendChild(ds);
     body.appendChild(row);
   });
