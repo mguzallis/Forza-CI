@@ -514,16 +514,17 @@ function showSingle(d,container){
       var tr=mk('tr');
       var vbadgeTd=mk('td','');var vbadge=mk('span','',v);vbadge.style.cssText='display:inline-block;padding:2px 9px;border-radius:10px;font-size:.64rem;font-weight:700;color:#fff;background:'+(VCOL[v]||'#888')+';font-family:\'Poppins\',sans-serif;white-space:nowrap;';vbadgeTd.appendChild(vbadge);tr.appendChild(vbadgeTd);
       var val=cr[v]||'';
-      var skuTd=document.createElement('td');skuTd.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:6px;';
+      var skuTd=mk('td','');
+      var skuWrap=document.createElement('div');skuWrap.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:6px;';
       var skuSpan=document.createElement('span');skuSpan.textContent=val||'-';
       if(val&&VCOL[v]){skuSpan.style.fontWeight='700';skuSpan.style.color=VCOL[v];}
-      skuTd.appendChild(skuSpan);
+      skuWrap.appendChild(skuSpan);
       if(val){
-        var spUrl=getSPUrl(val);
-        if(spUrl){var pill=document.createElement('a');pill.textContent='SDS/TDS';pill.href='#';pill.target='_blank';
+        var pill=document.createElement('a');pill.textContent='SDS/TDS';pill.href='#';pill.target='_blank';
         pill.style.cssText='font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;text-decoration:none;font-family:Poppins,sans-serif;white-space:nowrap;flex-shrink:0;';
-        pill.addEventListener('click',(function(u){return function(e){e.preventDefault();e.stopPropagation();window.open(u,'_blank');};})(spUrl));skuTd.appendChild(pill);}}
-      tr.appendChild(skuTd);tbody.appendChild(tr);
+        pill.addEventListener('click',(function(s){return function(e){e.preventDefault();e.stopPropagation();var u=getSPUrl(s);if(u)window.open(u,'_blank');};})(val));
+        skuWrap.appendChild(pill);}
+      skuTd.appendChild(skuWrap);tr.appendChild(skuTd);tbody.appendChild(tr);
     });
     tbl.appendChild(tbody);makeSortable(tbl);cards.appendChild(tbl);
   }
