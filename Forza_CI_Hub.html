@@ -219,6 +219,14 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .tds-link{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;text-decoration:none;font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:600;}
 .tds-link-tds{background:#EEF3FA;color:#1B3764;border:1px solid #C5D5E8;}
 .tds-note{font-size:.65rem;color:#999;text-align:center;padding-top:2px;}
+
+@media(max-width:600px){
+  .fg-tbl td,.fg-tbl th{padding:5px 6px;font-size:.68rem;}
+  .fg-f,.fg-t{min-width:100px;width:100px;}
+  .vtbl td,.vtbl th{padding:5px 6px;font-size:.7rem;}
+  .vtbl{font-size:.7rem;}
+  .fg-tbl{min-width:360px;}
+}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -685,8 +693,16 @@ function renderRepo(){
           VO.forEach(function(v){
             var tr2=mk('tr');
             var vtd2=mk('td','');var vbadge2=mk('span','',v);vbadge2.style.cssText='display:inline-block;padding:2px 9px;border-radius:10px;font-size:.64rem;font-weight:700;color:#fff;background:'+(VCOL[v]||'#888')+';font-family:\'Poppins\',sans-serif;white-space:nowrap;';vtd2.appendChild(vbadge2);tr2.appendChild(vtd2);
-            var val=VC[ind][v]||'',td=mk('td',val?'':'dim',val||'-');
-            if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
+            var val=VC[ind][v]||'';
+            var td=mk('td',val?'':'dim','');
+            if(val){
+              var skuSpan2=document.createElement('span');skuSpan2.textContent=val;
+              if(VCOL[v]){skuSpan2.style.fontWeight='700';skuSpan2.style.color=VCOL[v];}
+              var pill2=document.createElement('a');pill2.textContent=' SDS/TDS';pill2.href='#';pill2.target='_blank';
+              pill2.style.cssText='margin-left:6px;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;text-decoration:none;font-family:Poppins,sans-serif;white-space:nowrap;display:inline-block;';
+              pill2.addEventListener('click',(function(s){return function(e){e.preventDefault();e.stopPropagation();var u=getSPUrl(s);if(u)window.open(u,'_blank');};})(val));
+              td.appendChild(skuSpan2);td.appendChild(pill2);
+            } else { td.textContent='-'; }
             tr2.appendChild(td);tbody2.appendChild(tr2);
           });
           tbl2.appendChild(tbody2);box.appendChild(tbl2);el.appendChild(box);
