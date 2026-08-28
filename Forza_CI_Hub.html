@@ -227,6 +227,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
   .vtbl{font-size:.7rem;}
   .fg-tbl{min-width:360px;}
 }
+
+.blog-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.blog-fbtn{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:.7rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;color:#555;white-space:nowrap;}
+.blog-fbtn.active{background:#1B3764;color:#fff;border-color:#1B3764;}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.blog-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:8px;}
+.blog-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.10);border-color:#1B3764;}
+.blog-cat-pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.62rem;font-weight:700;color:#fff;font-family:'Poppins',sans-serif;white-space:nowrap;align-self:flex-start;}
+.blog-title{font-size:.82rem;font-weight:700;color:#1B3764;font-family:'Poppins',sans-serif;line-height:1.35;}
+.blog-excerpt{font-size:.72rem;color:#666;line-height:1.45;flex:1;}
+.blog-read{font-size:.68rem;font-weight:600;color:#F16022;font-family:'Poppins',sans-serif;margin-top:2px;}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -259,6 +270,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <button class="tab" id="tb-intel">Competitor Intel</button>
     <button class="tab" id="tb-fieldguides">Field Guides</button>
     <button class="tab" id="tb-documents">Documents</button>
+    <button class="tab" id="tb-blog">Blogs</button>
   </div>
   <div id="sec-lookup" class="sec active">
     <span class="slabel">Competitor SKU or Product Name</span>
@@ -280,6 +292,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <div id="intelDetail"></div>
   </div>
   <div id="sec-fieldguides" class="sec"><div id="fgContent"></div></div>
+  <div id="sec-blog" class="sec">
+    <div id="blogContent"></div>
+  </div>
   <div id="sec-documents" class="sec">
     <div class="dtoolbar">
       <input class="dsearch" id="docSearch" type="text" placeholder="Search documents...">
@@ -424,23 +439,24 @@ var VO=['Industrial','Transportation','Marine','Construction','Insulation','Comp
 var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
 var TL={battle:'Battle Card',crosswalk:'Crosswalk',brief:'Exec Brief',guide:'Field Guide',comparison:'Comparison',other:'Other'};
 var UPC_BUILTIN={'051111072783':'Hi-Strength 90','51111072783':'Hi-Strength 90','021200725715':'Super 77 Multi-Purpose','021200506995':'Super 77 Multi-Purpose','021200508524':'24 Foam & Fabric Spray','021200795626':'HoldFast 70','051135809793':'Sikaflex-252','51135809793':'Sikaflex-252','051135808000':'Sikaflex-221','051135808109':'Sikaflex-291','723513802656':'75-AM'};
-var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='';
+var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='',blogB=false,blogCat='all';
 
 function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
 function nm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
 
 // TABS
-['lookup','verticals','intel','fieldguides','documents'].forEach(function(id){
+['lookup','verticals','intel','fieldguides','documents','blog'].forEach(function(id){
   document.getElementById('tb-'+id).addEventListener('click',function(){showTab(id);});
 });
 function showTab(t){
-  ['lookup','verticals','intel','fieldguides','documents'].forEach(function(id){
+  ['lookup','verticals','intel','fieldguides','documents','blog'].forEach(function(id){
     document.getElementById('sec-'+id).classList.toggle('active',id===t);
     document.getElementById('tb-'+id).classList.toggle('active',id===t);
   });
   if(t==='verticals'&&!vB){buildVerts();vB=true;}
   if(t==='intel'&&!intelB){buildIntel();intelB=true;}
+  if(t==='blog'&&!blogB){buildBlog();blogB=true;}
   if(t==='fieldguides'&&!fgB){buildFG();fgB=true;}
   if(t==='documents'){buildDocs();}
 }
@@ -979,6 +995,38 @@ function showTdsPopup(sku){
   document.getElementById("tdsPopupOverlay").style.display="flex";
 }
 function closeTdsPopup(){document.getElementById("tdsPopupOverlay").style.display="none";}
+
+var BLOG_POSTS=[{"title": "Deck Tile Systems Manufacturer and OA4", "cat": "Case Study", "excerpt": "How a deck tile systems manufacturer evaluated bonding process requirements with ForzaBOND OA4.", "url": "https://forzabuilt.com/blog/case-studies/deck-tile-systems-manufacturer-oa4-case-study/"}, {"title": "Architectural Building Products Manufacturer and OA12", "cat": "Case Study", "excerpt": "How an architectural building products manufacturer implemented ForzaBOND OA12 in production applications.", "url": "https://forzabuilt.com/blog/case-studies/architectural-building-products-manufacturer-oa12-case-study/"}, {"title": "Leading Agricultural Equipment Manufacturer and R221", "cat": "Case Study", "excerpt": "A case study on agricultural equipment sealing and bonding considerations with ForzaBOND R221.", "url": "https://forzabuilt.com/blog/case-studies/leading-agricultural-equipment-manufacturer-r221-case-study/"}, {"title": "Commercial Trailers Manufacturer and T-R785", "cat": "Case Study", "excerpt": "A commercial trailer manufacturer case study covering sealant application strategy with T-R785.", "url": "https://forzabuilt.com/blog/case-studies/commercial-trailers-manufacturer-t-r785-case-study/"}, {"title": "Specialized Trailers Manufacturer and ForzaTAPE T215", "cat": "Case Study", "excerpt": "A specialized trailer manufacturing case study focused on bonding tape integration with ForzaTAPE T215.", "url": "https://forzabuilt.com/blog/case-studies/specialized-trailers-manufacturer-t215-case-study/"}, {"title": "Leading Truck Manufacturer and ForzaBOND T-OS150", "cat": "Case Study", "excerpt": "How a leading truck manufacturer approached seam sealing and assembly consistency using ForzaBOND T-OS150.", "url": "https://forzabuilt.com/blog/case-studies/leading-truck-manufacturer-t-os150-case-study/"}, {"title": "Mattress Manufacturer and IC932", "cat": "Case Study", "excerpt": "A case study on adhesive process considerations for a mattress manufacturer using IC932 in production workflows.", "url": "https://forzabuilt.com/blog/case-studies/mattress-manufacturer-ic932-case-study/"}, {"title": "Operable Partition Systems Manufacturer and OS2", "cat": "Case Study", "excerpt": "How an operable partition systems manufacturer approached panel and assembly sealing with ForzaBOND OS2.", "url": "https://forzabuilt.com/blog/case-studies/operable-partition-systems-manufacturer-os2-case-study/"}, {"title": "Wilson Trailer Hopper Seams & ForzaBOND\u00ae OS24", "cat": "Case Study", "excerpt": "How Wilson Trailer uses ForzaBOND\u00ae OS24 for hopper seam sealing \u2014 structural bonding, environmental sealing, and decades of verified performance.", "url": "https://forzabuilt.com/blog/case-studies/wilson-trailer-forzabond-os24-white-paper-2025/"}, {"title": "Duncan Aviation & ForzaBOND\u00ae 81-0389", "cat": "Case Study", "excerpt": "How Duncan Aviation and Forza built a 20+ year adhesive partnership around ForzaBOND\u00ae 81-0389 for aircraft interior refurbishment.", "url": "https://forzabuilt.com/blog/case-studies/duncan-aviation-white-paper-2025/"}, {"title": "Forza Launches T-OS150 for Bus, Trailer & Vehicle Manufacturing", "cat": "In The News", "excerpt": "U.S. made Modified Silane sealant gives transportation manufacturers a higher-performance alternative to traditional polyurethane and silicone formulations.", "url": "https://forzabuilt.com/blog/in-the-news/forza-launches-forzaseal-t-os150/"}, {"title": "Forza Positions HyPer Polymer\u2122 Technology Ahead of Earth Day", "cat": "In The News", "excerpt": "Forza's HyPer Polymer\u2122 adhesives are solvent-free, U.S.-made, and built for manufacturers who need stronger bonds with fewer compliance risks.", "url": "https://forzabuilt.com/blog/in-the-news/forza-positions-hyper-polymer-technology-as-a-superior-environmentally-responsible-adhesive-ahead-of-earth-day/"}, {"title": "Forza Leads U.S. with Advanced MS Polymer Adhesive Technology", "cat": "In The News", "excerpt": "Forza expands its HyPer Polymer technology platform to help manufacturers adopt safer, high-performance bonding solutions.", "url": "https://forzabuilt.com/blog/in-the-news/forza-leads-us-with-advanced-ms-polymer-adhesive-technology/"}, {"title": "Forza Celebrates Historic Growth & New Eagle Brand Identity", "cat": "In The News", "excerpt": "Forza achieves record-breaking revenue and customer loyalty, introducing a new Eagle logo symbolizing precision, performance, and progress.", "url": "https://forzabuilt.com/blog/in-the-news/forza-celebrates-historic-growth-new-eagle-brand-identity/"}, {"title": "Forza Launches ForzaBOND\u2122 R160 5-Minute Epoxy", "cat": "In The News", "excerpt": "New ForzaBOND R160 5-Min Epoxy delivers faster installation, superior bonding, and USA reliability for construction professionals.", "url": "https://forzabuilt.com/blog/in-the-news/forza-launches-forzabond-r160-5-minute-epoxy-expanding-its-high-performance-adhesive-solutions-for-construction-pros/"}, {"title": "FORZA Leads Industry Shift Toward Safer MS Sealants", "cat": "In The News", "excerpt": "Forza sets the new standard in industrial bonding with advanced MS polymers that meet evolving EPA and safety standards.", "url": "https://forzabuilt.com/blog/in-the-news/forza-leads-industry-shift-toward-safer-more-sustainable-ms-sealants-and-polymers/"}, {"title": "Forza Joins Tilt-Up Concrete Association (TCA)", "cat": "In The News", "excerpt": "Forza Inc. proudly announces its membership in the Tilt-Up Concrete Association, reinforcing its commitment to high-performance construction solutions.", "url": "https://forzabuilt.com/blog/in-the-news/forza-joins-tilt-up-concrete-association-tca/"}, {"title": "Forza Expands U.S. Manufacturing in Council Bluffs", "cat": "In The News", "excerpt": "Forza Inc. proudly announces the expansion of its U.S. manufacturing facilities in Council Bluffs, Iowa.", "url": "https://forzabuilt.com/blog/in-the-news/forza-expands-u-s-manufacturing-reinforces-commitment-to-made-in-america-excellence/"}, {"title": "Advanced Projects You Can Tackle with Contact Adhesives", "cat": "Adhesives", "excerpt": "Explore advanced bonding applications and what makes contact adhesives the right choice for high-demand industrial projects.", "url": "https://forzabuilt.com/blog/unveiling-the-potential-advanced-projects-you-can-tackle-with-contact-adhesives/"}, {"title": "Surface Prep: How Proper Preparation Improves Adhesion", "cat": "Adhesives", "excerpt": "Struggling with bond failures? Learn how proper surface prep improves adhesion, reduces defects, and ensures consistent performance.", "url": "https://forzabuilt.com/blog/surface-preparation-adhesion/"}, {"title": "Canister Spray Adhesives for Fiberglass Layup", "cat": "Composites", "excerpt": "Stabilize reinforcements, prevent fiber shift, and improve laminate quality in RTM and infusion molding with canister spray adhesives.", "url": "https://forzabuilt.com/blog/canister-spray-adhesives-fiberglass-layup/"}, {"title": "ForzaBOND\u00ae IC933 Multi-Purpose Contact Adhesive", "cat": "Adhesives", "excerpt": "IC933 sets new standards in bonding performance while adhering to stringent California VOC requirements under SCAQMD Rule 1168.", "url": "https://forzabuilt.com/blog/forzabond-ic933/"}, {"title": "Solvent-Based vs Water-Based Adhesives", "cat": "Adhesives", "excerpt": "Compare solvent-based and water-based adhesives \u2014 learn their pros, cons, and best uses to choose the right adhesive for your project.", "url": "https://forzabuilt.com/blog/solvent-based-vs-water-based-adhesives/"}, {"title": "Contact Cement vs Contact Adhesive: What's the Difference?", "cat": "Adhesives", "excerpt": "Expert guide covering durability, application methods, and which bonding solution is right for your application.", "url": "https://forzabuilt.com/blog/contact-cement-vs-contact-adhesive/"}, {"title": "Best Adhesive for Fiberglass: Epoxies, MMA, and Urethanes", "cat": "Composites", "excerpt": "Compare epoxies, methacrylates, and urethanes for stronger, weather-resistant fiberglass bonds.", "url": "https://forzabuilt.com/blog/best-adhesive-for-fiberglass/"}, {"title": "Manufactured Housing Adhesives", "cat": "Building", "excerpt": "How Forza has partnered with prefab home and building manufacturers to create revolutionary adhesive solutions including PC27.", "url": "https://forzabuilt.com/blog/manufactured-housing-adhesives/"}];
+var BLOG_CAT_COLORS={"Case Study": "#137875", "In The News": "#B83D35", "Adhesives": "#F16A26", "Composites": "#888888", "Building": "#8B6914", "Marine": "#137875", "Manufacturing": "#1B3764", "Innovation": "#D0157D", "Technical": "#1B3764"};
+function buildBlog(){
+  var el=document.getElementById("blogContent");el.innerHTML="";
+  var cats=["all"];BLOG_POSTS.forEach(function(p){if(cats.indexOf(p.cat)===-1)cats.push(p.cat);});
+  var filter=document.createElement("div");filter.className="blog-filter";
+  cats.forEach(function(c){
+    var btn=document.createElement("button");btn.className="blog-fbtn"+(blogCat===c?" active":"");
+    btn.textContent=c==="all"?"All Posts":c;
+    btn.addEventListener("click",function(){blogCat=c;buildBlog();});
+    filter.appendChild(btn);
+  });
+  el.appendChild(filter);
+  var grid=document.createElement("div");grid.className="blog-grid";
+  var filtered=blogCat==="all"?BLOG_POSTS:BLOG_POSTS.filter(function(p){return p.cat===blogCat;});
+  filtered.forEach(function(p){
+    var card=document.createElement("div");card.className="blog-card";
+    card.addEventListener("click",function(){window.open(p.url,"_blank");});
+    var pill=document.createElement("span");pill.className="blog-cat-pill";
+    pill.textContent=p.cat;pill.style.background=BLOG_CAT_COLORS[p.cat]||"#888";
+    card.appendChild(pill);
+    var title=document.createElement("div");title.className="blog-title";title.textContent=p.title;
+    card.appendChild(title);
+    var excerpt=document.createElement("div");excerpt.className="blog-excerpt";excerpt.textContent=p.excerpt;
+    card.appendChild(excerpt);
+    var read=document.createElement("div");read.className="blog-read";read.textContent="Read Article →";
+    card.appendChild(read);
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
 </script>
 
 <div id="vertPopupOverlay" class="vert-popup-overlay" style="display:none;" onclick="if(event.target===this)closeVertPopup();">
