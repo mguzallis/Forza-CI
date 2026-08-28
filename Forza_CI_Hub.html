@@ -768,7 +768,7 @@ function showIntelDetail(c,view){
         var baseInd=s.ind?s.ind.replace('*',''):'';
         indText.style.cursor='pointer';indText.title='Tap to see vertical equivalents';
         indText.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(baseInd));
-        var docBtn=document.createElement('span');docBtn.innerHTML='&#128196;';docBtn.style.cssText='cursor:pointer;font-size:.75rem;opacity:0.65;flex-shrink:0;';docBtn.title='View TDS/SDS';
+        var docBtn=document.createElement('span');docBtn.textContent='SDS/TDS';docBtn.style.cssText='cursor:pointer;font-size:.6rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 5px;flex-shrink:0;font-family:Poppins,sans-serif;';docBtn.title='View TDS/SDS on SharePoint';
         docBtn.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showTdsPopup(bi);};})(baseInd));
         indCell.appendChild(indText);indCell.appendChild(docBtn);tr.appendChild(indCell);tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
@@ -804,7 +804,7 @@ function buildFG(){
     (isFas?['Competitor SKU','Application','Forza Industrial','Forza Transportation']:['Competitor SKU','Application','Forza Marine']).forEach(function(h){hr.appendChild(mk('th',null,h));});
     thead.appendChild(hr);tbl.appendChild(thead);
     var tb=mk('tbody');
-    sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(mk('td','fg-f',row[2]||'-'));if(isFas)tr.appendChild(mk('td','fg-t',row[3]||'-'));tb.appendChild(tr);});
+    sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));var fgTd2=mk('td','fg-f','');var fgSkuSpan2=document.createElement('span');fgSkuSpan2.textContent=row[2]||'-';fgTd2.appendChild(fgSkuSpan2);if(row[2]&&row[2]!=='-'){var fgBtn2=document.createElement('span');fgBtn2.textContent='SDS/TDS';fgBtn2.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn2.title='View TDS/SDS';fgBtn2.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(row[2].replace('*','').split(' ')[0]));fgTd2.appendChild(fgBtn2);}tr.appendChild(fgTd2);if(isFas){var fgTd3=mk('td','fg-t','');var fgSkuSpan3=document.createElement('span');fgSkuSpan3.textContent=row[3]||'-';fgTd3.appendChild(fgSkuSpan3);if(row[3]&&row[3]!=='-'){var fgBtn3=document.createElement('span');fgBtn3.textContent='SDS/TDS';fgBtn3.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn3.title='View TDS/SDS';fgBtn3.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(row[3].replace('*','').split(' ')[0]));fgTd3.appendChild(fgBtn3);}tr.appendChild(fgTd3);}tb.appendChild(tr);});
     tbl.appendChild(tb);makeSortable(tbl);w.appendChild(tbl);el.appendChild(w);
   });
 }
@@ -929,7 +929,7 @@ function showVertPopup(indSku){
     var row=document.createElement('div');row.className='vert-row';
     var badge=document.createElement('span');badge.className='vert-badge';badge.textContent=vname;badge.style.background=VCOL[vname]||'#888';row.appendChild(badge);
     var sk=document.createElement('span');sk.className='vert-sku';sk.textContent=verts[vname].sku;sk.style.color=VCOL[vname]||'#888';
-    var docI=document.createElement('span');docI.style.cssText='cursor:pointer;font-size:.7rem;opacity:0.6;margin-left:4px;';docI.innerHTML='&#128196;';docI.title='View TDS/SDS';
+    var docI=document.createElement('span');docI.textContent='SDS/TDS';docI.style.cssText='cursor:pointer;font-size:.6rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 5px;margin-left:4px;font-family:Poppins,sans-serif;';docI.title='View TDS/SDS on SharePoint';
     docI.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(verts[vname].sku));
     row.appendChild(sk);row.appendChild(docI);
     var ds=document.createElement('span');ds.className='vert-desc';ds.textContent=verts[vname].desc;row.appendChild(ds);
@@ -948,7 +948,7 @@ function showTdsPopup(sku){
   var body=document.getElementById("tdsPopupBody");body.innerHTML="";
   var url=getSPUrl(clean);
   if(url){var a=document.createElement("a");a.className="tds-link tds-link-tds";a.href=url;a.target="_blank";
-    a.innerHTML="<span style=\"font-size:1rem;\">&#128196;</span><span>View TDS / SDS on SharePoint</span>";
+    a.textContent="View TDS / SDS on SharePoint";
     body.appendChild(a);
   }else{var msg=document.createElement("div");msg.style.cssText="font-size:.75rem;color:#888;padding:4px 0;";
     msg.textContent="No SharePoint folder mapped for "+clean+".";body.appendChild(msg);}
