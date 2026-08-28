@@ -768,7 +768,7 @@ function showIntelDetail(c,view){
         var baseInd=s.ind?s.ind.replace('*',''):'';
         indText.style.cursor='pointer';indText.title='Tap to see vertical equivalents';
         indText.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(baseInd));
-        var docBtn=mk('span','','&#128196;');docBtn.style.cssText='cursor:pointer;font-size:.75rem;opacity:0.65;flex-shrink:0;';docBtn.title='View TDS/SDS';
+        var docBtn=document.createElement('span');docBtn.innerHTML='&#128196;';docBtn.style.cssText='cursor:pointer;font-size:.75rem;opacity:0.65;flex-shrink:0;';docBtn.title='View TDS/SDS';
         docBtn.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showTdsPopup(bi);};})(baseInd));
         indCell.appendChild(indText);indCell.appendChild(docBtn);tr.appendChild(indCell);tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
