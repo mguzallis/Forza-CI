@@ -457,13 +457,13 @@ function nm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
 
 // TABS
-document.addEventListener('DOMContentLoaded',function(){
+function initTabs(){
   ['lookup','verticals','intel','fieldguides','blog','wp','training','documents'].forEach(function(id){
     var el=document.getElementById('tb-'+id);
     if(el)el.addEventListener('click',function(){showTab(id);});
   });
   showTab('lookup');
-});
+}
 function showTab(t){
   ['lookup','verticals','intel','fieldguides','blog','wp','training','documents'].forEach(function(id){
     document.getElementById('sec-'+id).classList.toggle('active',id===t);
@@ -1051,5 +1051,6 @@ function buildTraining(){
 </div>
 
 <div id="vertPopupOverlay" class="vert-popup-overlay" style="display:none;" onclick="if(event.target===this)closeVertPopup();"><div class="vert-popup"><div class="vert-popup-hdr"><span class="vert-popup-title" id="vertPopupTitle">Vertical Equivalents</span><button class="vert-popup-close" onclick="closeVertPopup()">&#x2715;</button></div><div class="vert-popup-body" id="vertPopupBody"></div></div></div>
+<script>initTabs();</script>
 </body>
 </html>
