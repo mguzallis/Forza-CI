@@ -238,6 +238,16 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .blog-title{font-size:.82rem;font-weight:700;color:#1B3764;font-family:'Poppins',sans-serif;line-height:1.35;}
 .blog-excerpt{font-size:.72rem;color:#666;line-height:1.45;flex:1;}
 .blog-read{font-size:.68rem;font-weight:600;color:#F16022;font-family:'Poppins',sans-serif;margin-top:2px;}
+
+.wp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.wp-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:6px;text-decoration:none;}
+.wp-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.10);border-color:#1B3764;}
+.wp-sku-pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.62rem;font-weight:700;color:#fff;background:#F16A26;font-family:'Poppins',sans-serif;white-space:nowrap;align-self:flex-start;}
+.wp-company{font-size:.84rem;font-weight:700;color:#1B3764;font-family:'Poppins',sans-serif;line-height:1.3;}
+.wp-desc{font-size:.72rem;color:#666;line-height:1.45;flex:1;}
+.wp-open{font-size:.68rem;font-weight:600;color:#F16022;font-family:'Poppins',sans-serif;margin-top:4px;}
+.wp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.wp-header-title{font-size:.78rem;font-weight:700;color:#555;font-family:'Poppins',sans-serif;}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -271,6 +281,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <button class="tab" id="tb-fieldguides">Field Guides</button>
     <button class="tab" id="tb-documents">Documents</button>
     <button class="tab" id="tb-blog">Blogs</button>
+    <button class="tab" id="tb-wp">White Papers</button>
   </div>
   <div id="sec-lookup" class="sec active">
     <span class="slabel">Competitor SKU or Product Name</span>
@@ -292,6 +303,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <div id="intelDetail"></div>
   </div>
   <div id="sec-fieldguides" class="sec"><div id="fgContent"></div></div>
+  <div id="sec-wp" class="sec">
+    <div id="wpContent"></div>
+  </div>
   <div id="sec-blog" class="sec">
     <div id="blogContent"></div>
   </div>
@@ -439,24 +453,25 @@ var VO=['Industrial','Transportation','Marine','Construction','Insulation','Comp
 var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
 var TL={battle:'Battle Card',crosswalk:'Crosswalk',brief:'Exec Brief',guide:'Field Guide',comparison:'Comparison',other:'Other'};
 var UPC_BUILTIN={'051111072783':'Hi-Strength 90','51111072783':'Hi-Strength 90','021200725715':'Super 77 Multi-Purpose','021200506995':'Super 77 Multi-Purpose','021200508524':'24 Foam & Fabric Spray','021200795626':'HoldFast 70','051135809793':'Sikaflex-252','51135809793':'Sikaflex-252','051135808000':'Sikaflex-221','051135808109':'Sikaflex-291','723513802656':'75-AM'};
-var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='',blogB=false,blogCat='all';
+var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='',blogB=false,blogCat='all',wpB=false;
 
 function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
 function nm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
 
 // TABS
-['lookup','verticals','intel','fieldguides','documents','blog'].forEach(function(id){
+['lookup','verticals','intel','fieldguides','documents','blog','wp'].forEach(function(id){
   document.getElementById('tb-'+id).addEventListener('click',function(){showTab(id);});
 });
 function showTab(t){
-  ['lookup','verticals','intel','fieldguides','documents','blog'].forEach(function(id){
+  ['lookup','verticals','intel','fieldguides','documents','blog','wp'].forEach(function(id){
     document.getElementById('sec-'+id).classList.toggle('active',id===t);
     document.getElementById('tb-'+id).classList.toggle('active',id===t);
   });
   if(t==='verticals'&&!vB){buildVerts();vB=true;}
   if(t==='intel'&&!intelB){buildIntel();intelB=true;}
   if(t==='blog'&&!blogB){buildBlog();blogB=true;}
+  if(t==='wp'&&!wpB){buildWP();wpB=true;}
   if(t==='fieldguides'&&!fgB){buildFG();fgB=true;}
   if(t==='documents'){buildDocs();}
 }
@@ -1023,6 +1038,29 @@ function buildBlog(){
     card.appendChild(excerpt);
     var read=document.createElement("div");read.className="blog-read";read.textContent="Read Article →";
     card.appendChild(read);
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+var WP_DATA=[{"company": "BedInABox", "sku": "IC932", "desc": "Mattress manufacturing contact adhesive application \u2014 high-volume foam and fabric bonding with ForzaBOND IC932.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/BedInABox%20-%20IC932%20White%20Paper.docx?d=wed373a62a9e94f28a1f2e07ef139a0bc&csf=1&web=1&e=euz99g"}, {"company": "Behlen Manufacturing", "sku": "R221", "desc": "Agricultural equipment structural bonding \u2014 sealing and assembly considerations with ForzaBOND R221.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Behlen%20Manufacturing%20-%20R221%20White%20Paper.docx?d=w4a8c54ef887942138d42ee8c025fd805&csf=1&web=1&e=NY3iG4"}, {"company": "Construction Specialties", "sku": "OA12", "desc": "Architectural building products manufacturing \u2014 production bonding implementation with ForzaBOND OA12.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Construction%20Specialties%20-%20OA12%20White%20Paper.docx?d=wde1f96854ce4426db3fcffc58930fbe5&csf=1&web=1&e=uPju1C"}, {"company": "Embraco", "sku": "OA4", "desc": "Compressor and refrigeration assembly \u2014 structural bonding process evaluation with ForzaBOND OA4.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Embraco%20-%20OA4%20White%20Paper.docx?d=w6111f0b9d27349d2abe1ef77ab0b706c&csf=1&web=1&e=ikyI8d"}, {"company": "Modernfold", "sku": "OS2", "desc": "Operable partition systems \u2014 panel and assembly sealing with ForzaBOND OS2.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Modernfold%20-%20OS2%20White%20Paper.docx?d=wcb9af2b906054377a5ebcff4890c36bf&csf=1&web=1&e=cIcMfn"}, {"company": "Titan Trailer", "sku": "T-R785", "desc": "Commercial trailer manufacturing \u2014 sealant application strategy with ForzaBOND T-R785.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Titan%20Trailer%20-%20T-R785%20White%20Paper.docx?d=w86793be147924ae4a896048a942abad8&csf=1&web=1&e=6TM0Wp"}, {"company": "Trail King", "sku": "T215", "desc": "Specialized trailer manufacturing \u2014 bonding tape integration with ForzaTAPE T215.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Trail%20King%20-%20T215%20White%20Paper.docx?d=w815e2fe11ed54245b300db85cf37a38c&csf=1&web=1&e=XibsPV"}, {"company": "Volvo Trucks", "sku": "T-OS150", "desc": "Truck manufacturing seam sealing \u2014 assembly consistency and sealing performance with ForzaBOND T-OS150.", "url": "https://applichem.sharepoint.com/:w:/r/sites/Marketing/Shared%20Documents/General/Design%20Working%20Files/14.%20Forza%20Science%20Book/White%20Papers%20for%20Application%20Stories/Volvo%20Trucks%20-%20T-OS150%20White%20Paper.docx?d=wd86a4d13398849919e062db92ea4ffeb&csf=1&web=1&e=wtZynn"}];
+function buildWP(){
+  var el=document.getElementById("wpContent");el.innerHTML="";
+  var hdr=document.createElement("div");hdr.className="wp-header";
+  var htitle=document.createElement("div");htitle.className="wp-header-title";
+  htitle.textContent=WP_DATA.length+" white papers — opens in SharePoint (login required)";
+  hdr.appendChild(htitle);el.appendChild(hdr);
+  var grid=document.createElement("div");grid.className="wp-grid";
+  WP_DATA.forEach(function(p){
+    var card=document.createElement("a");card.className="wp-card";card.href=p.url;card.target="_blank";
+    var pill=document.createElement("span");pill.className="wp-sku-pill";pill.textContent=p.sku;
+    card.appendChild(pill);
+    var company=document.createElement("div");company.className="wp-company";company.textContent=p.company;
+    card.appendChild(company);
+    var desc=document.createElement("div");desc.className="wp-desc";desc.textContent=p.desc;
+    card.appendChild(desc);
+    var open=document.createElement("div");open.className="wp-open";open.textContent="Open Document →";
+    card.appendChild(open);
     grid.appendChild(card);
   });
   el.appendChild(grid);
