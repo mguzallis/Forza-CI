@@ -489,7 +489,7 @@ function showRes(m,q){
   m.forEach(function(d){
     var row=mk('div','rrow');var left=mk('div');
     left.appendChild(mk('div','rr-sku',d.comp));left.appendChild(mk('div','rr-app',d.brand+' - '+d.app.substring(0,55)));
-    row.appendChild(left);var rrf=mk('div','rr-forza'+(d.ind&&d.ind.endsWith('*')?' rr-approx':''),d.ind||'-');rrf.style.cursor='pointer';rrf.title='Tap to view TDS/SDS';rrf.addEventListener('click',(function(sk){return function(e){e.stopPropagation();showTdsPopup(sk);};})(d.ind||''));row.appendChild(rrf);
+    row.appendChild(left);var rrf=mk('div','rr-forza'+(d.ind&&d.ind.endsWith('*')?' rr-approx':''),d.ind||'-');rrf.style.cursor='pointer';rrf.title='Tap to view TDS/SDS';rrf.addEventListener('click',(function(sk){return function(e){e.stopPropagation();var u=getSPUrl(sk.replace('*',''));if(u)window.open(u,'_blank');};})(d.ind||''));row.appendChild(rrf);
     row.addEventListener('click',(function(dd){return function(){document.getElementById('skuInput').value=dd.comp;showSingle(dd,el);};})(d));
     el.appendChild(row);
   });
@@ -513,7 +513,7 @@ function showSingle(d,container){
       var tr=mk('tr');tr.appendChild(mk('td',null,v));
       var val=cr[v]||'',td=mk('td',val?'':'dim',val||'-');
       if(val&&VCOL[v]){td.style.fontWeight='700';td.style.color=VCOL[v];}
-      if(val){td.style.cursor='pointer';td.title='Tap to view TDS/SDS';td.addEventListener('click',(function(sk){return function(e){e.stopPropagation();showTdsPopup(sk);};})(val));}
+      if(val){td.style.cursor='pointer';td.title='Tap to view TDS/SDS';td.addEventListener('click',(function(sk){return function(e){e.stopPropagation();var u=getSPUrl(sk);if(u)window.open(u,'_blank');};})(val));}
       tr.appendChild(td);tbody.appendChild(tr);
     });
     tbl.appendChild(tbody);makeSortable(tbl);cards.appendChild(tbl);
@@ -769,7 +769,7 @@ function showIntelDetail(c,view){
         indText.style.cursor='pointer';indText.title='Tap to see vertical equivalents';
         indText.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(baseInd));
         var docBtn=document.createElement('span');docBtn.textContent='SDS/TDS';docBtn.style.cssText='cursor:pointer;font-size:.6rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 5px;flex-shrink:0;font-family:Poppins,sans-serif;';docBtn.title='View TDS/SDS on SharePoint';
-        docBtn.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showTdsPopup(bi);};})(baseInd));
+        docBtn.addEventListener('click',(function(bi){return function(e){e.stopPropagation();var u=getSPUrl(bi);if(u)window.open(u,'_blank');};})(baseInd));
         indCell.appendChild(indText);indCell.appendChild(docBtn);tr.appendChild(indCell);tb.appendChild(tr);});
       tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
       if(hasAsterisk){var note=mk('div','');note.style.cssText='margin-top:10px;padding:8px 12px;background:#FFF8EC;border-left:3px solid #F16022;font-size:.72rem;color:#555;line-height:1.5;';note.textContent='* Chemistry family match — Forza equivalent is in the same product class but may differ in specific formulation, cure system, or performance characteristics. Verify application suitability and compare TDS before substituting.';dp.appendChild(note);}
@@ -804,7 +804,7 @@ function buildFG(){
     (isFas?['Competitor SKU','Application','Forza Industrial','Forza Transportation']:['Competitor SKU','Application','Forza Marine']).forEach(function(h){hr.appendChild(mk('th',null,h));});
     thead.appendChild(hr);tbl.appendChild(thead);
     var tb=mk('tbody');
-    sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));var fgTd2=mk('td','fg-f','');var fgSkuSpan2=document.createElement('span');fgSkuSpan2.textContent=row[2]||'-';fgTd2.appendChild(fgSkuSpan2);if(row[2]&&row[2]!=='-'){var fgBtn2=document.createElement('span');fgBtn2.textContent='SDS/TDS';fgBtn2.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn2.title='View TDS/SDS';fgBtn2.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(row[2].replace('*','').split(' ')[0]));fgTd2.appendChild(fgBtn2);}tr.appendChild(fgTd2);if(isFas){var fgTd3=mk('td','fg-t','');var fgSkuSpan3=document.createElement('span');fgSkuSpan3.textContent=row[3]||'-';fgTd3.appendChild(fgSkuSpan3);if(row[3]&&row[3]!=='-'){var fgBtn3=document.createElement('span');fgBtn3.textContent='SDS/TDS';fgBtn3.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn3.title='View TDS/SDS';fgBtn3.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(row[3].replace('*','').split(' ')[0]));fgTd3.appendChild(fgBtn3);}tr.appendChild(fgTd3);}tb.appendChild(tr);});
+    sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));var fgTd2=mk('td','fg-f','');var fgSkuSpan2=document.createElement('span');fgSkuSpan2.innerHTML=(row[2]||'-').replace(/\//g,'/&#8203;');fgSkuSpan2.style.cssText='word-break:keep-all;overflow-wrap:anywhere;';fgTd2.appendChild(fgSkuSpan2);if(row[2]&&row[2]!=='-'){var fgBtn2=document.createElement('span');fgBtn2.textContent='SDS/TDS';fgBtn2.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn2.title='View TDS/SDS';fgBtn2.addEventListener('click',(function(s){return function(e){e.stopPropagation();var u=getSPUrl(s);if(u)window.open(u,'_blank');};})(row[2].replace('*','').split(' ')[0]));fgTd2.appendChild(fgBtn2);}tr.appendChild(fgTd2);if(isFas){var fgTd3=mk('td','fg-t','');var fgSkuSpan3=document.createElement('span');fgSkuSpan3.innerHTML=(row[3]||'-').replace(/\//g,'/&#8203;');fgSkuSpan3.style.cssText='word-break:keep-all;overflow-wrap:anywhere;';fgTd3.appendChild(fgSkuSpan3);if(row[3]&&row[3]!=='-'){var fgBtn3=document.createElement('span');fgBtn3.textContent='SDS/TDS';fgBtn3.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;margin-left:5px;font-family:Poppins,sans-serif;';fgBtn3.title='View TDS/SDS';fgBtn3.addEventListener('click',(function(s){return function(e){e.stopPropagation();var u=getSPUrl(s);if(u)window.open(u,'_blank');};})(row[3].replace('*','').split(' ')[0]));fgTd3.appendChild(fgBtn3);}tr.appendChild(fgTd3);}tb.appendChild(tr);});
     tbl.appendChild(tb);makeSortable(tbl);w.appendChild(tbl);el.appendChild(w);
   });
 }
@@ -863,7 +863,13 @@ function showVD(i){
     skuTd.style.cursor='pointer';skuTd.title='Tap to see vertical equivalents';
     var _indBase=isI?s.s:(IE[s.s]||s.s);
     skuTd.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(_indBase));
-    tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
+    var skuTdWrap=mk('td','');skuTdWrap.style.cssText='display:flex;align-items:center;gap:6px;';
+    var tdsVBtn=document.createElement('span');tdsVBtn.textContent='SDS/TDS';
+    tdsVBtn.style.cssText='cursor:pointer;font-size:.58rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 4px;font-family:Poppins,sans-serif;white-space:nowrap;flex-shrink:0;';
+    tdsVBtn.title='View SDS/TDS on SharePoint';
+    tdsVBtn.addEventListener('click',(function(sk){return function(e){e.stopPropagation();var u=getSPUrl(sk);if(u)window.open(u,'_blank');};})(s.s));
+    skuTdWrap.appendChild(skuTd);skuTdWrap.appendChild(tdsVBtn);
+    tr.appendChild(skuTdWrap);tr.appendChild(mk('td',null,s.d));
     if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
     tbody.appendChild(tr);
   });
@@ -930,7 +936,7 @@ function showVertPopup(indSku){
     var badge=document.createElement('span');badge.className='vert-badge';badge.textContent=vname;badge.style.background=VCOL[vname]||'#888';row.appendChild(badge);
     var sk=document.createElement('span');sk.className='vert-sku';sk.textContent=verts[vname].sku;sk.style.color=VCOL[vname]||'#888';
     var docI=document.createElement('span');docI.textContent='SDS/TDS';docI.style.cssText='cursor:pointer;font-size:.6rem;font-weight:700;color:#1B3764;background:#EEF3FA;border:1px solid #C5D5E8;border-radius:4px;padding:1px 5px;margin-left:4px;font-family:Poppins,sans-serif;';docI.title='View TDS/SDS on SharePoint';
-    docI.addEventListener('click',(function(s){return function(e){e.stopPropagation();showTdsPopup(s);};})(verts[vname].sku));
+    docI.addEventListener('click',(function(s){return function(e){e.stopPropagation();var u=getSPUrl(s);if(u)window.open(u,'_blank');};})(verts[vname].sku));
     row.appendChild(sk);row.appendChild(docI);
     var ds=document.createElement('span');ds.className='vert-desc';ds.textContent=verts[vname].desc;row.appendChild(ds);
     body.appendChild(row);
@@ -968,6 +974,6 @@ function closeTdsPopup(){document.getElementById("tdsPopupOverlay").style.displa
   </div>
 </div>
 
-<div id="tdsPopupOverlay" class="tds-popup-overlay" style="display:none;" onclick="if(event.target===this)closeTdsPopup();"><div class="tds-popup"><div class="tds-popup-hdr"><span class="tds-popup-title" id="tdsPopupTitle">Product Documents</span><button class="tds-popup-close" onclick="closeTdsPopup()">&#x2715;</button></div><div class="tds-popup-body" id="tdsPopupBody"></div></div></div>
+<!-- tdsPopup removed --><div id="tdsPopupOverlay" class="tds-popup-overlay" style="display:none;" onclick="if(event.target===this)closeTdsPopup();"><div class="tds-popup"><div class="tds-popup-hdr"><span class="tds-popup-title" id="tdsPopupTitle">Product Documents</span><button class="tds-popup-close" onclick="closeTdsPopup()">&#x2715;</button></div><div class="tds-popup-body" id="tdsPopupBody"></div></div></div>
 </body>
 </html>
