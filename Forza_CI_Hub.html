@@ -234,7 +234,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .tab-pill{padding:5px 12px;border-radius:99px;border:1px solid #D0D5DD;background:#fff;font-size:.7rem;font-weight:600;color:#555;cursor:pointer;font-family:'Poppins',sans-serif;}
 .tab-pill:hover{border-color:var(--blue);color:var(--blue);}
 .tab-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);}
-.training-placeholder{text-align:center;padding:60px 20px;color:#888;font-size:.85rem;}
+
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -266,7 +266,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     <button class="tab" id="tb-verticals">Vertical Crosswalk</button>
     <button class="tab" id="tb-intel">Competitor Intel</button>
     <button class="tab" id="tb-fieldguides">Field Guides</button>
-    <button class="tab" id="tb-blog">Blog</button>
+    <button class="tab" id="tb-blog">Blogs</button>
     <button class="tab" id="tb-whitepapers">White Papers</button>
     <button class="tab" id="tb-training">Training</button>
     <button class="tab" id="tb-documents">Documents</button>
@@ -537,9 +537,16 @@ function buildWP(){
 
 function buildTraining(){
   var sec=document.createElement('div');
-  var ph=document.createElement('div');ph.className='training-placeholder';
-  ph.innerHTML='<div style="font-size:2rem;margin-bottom:12px;">📚</div><div style="font-weight:600;color:var(--blue);margin-bottom:8px;">Training Library</div><div>Training materials will appear here when published to SharePoint.</div>';
-  sec.appendChild(ph);
+  var grid=document.createElement('div');grid.className='blog-grid';
+  var card=document.createElement('div');card.className='blog-card';
+  card.onclick=function(){window.open('https://applichem.sharepoint.com/sites/Marketing/Shared%20Documents/Competitive%20Intelligence/Forza_CI_Hub_SharePoint_Package/Science%20Book%20Working%20Draft.pdf?web=1','_blank');};
+  var badge=document.createElement('div');badge.className='blog-cat-badge';
+  badge.style.background='#1B3764';badge.textContent='Reference';
+  var title=document.createElement('div');title.className='blog-title';title.textContent='Forza Science Book';
+  var excerpt=document.createElement('div');excerpt.className='blog-excerpt';excerpt.textContent='Internal chemistry and formulation reference covering ForzaBOND adhesive, sealant, and tape technology across all six verticals. Working draft — for internal use only.';
+  card.appendChild(badge);card.appendChild(title);card.appendChild(excerpt);
+  grid.appendChild(card);
+  sec.appendChild(grid);
   return sec;
 }
 
