@@ -360,9 +360,9 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
     </div>
     <div class="dlist" id="docList"></div>
   </div>
-  <div id="sec-blog" class="sec" style="display:none"><div id="blogContent"></div></div>
-  <div id="sec-whitepapers" class="sec" style="display:none"><div id="wpContent"></div></div>
-  <div id="sec-training" class="sec" style="display:none"><div id="trainingContent"></div></div>
+  <div id="sec-blog" class="sec"><div id="blogContent"></div></div>
+  <div id="sec-whitepapers" class="sec"><div id="wpContent"></div></div>
+  <div id="sec-training" class="sec"><div id="trainingContent"></div></div>
 </div>
 <input type="file" id="scanInput" accept="image/*" capture="environment" style="position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;">
 <canvas id="scanCanvas" style="display:none;"></canvas>
@@ -505,7 +505,7 @@ function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|O
 function showTab(t){
   ['lookup','verticals','intel','fieldguides','documents','blog','whitepapers','training'].forEach(function(id){
     var s=document.getElementById('sec-'+id);var b=document.getElementById('tb-'+id);
-    if(s){s.style.display=id===t?'block':'none';s.classList.toggle('active',id===t);}
+    if(s){s.style.display='';s.classList.toggle('active',id===t);}
     if(b){b.classList.toggle('active',id===t);}
   });
   if(t==='verticals'&&!vB){buildVerts();vB=true;}
