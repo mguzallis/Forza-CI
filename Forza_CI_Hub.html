@@ -4,70 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>Forza Competitive Intelligence Hub</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
-function buildBlog(){
-  var sec=document.getElementById('blogSection');
-  if(!sec){sec=document.createElement('div');sec.id='blogSection';}
-  sec.innerHTML='';
-  // Category filter pills
-  var cats=[...new Set(BLOG_POSTS.map(function(p){return p.cat;}))];
-  var activeCat='all';
-  var pillBar=document.createElement('div');pillBar.className='tab-pill-bar';
-  var allPill=document.createElement('button');allPill.className='tab-pill active';allPill.textContent='All';
-  allPill.onclick=function(){activeCat='all';renderCards();setActive(allPill,pillBar);};
-  pillBar.appendChild(allPill);
-  cats.forEach(function(cat){
-    var p=document.createElement('button');p.className='tab-pill';p.textContent=cat;
-    p.onclick=function(){activeCat=cat;renderCards();setActive(p,pillBar);};
-    pillBar.appendChild(p);
-  });
-  sec.appendChild(pillBar);
-  var grid=document.createElement('div');grid.className='blog-grid';
-  sec.appendChild(grid);
-  function setActive(el,bar){bar.querySelectorAll('.tab-pill').forEach(function(b){b.classList.remove('active');});el.classList.add('active');}
-  function renderCards(){
-    grid.innerHTML='';
-    var posts=activeCat==='all'?BLOG_POSTS:BLOG_POSTS.filter(function(p){return p.cat===activeCat;});
-    posts.forEach(function(p){
-      var card=document.createElement('div');card.className='blog-card';
-      card.onclick=function(){window.open(p.url,'_blank');};
-      var color=BLOG_CAT_COLORS[p.cat]||'#888';
-      var badge=document.createElement('div');badge.className='blog-cat-badge';
-      badge.style.background=color;badge.textContent=p.cat;
-      var title=document.createElement('div');title.className='blog-title';title.textContent=p.title;
-      var excerpt=document.createElement('div');excerpt.className='blog-excerpt';excerpt.textContent=p.excerpt;
-      card.appendChild(badge);card.appendChild(title);card.appendChild(excerpt);
-      grid.appendChild(card);
-    });
-  }
-  renderCards();
-  return sec;
-}
 
-function buildWP(){
-  var sec=document.createElement('div');
-  var grid=document.createElement('div');grid.className='wp-grid';
-  WP_DATA.forEach(function(w){
-    var card=document.createElement('div');card.className='wp-card';
-    card.onclick=function(){window.open(w.url,'_blank');};
-    var co=document.createElement('div');co.className='wp-company';co.textContent=w.company;
-    var sku=document.createElement('div');sku.className='wp-sku';sku.textContent='ForzaBOND '+w.sku;
-    var desc=document.createElement('div');desc.className='wp-desc';desc.textContent=w.desc;
-    card.appendChild(co);card.appendChild(sku);card.appendChild(desc);
-    grid.appendChild(card);
-  });
-  sec.appendChild(grid);
-  return sec;
-}
-
-function buildTraining(){
-  var sec=document.createElement('div');
-  var ph=document.createElement('div');ph.className='training-placeholder';
-  ph.innerHTML='<div style="font-size:2rem;margin-bottom:12px;">📚</div><div style="font-weight:600;color:var(--blue);margin-bottom:8px;">Training Library</div><div>Training materials will appear here when published to SharePoint.</div>';
-  sec.appendChild(ph);
-  return sec;
-}
-</script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
   var firebaseConfig={apiKey:"AIzaSyA4JcZuEOavW8ld9Jw53OylzBl6BDivnM0",authDomain:"forza-ci.firebaseapp.com",databaseURL:"https://forza-ci-default-rtdb.firebaseio.com",projectId:"forza-ci",storageBucket:"forza-ci.firebasestorage.app",messagingSenderId:"720268916384",appId:"1:720268916384:web:b2d010775392dbaf973bc5"};
@@ -502,6 +439,69 @@ function isMobile(){return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|O
 // TABS
 ['lookup','verticals','intel','fieldguides','documents','blog','whitepapers','training'].forEach(function(id){var btn=document.getElementById('tb-'+id);if(btn){btn.addEventListener('click',function(){showTab(id);});}});
 });
+function buildBlog(){
+  var sec=document.getElementById('blogSection');
+  if(!sec){sec=document.createElement('div');sec.id='blogSection';}
+  sec.innerHTML='';
+  // Category filter pills
+  var cats=[...new Set(BLOG_POSTS.map(function(p){return p.cat;}))];
+  var activeCat='all';
+  var pillBar=document.createElement('div');pillBar.className='tab-pill-bar';
+  var allPill=document.createElement('button');allPill.className='tab-pill active';allPill.textContent='All';
+  allPill.onclick=function(){activeCat='all';renderCards();setActive(allPill,pillBar);};
+  pillBar.appendChild(allPill);
+  cats.forEach(function(cat){
+    var p=document.createElement('button');p.className='tab-pill';p.textContent=cat;
+    p.onclick=function(){activeCat=cat;renderCards();setActive(p,pillBar);};
+    pillBar.appendChild(p);
+  });
+  sec.appendChild(pillBar);
+  var grid=document.createElement('div');grid.className='blog-grid';
+  sec.appendChild(grid);
+  function setActive(el,bar){bar.querySelectorAll('.tab-pill').forEach(function(b){b.classList.remove('active');});el.classList.add('active');}
+  function renderCards(){
+    grid.innerHTML='';
+    var posts=activeCat==='all'?BLOG_POSTS:BLOG_POSTS.filter(function(p){return p.cat===activeCat;});
+    posts.forEach(function(p){
+      var card=document.createElement('div');card.className='blog-card';
+      card.onclick=function(){window.open(p.url,'_blank');};
+      var color=BLOG_CAT_COLORS[p.cat]||'#888';
+      var badge=document.createElement('div');badge.className='blog-cat-badge';
+      badge.style.background=color;badge.textContent=p.cat;
+      var title=document.createElement('div');title.className='blog-title';title.textContent=p.title;
+      var excerpt=document.createElement('div');excerpt.className='blog-excerpt';excerpt.textContent=p.excerpt;
+      card.appendChild(badge);card.appendChild(title);card.appendChild(excerpt);
+      grid.appendChild(card);
+    });
+  }
+  renderCards();
+  return sec;
+}
+
+function buildWP(){
+  var sec=document.createElement('div');
+  var grid=document.createElement('div');grid.className='wp-grid';
+  WP_DATA.forEach(function(w){
+    var card=document.createElement('div');card.className='wp-card';
+    card.onclick=function(){window.open(w.url,'_blank');};
+    var co=document.createElement('div');co.className='wp-company';co.textContent=w.company;
+    var sku=document.createElement('div');sku.className='wp-sku';sku.textContent='ForzaBOND '+w.sku;
+    var desc=document.createElement('div');desc.className='wp-desc';desc.textContent=w.desc;
+    card.appendChild(co);card.appendChild(sku);card.appendChild(desc);
+    grid.appendChild(card);
+  });
+  sec.appendChild(grid);
+  return sec;
+}
+
+function buildTraining(){
+  var sec=document.createElement('div');
+  var ph=document.createElement('div');ph.className='training-placeholder';
+  ph.innerHTML='<div style="font-size:2rem;margin-bottom:12px;">📚</div><div style="font-weight:600;color:var(--blue);margin-bottom:8px;">Training Library</div><div>Training materials will appear here when published to SharePoint.</div>';
+  sec.appendChild(ph);
+  return sec;
+}
+
 function showTab(t){
   ['lookup','verticals','intel','fieldguides','documents','blog','whitepapers','training'].forEach(function(id){
     var s=document.getElementById('sec-'+id);var b=document.getElementById('tb-'+id);
