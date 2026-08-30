@@ -180,7 +180,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .fg-tbl td.fg-tbl th{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#666;background:#F8F9FA;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border);}
 .fg-tbl td{font-size:.74rem;color:#333;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
 .fg-tbl tr:last-child td{border-bottom:none;}
-.fg-f{font-weight:700;color:var(--orange);}
+.fg-sku{font-weight:700;}
 .fg-tbl td.fg-t{font-weight:700;color:#B83D35;}
 .fg-tbl tr:last-child td{border-bottom:none;}
 .fg-tbl tr:hover td{background:#F8F9FC;}
@@ -891,7 +891,9 @@ function buildFG(){
     (isFas?['Competitor SKU','Application','Forza Industrial','Forza Transportation']:['Competitor SKU','Application','Forza Marine']).forEach(function(h){hr.appendChild(mk('th',null,h));});
     thead.appendChild(hr);tbl.appendChild(thead);
     var tb=mk('tbody');
-    sec.rows.forEach(function(row){var tr=mk('tr');tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(mk('td','fg-f',row[2]||'-'));if(isFas)tr.appendChild(mk('td','fg-t',row[3]||'-'));tb.appendChild(tr);});
+    sec.rows.forEach(function(row){var tr=mk('tr');var indTd=mk('td','fg-sku',row[2]||'-');indTd.style.color=isFas?'#F16A26':'#137875';indTd.style.fontWeight='700';
+var transTd=mk('td','fg-sku',row[3]||'-');transTd.style.color='#B83D35';transTd.style.fontWeight='700';
+tr.appendChild(mk('td',null,row[0]));tr.appendChild(mk('td',null,row[1]));tr.appendChild(indTd);if(isFas)tr.appendChild(transTd);tb.appendChild(tr);});
     tbl.appendChild(tb);makeSortable(tbl);var wrap=mk("div","fg-tbl-wrap");wrap.appendChild(tbl);w.appendChild(wrap);el.appendChild(w);
   });
 }
