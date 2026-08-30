@@ -98,7 +98,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .vtbl th{text-align:left;font-family:'K','Poppins',sans-serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#888;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
 .vtbl td{font-size:.78rem;padding:7px 10px;border-bottom:1px solid #F0F2F6;color:#333;vertical-align:middle;}
 .vtbl td:first-child{font-weight:600;color:var(--blue);}
-.vtbl td.orange{font-weight:700;color:var(--orange);}
+.vtbl td.orange{font-weight:700;}
 .vtbl td.dim{color:#ccc;font-style:italic;font-weight:400;}
 .vtbl tr:last-child td{border-bottom:none;}
 .vtbl tr:hover td{background:#F8F9FC;}
@@ -435,7 +435,37 @@ var FG=[{"name": "Fastenal", "color": "#003366", "tabs": [{"comp": "3M", "sectio
 var IE={"T-C485": "81-0389", "T-C222": "C130", "T-C225": "C331", "TC452": "IC932", "TC453": "IC933", "TC454": "IC934", "TC456": "IC936", "TC466": "IC946", "TC467": "IC947", "TC471": "IC951", "T-OA177": "OA13", "T-OA156": "OA4", "T-OS151": "OS2", "T-OS152": "OS24", "T-OS160": "OS61", "T-OS164": "OS35", "T-OSA155": "OSA", "T-R682": "R160", "T-R679": "R221", "T-R785": "R519", "T-S596": "S228", "T-T415": "T215", "T-T420": "T220", "T-T246": "T226", "T-T505": "T305", "T-T1420": "T710", "M-C285": "81-0389", "M-C280": "C130", "M-C283": "C331", "MC722": "IC932", "MC723": "IC933", "MC724": "IC934", "MC726": "IC936", "MC736": "IC946", "MC737": "IC947", "MC741": "IC951", "M-OA755": "OA4", "M-OS789": "OS2", "M-OS764": "OS24", "M-OS775": "OS35", "M-OS777": "OS37", "M-OSA783": "OSA", "M-R420": "R160", "M-R445": "R221", "M-R478": "R519", "M-S750": "S228", "M-T815": "T215", "M-T820": "T220", "CC513": "IC932", "CC519": "IC933", "CC515": "IC934", "TU615": "IC934", "CC503": "IC936", "TU603": "IC936", "CC501": "IC946", "TU601": "IC946", "CC507": "IC947", "C-OA52": "OA12", "C-OA53": "OA13", "C-OA5": "OA4", "C-OA98": "OS24", "C-OS9": "OS2", "TU-OA40": "OS2", "TU-OS45": "OS25", "TU-OS50": "OS61", "C-OS55": "OS35", "TU-OS65": "OS35", "C-OSA": "OSA", "C-R560": "R160", "C-R552": "R221", "C-R329": "R519", "C-S538": "S228", "C-W6106": "W700", "C-T550": "T205", "C-T553": "T215", "C-T557": "T220", "C-T500": "T305", "C-T731": "T465", "C-T564": "T532", "TU-T832": "T532", "C-T5100": "T715", "R-A2000": "A1000", "R-C661": "C331", "RC862": "IC932", "RC863": "IC933", "RC864": "IC934", "RC826": "IC936", "RC886": "IC946", "RC887": "IC947", "R-OS8": "OS2", "R-OS84": "OS35", "R-OSA": "OSA", "R-R820": "R160", "R-T600": "T305", "R-T620": "T310", "R-T860": "T715", "TAC-734G": "IC934", "TAC-OS7": "OS2", "TAC-OS74": "OS24", "TAC-OS75": "OS35", "TAC-R760": "R160", "TAC-R777": "R221", "TAC-R750": "R519", "TAC-T700": "T305"};
 var VC={"81-0389": {"Industrial": "81-0389", "Transportation": "T-C485", "Marine": "M-C285", "Construction": "", "Insulation": "", "Composites": ""}, "C130": {"Industrial": "C130", "Transportation": "T-C222", "Marine": "M-C280", "Construction": "", "Insulation": "", "Composites": ""}, "C331": {"Industrial": "C331", "Transportation": "T-C225", "Marine": "M-C283", "Construction": "", "Insulation": "R-C661", "Composites": ""}, "IC932": {"Industrial": "IC932", "Transportation": "TC452", "Marine": "MC722", "Construction": "CC513", "Insulation": "RC862", "Composites": ""}, "IC933": {"Industrial": "IC933", "Transportation": "TC453", "Marine": "MC723", "Construction": "CC519", "Insulation": "RC863", "Composites": ""}, "IC934": {"Industrial": "IC934", "Transportation": "TC454", "Marine": "MC724", "Construction": "CC515/TU615", "Insulation": "RC864", "Composites": "TAC-734G"}, "IC936": {"Industrial": "IC936", "Transportation": "TC456", "Marine": "MC726", "Construction": "CC503/TU603", "Insulation": "RC826", "Composites": ""}, "IC946": {"Industrial": "IC946", "Transportation": "TC466", "Marine": "MC736", "Construction": "CC501/TU601", "Insulation": "RC886", "Composites": ""}, "IC947": {"Industrial": "IC947", "Transportation": "TC467", "Marine": "MC737", "Construction": "CC507", "Insulation": "RC887", "Composites": ""}, "IC951": {"Industrial": "IC951", "Transportation": "TC471", "Marine": "MC741", "Construction": "", "Insulation": "", "Composites": ""}, "A1000": {"Industrial": "A1000", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "R-A2000", "Composites": ""}, "OA4": {"Industrial": "OA4", "Transportation": "T-OA156", "Marine": "M-OA755", "Construction": "C-OA5", "Insulation": "", "Composites": ""}, "OA12": {"Industrial": "OA12", "Transportation": "", "Marine": "", "Construction": "C-OA52", "Insulation": "", "Composites": ""}, "OA13": {"Industrial": "OA13", "Transportation": "T-OA177", "Marine": "", "Construction": "C-OA53", "Insulation": "", "Composites": ""}, "OS2": {"Industrial": "OS2", "Transportation": "T-OS151", "Marine": "M-OS789", "Construction": "C-OS9/TU-OA40", "Insulation": "R-OS8", "Composites": "TAC-OS7"}, "OS24": {"Industrial": "OS24", "Transportation": "T-OS152", "Marine": "M-OS764", "Construction": "C-OA98", "Insulation": "", "Composites": "TAC-OS74"}, "OS35": {"Industrial": "OS35", "Transportation": "T-OS164", "Marine": "M-OS775", "Construction": "C-OS55/TU-OS65", "Insulation": "R-OS84", "Composites": "TAC-OS75"}, "OS37": {"Industrial": "OS37", "Transportation": "", "Marine": "M-OS777", "Construction": "", "Insulation": "", "Composites": ""}, "OSA": {"Industrial": "OSA", "Transportation": "T-OSA155", "Marine": "M-OSA783", "Construction": "C-OSA", "Insulation": "R-OSA", "Composites": ""}, "R160": {"Industrial": "R160", "Transportation": "T-R682", "Marine": "M-R420", "Construction": "C-R560", "Insulation": "R-R820", "Composites": "TAC-R760"}, "R221": {"Industrial": "R221", "Transportation": "T-R679", "Marine": "M-R445", "Construction": "C-R552", "Insulation": "", "Composites": "TAC-R777"}, "R320": {"Industrial": "R320", "Transportation": "T-R679", "Marine": "M-R445", "Construction": "", "Insulation": "", "Composites": ""}, "R519": {"Industrial": "R519", "Transportation": "T-R785", "Marine": "M-R478", "Construction": "C-R329", "Insulation": "", "Composites": "TAC-R750"}, "S228": {"Industrial": "S228", "Transportation": "T-S596", "Marine": "M-S750", "Construction": "C-S538", "Insulation": "", "Composites": ""}, "T205": {"Industrial": "T205", "Transportation": "", "Marine": "", "Construction": "C-T550", "Insulation": "", "Composites": ""}, "T215": {"Industrial": "T215", "Transportation": "T-T415", "Marine": "M-T815", "Construction": "C-T553", "Insulation": "", "Composites": ""}, "T220": {"Industrial": "T220", "Transportation": "T-T420", "Marine": "M-T820", "Construction": "C-T557", "Insulation": "", "Composites": ""}, "T226": {"Industrial": "T226", "Transportation": "T-T246", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "T305": {"Industrial": "T305", "Transportation": "T-T505", "Marine": "", "Construction": "C-T500", "Insulation": "R-T600", "Composites": "TAC-T700"}, "T310": {"Industrial": "T310", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "R-T620", "Composites": ""}, "T465": {"Industrial": "T465", "Transportation": "", "Marine": "", "Construction": "C-T731", "Insulation": "", "Composites": ""}, "T532": {"Industrial": "T532", "Transportation": "", "Marine": "", "Construction": "C-T564/TU-T832", "Insulation": "", "Composites": ""}, "T710": {"Industrial": "T710", "Transportation": "T-T1420", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "T715": {"Industrial": "T715", "Transportation": "", "Marine": "", "Construction": "C-T5100", "Insulation": "R-T860", "Composites": ""}, "CA1000": {"Industrial": "CA1000", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "CA1500": {"Industrial": "CA1500", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "CA2400": {"Industrial": "CA2400", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H103": {"Industrial": "H103", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H117": {"Industrial": "H117", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H158": {"Industrial": "H158", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H163": {"Industrial": "H163", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H164": {"Industrial": "H164", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H167": {"Industrial": "H167", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "H176": {"Industrial": "H176", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}, "MC739": {"Industrial": "", "Transportation": "", "Marine": "MC739", "Construction": "", "Insulation": "", "Composites": ""}, "RuggedRed Citrus": {"Industrial": "RuggedRed Citrus", "Transportation": "", "Marine": "", "Construction": "", "Insulation": "", "Composites": ""}};
 var VO=['Industrial','Transportation','Marine','Construction','Insulation','Composites'];
-var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
+var VCOL={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#C7C8C9'};
+function getSkuColor(sku){
+  if(!sku||sku==='-'||sku==='—')return '#888';
+  var s=sku.replace(/\*/g,'').trim();
+  if(/^(TAC-)/.test(s))return '#C7C8C9';
+  if(/^(MC|M-OA|M-OS|M-R|M-T|M-S|M-C|RuggedRed)/.test(s))return '#137875';
+  if(/^(TC|T-OA|T-OS|T-R|T-T|T-S|T-C|T-OSA|T-W)/.test(s))return '#B83D35';
+  if(/^(RC|R-OS|R-R|R-T|R-A|R-C[0-9])/.test(s))return '#D0157D';
+  if(/^(CC|C-OA|C-OS|C-R|C-T|C-W|C-S|TU)/.test(s))return '#8B6914';
+  return '#F16A26';
+}
+function colorSkuCell(td, val){
+  if(!val||val==='-'||val==='—'){td.textContent=val||'-';td.style.color='#aaa';return;}
+  // Handle multiple SKUs like "IC933 / TC453"
+  var parts=val.replace(/\*/g,'').split(/\s*\/\s*/);
+  if(parts.length===1){
+    td.textContent=val;
+    td.style.color=getSkuColor(parts[0].trim());
+    td.style.fontWeight='700';
+  } else {
+    // Color each SKU segment individually
+    parts.forEach(function(p,i){
+      var span=document.createElement('span');
+      span.textContent=p.trim()+(val.includes('*')?'':'');
+      span.style.color=getSkuColor(p.trim());
+      span.style.fontWeight='700';
+      if(i<parts.length-1){span.textContent+=' / ';}
+      td.appendChild(span);
+    });
+  }
+}
 var TL={battle:'Battle Card',crosswalk:'Crosswalk',brief:'Exec Brief',guide:'Field Guide',comparison:'Comparison',other:'Other'};
 var UPC_BUILTIN={'051111072783':'Hi-Strength 90','51111072783':'Hi-Strength 90','021200725715':'Super 77 Multi-Purpose','021200506995':'Super 77 Multi-Purpose','021200508524':'24 Foam & Fabric Spray','021200795626':'HoldFast 70','051135809793':'Sikaflex-252','51135809793':'Sikaflex-252','051135808000':'Sikaflex-221','051135808109':'Sikaflex-291','723513802656':'75-AM'};
 var aF='all',aV=null,aIntel=null,aIntelView='exec',intelB=false,vB=false,fgB=false,fgG=0,fgC=0,lastUpc='';
@@ -581,7 +611,7 @@ function showRes(m,q){
   m.forEach(function(d){
     var row=mk('div','rrow');var left=mk('div');
     left.appendChild(mk('div','rr-sku',d.comp));left.appendChild(mk('div','rr-app',d.brand+' - '+d.app.substring(0,55)));
-    row.appendChild(left);var rrf=mk('div','rr-forza'+(d.ind&&d.ind.endsWith('*')?' rr-approx':''),d.ind||'-');row.appendChild(rrf);
+    row.appendChild(left);var rrf=mk('div','rr-forza'+(d.ind&&d.ind.endsWith('*')?' rr-approx':''));colorSkuCell(rrf,d.ind||'-');row.appendChild(rrf);
     row.addEventListener('click',(function(dd){return function(){document.getElementById('skuInput').value=dd.comp;showSingle(dd,el);};})(d));
     el.appendChild(row);
   });
@@ -594,7 +624,7 @@ function showSingle(d,container){
   var cards=mk('div','r-cards');
   var card=mk('div','r-card');
   card.appendChild(mk('div','r-card-label','Forza Equivalent - Industrial'));
-  card.appendChild(mk('div',d.ind?'r-card-sku':'r-card-sku empty',d.ind||'No industrial equivalent'));
+  var cardSkuEl=mk('div',d.ind?'r-card-sku':'r-card-sku empty');if(d.ind){colorSkuCell(cardSkuEl,d.ind);}else{cardSkuEl.textContent='No industrial equivalent';}card.appendChild(cardSkuEl);
   cards.appendChild(card);
   if(d.ind&&VC[d.ind]){
     var cr=VC[d.ind],tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
@@ -748,7 +778,7 @@ function renderRepo(){
     if(!hasUpc)upcTd.style.color='#ccc';
     tr.appendChild(upcTd);
     tr.appendChild(mk('td',null,e.name||''));
-    var indTd=mk('td','orange',e.ind||'-');
+    var indTd=mk('td');colorSkuCell(indTd,e.ind||'-');
     if(e.ind){
       indTd.style.cursor='pointer';indTd.title='Tap to see full vertical cross';
       indTd.addEventListener('click',(function(ind){return function(){
@@ -835,7 +865,7 @@ function showIntelDetail(c,view){
     dp.appendChild(mk('div','bc-label','Company at a Glance'));var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');hrow.appendChild(mk('th',null,'Category'));hrow.appendChild(mk('th',null,'Details'));thead.appendChild(hrow);tbl.appendChild(thead);
     var tb=mk('tbody');ex.glance.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tb.appendChild(tr);});tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
     dp.appendChild(mk('div','bc-label','Key Context'));dp.appendChild(mk('div','pitch-box',ex.key_context));dp.appendChild(mk('div','bc-label','Company Overview'));dp.appendChild(mk('div','overview-box',ex.overview));
-    if(ex.brands_detail&&ex.brands_detail.length){dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});bthead.appendChild(bhrow);btbl.appendChild(bthead);var btb=mk('tbody');ex.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tr.appendChild(mk('td','orange',r[2]));btb.appendChild(tr);});btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);}
+    if(ex.brands_detail&&ex.brands_detail.length){dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});bthead.appendChild(bhrow);btbl.appendChild(bthead);var btb=mk('tbody');ex.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));var eTd=mk('td');colorSkuCell(eTd,r[2]);tr.appendChild(eTd);btb.appendChild(tr);});btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);}
     dp.appendChild(mk('div','bc-label','Strategic Assessment'));dp.appendChild(mk('div','overview-box',ex.assessment));dp.appendChild(mk('div','bc-label','Bottom Line'));dp.appendChild(mk('div','pitch-box',ex.bottom_line));
     var swg=mk('div','sw-grid');var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));ex.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Difficult to Displace'));ex.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);dp.appendChild(swg);det.appendChild(dp);
   }else if(view==='bc'){
@@ -845,7 +875,7 @@ function showIntelDetail(c,view){
     if(c.seeds&&c.seeds.length){dp.appendChild(mk('div','bc-label','Quick Dismisses'));c.seeds.forEach(function(s){var sb=mk('div','seed-box');var lbl=mk('span','seed-action','⚡ SAY THIS: ');sb.appendChild(lbl);sb.appendChild(document.createTextNode(s));dp.appendChild(sb);});}
     if(c.landmines&&c.landmines.length){dp.appendChild(mk('div','bc-label','Landmines'));c.landmines.forEach(function(l){var b=mk('div','lm-box');var plantRow=mk('div','lm-plant-row');var plantLbl=mk('span','lm-action-lbl','💣 PLANT THIS QUESTION:');var plantTxt=mk('span','lm-title-txt',l[0]);plantRow.appendChild(plantLbl);plantRow.appendChild(plantTxt);b.appendChild(plantRow);if(l[1]){var ctxRow=mk('div','lm-ctx-row');var ctxLbl=mk('span','lm-ctx-lbl','CONTEXT: ');var ctxTxt=mk('span','lm-body',l[1]);ctxRow.appendChild(ctxLbl);ctxRow.appendChild(ctxTxt);b.appendChild(ctxRow);}dp.appendChild(b);});}
     if(c.objections&&c.objections.length){dp.appendChild(mk('div','bc-label','Objection Handling'));c.objections.forEach(function(o){var b=mk('div','obj-box');b.appendChild(mk('div','obj-q','“'+o[0]+'”'));b.appendChild(mk('div','obj-a',o[1]));dp.appendChild(b);});}
-    if(c.crosswalk&&c.crosswalk.length){dp.appendChild(mk('div','bc-label','Key SKU Crosswalk'));var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});thead.appendChild(hrow);tbl.appendChild(thead);var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));tr.appendChild(mk('td','orange',r.ind));tb.appendChild(tr);});tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);}
+    if(c.crosswalk&&c.crosswalk.length){dp.appendChild(mk('div','bc-label','Key SKU Crosswalk'));var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});thead.appendChild(hrow);tbl.appendChild(thead);var tb=mk('tbody');c.crosswalk.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r.sku));tr.appendChild(mk('td',null,r.app));var xTd=mk('td');colorSkuCell(xTd,r.ind);tr.appendChild(xTd);tb.appendChild(tr);});tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);}
     var swg=mk('div','sw-grid');var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));c.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);if(c.moats&&c.moats.length){var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Do Not Fight These'));c.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);}dp.appendChild(swg);det.appendChild(dp);
   }else if(view==='crosswalk'){
     var dp=mk('div','dp');dp.appendChild(mk('div','dp-title',c.name+' — Full SKU Crosswalk'));dp.appendChild(mk('div','dp-meta',c.brands));
@@ -854,7 +884,7 @@ function showIntelDetail(c,view){
     var hasAsterisk=allSkus.some(function(s){return s.ind&&s.ind.endsWith('*');});
     if(allSkus.length){
       var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');['Competitor SKU','Application','Forza Equivalent'].forEach(function(h){hrow.appendChild(mk('th',null,h));});thead.appendChild(hrow);tbl.appendChild(thead);
-      var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));var indCell=mk('td','orange',s.ind);if(s.ind&&s.ind.endsWith('*')){indCell.style.color='#B06010';}
+      var tb=mk('tbody');allSkus.forEach(function(s){var tr=mk('tr');tr.appendChild(mk('td',null,s.comp));tr.appendChild(mk('td',null,s.app));var indCell=mk('td');colorSkuCell(indCell,s.ind);if(s.ind&&s.ind.endsWith('*')){indCell.style.color='#B06010';}
         var baseInd=s.ind?s.ind.replace('*',''):'';indCell.style.cursor='pointer';indCell.title='Tap to see vertical equivalents';
         indCell.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(baseInd));
         tr.appendChild(indCell);tb.appendChild(tr);});
@@ -939,7 +969,7 @@ function showVD(i){
   var v=VERT[i],isI=v.name==='Industrial',det=document.getElementById('vertDetail');det.innerHTML='';
   var dp=mk('div','dp');dp.style.marginTop='0';
   var title=mk('div','dp-title');title.textContent=v.name+' Vertical - '+v.skus.length+' SKUs';title.style.color=v.color;dp.appendChild(title);
-  var skuColors={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#888'};
+  var skuColors={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#C7C8C9'};
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
   hrow.appendChild(mk('th',null,'Forza SKU'));hrow.appendChild(mk('th',null,'Description'));
   if(!isI)hrow.appendChild(mk('th',null,'Industrial Equivalent'));
