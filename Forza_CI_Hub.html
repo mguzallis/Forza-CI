@@ -761,6 +761,26 @@ function offerSave(upc,name,ind,imgData){
 }
 
 function getRepo(){try{return JSON.parse(localStorage.getItem('fz_upc')||'{}');}catch(e){return {};}}
+function syncAndRender(){
+  if(window.fbDb){
+    window.fbDb.ref('upc_repo').once('value',function(snapshot){
+      var data=snapshot.val()||{};
+      var local={};try{local=JSON.parse(localStorage.getItem('fz_upc')||'{}');}catch(e){}
+      Object.keys(data).forEach(function(key){
+        if(!local[key])local[key]={};
+        local[key].name=data[key].name||local[key].name||'';
+        local[key].ind=data[key].ind||local[key].ind||'';
+        local[key].date=data[key].date||local[key].date||'';
+        local[key].upc=data[key].upc||local[key].upc||'';
+        local[key].rep=data[key].rep||local[key].rep||'';
+      });
+      try{localStorage.setItem('fz_upc',JSON.stringify(local));}catch(e){}
+      renderRepo();
+    });
+  } else {
+    renderRepo();
+  }
+}
 
 function renderRepo(){
   var wrap=document.getElementById('upcRepo');wrap.innerHTML='';
@@ -819,7 +839,7 @@ function renderRepo(){
   });
   tbl.appendChild(tbody);makeSortable(tbl);wrap.appendChild(tbl);
 }
-renderRepo();
+syncAndRender();
 
 // COMPETITOR CARDS
 function buildCards(data,gridId,selFn,activeId){
@@ -1023,7 +1043,7 @@ function initRepModal(){
   inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
   setTimeout(function(){inp.focus();},100);
 }
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){buildDocs();initRepModal();renderRepo();});}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){buildDocs();initRepModal();syncAndRender();});}
 else{buildDocs();initRepModal();renderRepo();}
 
 function buildVertMap(){
