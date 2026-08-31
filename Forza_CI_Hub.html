@@ -1005,10 +1005,13 @@ function showVD(i){
   var filteredSkus=isI?v.skus:v.skus.filter(function(s){return IE[s.s]&&IE[s.s]!=='';});
   filteredSkus.forEach(function(s){
     var tr=mk('tr');
-    var skuTd=mk('td',null,s.s);skuTd.style.fontWeight='700';skuTd.style.color=skuColors[v.name]||v.color;
+    var skuTd=mk('td');skuTd.style.fontWeight='700';skuTd.style.color=skuColors[v.name]||v.color;
     skuTd.style.cursor='pointer';skuTd.title='Tap to see vertical equivalents';
     var _indBase=isI?s.s:(IE[s.s]||s.s);
     skuTd.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(_indBase));
+    var skuLbl=document.createElement('span');skuLbl.textContent=s.s;skuTd.appendChild(skuLbl);
+    var spUrl=getSPUrl(s.s);
+    if(spUrl){var pill=document.createElement('a');pill.href=spUrl;pill.target='_blank';pill.className='sds-pill';pill.textContent='SDS/TDS';pill.onclick=function(e){e.stopPropagation();};skuTd.appendChild(pill);}
     tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
     if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
     tbody.appendChild(tr);
