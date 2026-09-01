@@ -1009,26 +1009,27 @@ function mkPill(sku){
   return p;
 }
 function mkSkuCell(indStr,clickFn){
-  // indStr may be "IC933 / RC863" — split and show each SKU with its own pill
   var wrap=document.createElement('div');
-  wrap.style.cssText='display:flex;align-items:center;gap:6px;flex-wrap:nowrap;';
+  wrap.style.cssText='display:flex;flex-direction:column;gap:3px;';
   if(!indStr||indStr==='-'||indStr==='—'){
     var lbl=document.createElement('span');lbl.textContent=indStr||'-';lbl.style.color='#aaa';
     wrap.appendChild(lbl);return wrap;
   }
   var parts=indStr.replace(/\*/g,'').split(/\s*\/\s*/);
-  parts.forEach(function(rawSku,i){
+  parts.forEach(function(rawSku){
     var sku=rawSku.trim();
     if(!sku)return;
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:5px;white-space:nowrap;';
     var lbl=document.createElement('span');
     lbl.textContent=sku;
     lbl.style.cssText='font-weight:700;cursor:pointer;';
     lbl.style.color=getSkuColor(sku);
     if(clickFn)lbl.addEventListener('click',function(e){e.stopPropagation();clickFn(sku);});
-    wrap.appendChild(lbl);
+    row.appendChild(lbl);
     var url=getSPUrl(sku);
-    if(url)wrap.appendChild(mkPill(sku));
-    if(i<parts.length-1){var sep=document.createElement('span');sep.textContent=' /';sep.style.color='#aaa';wrap.appendChild(sep);}
+    if(url)row.appendChild(mkPill(sku));
+    wrap.appendChild(row);
   });
   return wrap;
 }
