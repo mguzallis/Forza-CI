@@ -1021,10 +1021,10 @@ function mkSkuCell(indStr,clickFn){
     var sku=rawSku.trim();
     if(!sku)return;
     var row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:5px;white-space:nowrap;';
+    row.style.cssText='display:grid;grid-template-columns:90px auto;align-items:center;gap:5px;';
     var lbl=document.createElement('span');
     lbl.textContent=sku;
-    lbl.style.cssText='font-weight:700;cursor:pointer;';
+    lbl.style.cssText='font-weight:700;cursor:pointer;overflow:hidden;';
     lbl.style.color=getSkuColor(sku);
     if(clickFn)lbl.addEventListener('click',function(e){e.stopPropagation();clickFn(sku);});
     row.appendChild(lbl);
