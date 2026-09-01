@@ -898,20 +898,7 @@ function showIntelDetail(c,view){
     dp.appendChild(mk('div','bc-label','Company at a Glance'));var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');hrow.appendChild(mk('th',null,'Category'));hrow.appendChild(mk('th',null,'Details'));thead.appendChild(hrow);tbl.appendChild(thead);
     var tb=mk('tbody');ex.glance.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));tb.appendChild(tr);});tbl.appendChild(tb);makeSortable(tbl);dp.appendChild(tbl);
     dp.appendChild(mk('div','bc-label','Key Context'));dp.appendChild(mk('div','pitch-box',ex.key_context));dp.appendChild(mk('div','bc-label','Company Overview'));dp.appendChild(mk('div','overview-box',ex.overview));
-    if(ex.brands_detail&&ex.brands_detail.length){dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');['Brand / Product Line','Key SKUs','Forza Competitive Line'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});bthead.appendChild(bhrow);btbl.appendChild(bthead);var btb=mk('tbody');ex.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));var eTd=mk('td');
-if(r[2]&&r[2].match(/^Forza[A-Z]/)){
-  var _lines=r[2].split(/\s*[,\/]\s*/);
-  var _wrap=document.createElement('div');_wrap.style.cssText='display:flex;flex-direction:column;gap:2px;';
-  _lines.forEach(function(line){
-    var _s=document.createElement('span');_s.textContent=line.trim();
-    _s.style.cssText='color:#222;font-size:.75rem;';
-    _wrap.appendChild(_s);
-  });
-  eTd.appendChild(_wrap);
-} else {
-  eTd.appendChild(mkSkuCell(r[2],function(sk){showVertPopup(sk);}));
-}
-tr.appendChild(eTd);btb.appendChild(tr);});btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);}
+    if(ex.brands_detail&&ex.brands_detail.length){dp.appendChild(mk('div','bc-label','Forza-Relevant Brands'));var btbl=mk('table','vtbl'),bthead=mk('thead'),bhrow=mk('tr');['Brand / Product Line','Key SKUs'].forEach(function(h){bhrow.appendChild(mk('th',null,h));});bthead.appendChild(bhrow);btbl.appendChild(bthead);var btb=mk('tbody');ex.brands_detail.forEach(function(r){var tr=mk('tr');tr.appendChild(mk('td',null,r[0]));tr.appendChild(mk('td',null,r[1]));btb.appendChild(tr);});btbl.appendChild(btb);makeSortable(btbl);dp.appendChild(btbl);}
     dp.appendChild(mk('div','bc-label','Strategic Assessment'));dp.appendChild(mk('div','overview-box',ex.assessment));dp.appendChild(mk('div','bc-label','Bottom Line'));dp.appendChild(mk('div','pitch-box',ex.bottom_line));
     var swg=mk('div','sw-grid');var wb=mk('div','sw-box');wb.appendChild(mk('div','sw-label sw-win','Where Forza Wins'));ex.wins.forEach(function(w){wb.appendChild(mk('div','sw-item win',w));});swg.appendChild(wb);var mb=mk('div','sw-box');mb.appendChild(mk('div','sw-label sw-gap','Difficult to Displace'));ex.moats.forEach(function(m){mb.appendChild(mk('div','sw-item gap',m));});swg.appendChild(mb);dp.appendChild(swg);det.appendChild(dp);
   }else if(view==='bc'){
