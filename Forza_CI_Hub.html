@@ -237,7 +237,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .tab-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);}
 
 .sds-pill:hover{background:#1B3764;color:#fff;border-color:#1B3764;}
-.vtbl td,.fg-tbl td{vertical-align:middle;}.vtbl td:first-child{white-space:nowrap;}.fg-tbl td:nth-child(3),.fg-tbl td:nth-child(4){white-space:nowrap;}
+.vtbl td,.fg-tbl td{vertical-align:middle;}.vtbl th:nth-child(2),.vtbl td:nth-child(2){width:70px;padding-left:0;padding-right:4px;}.vtbl td:first-child{white-space:nowrap;}.fg-tbl td:nth-child(3),.fg-tbl td:nth-child(4){white-space:nowrap;}
 </style>
 <link rel="apple-touch-icon" href="/Forza-CI/icon.png">
 <link rel="icon" type="image/png" href="/Forza-CI/icon.png">
@@ -1038,7 +1038,7 @@ function showVD(i){
   var title=mk('div','dp-title');title.textContent=v.name+' Vertical - '+v.skus.length+' SKUs';title.style.color=v.color;dp.appendChild(title);
   var skuColors={'Industrial':'#F16A26','Transportation':'#B83D35','Marine':'#137875','Construction':'#8B6914','Insulation':'#D0157D','Composites':'#5A5B5C'};
   var tbl=mk('table','vtbl'),thead=mk('thead'),hrow=mk('tr');
-  hrow.appendChild(mk('th',null,'Forza SKU'));hrow.appendChild(mk('th',null,'Description'));
+  hrow.appendChild(mk('th',null,'Forza SKU'));hrow.appendChild(mk('th',null,''));hrow.appendChild(mk('th',null,'Description'));
   if(!isI)hrow.appendChild(mk('th',null,'Industrial Equivalent'));
   thead.appendChild(hrow);tbl.appendChild(thead);
   var tbody=mk('tbody');
@@ -1049,8 +1049,12 @@ function showVD(i){
     skuTd.style.cursor='pointer';skuTd.title='Tap to see vertical equivalents';
     var _indBase=isI?s.s:(IE[s.s]||s.s);
     skuTd.addEventListener('click',(function(bi){return function(e){e.stopPropagation();showVertPopup(bi);};})(_indBase));
-    var _vw=mkSkuCell(s.s,function(sk){showVertPopup(sk);});
-    skuTd.appendChild(_vw);tr.appendChild(skuTd);tr.appendChild(mk('td',null,s.d));
+    var skuLbl=document.createElement('span');skuLbl.textContent=s.s;skuLbl.style.fontWeight='700';skuTd.appendChild(skuLbl);
+    tr.appendChild(skuTd);
+    var pillTd=mk('td');pillTd.style.cssText='white-space:nowrap;padding-left:0;padding-right:4px;';
+    var spUrl=getSPUrl(s.s);if(spUrl){pillTd.appendChild(mkPill(s.s));}
+    tr.appendChild(pillTd);
+    tr.appendChild(mk('td',null,s.d));
     if(!isI){var ieq=IE[s.s]||'';var ieqTd=mk('td',ieq?'':'dim',ieq||'-');if(ieq){ieqTd.style.fontWeight='700';ieqTd.style.color='#F16A26';}tr.appendChild(ieqTd);}
     tbody.appendChild(tr);
   });
